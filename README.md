@@ -15,6 +15,10 @@ Fixed an issue where weapons randomized to have an effectiveness pointer or a st
 
 Reproduced the freezing issue when breaking weapons. Only seems like a problem in v1.0 of the patch though. Will need further investigation.
 
+Fixed an issue where non-weapon items were being given random traits if the traits option was turned on.
+
+Removed Uncounterable from the list of possible traits for weapons in FE6, due to animation lockups when applying to melee weapons.
+
 ## Purpose
 The intent for this project was to create an easy-to-use and customizable randomizer for use with the Fire Emblem games for Game Boy Advance. This includes Fire Emblem: Sword of Seals (JP), Fire Emblem (NA), and Fire Emblem: The Sacred Stones (NA). This application simply reads the game data (from a *.gba file) and directly modifies the bytes in the data tables to generate a version of the game that may contains randomized classes, growths, items, and so on. 
 
@@ -23,6 +27,7 @@ The intent for this project was to create an easy-to-use and customizable random
 * Random classes are available for most playable characters and bosses. Problems arise with playable characters and bosses that are scripted to move in events and can fly (Miledy, Gale, Narcian) and fly across otherwise impassable terrain (bodies of water and mountains). One option is to randomize them only with other flying classes, but that drastically cuts down on the possibilties (basically Wyvern Knight or Pegasus Knight). At the moment, they just won't be randomized.
 * There have been reports of freezing of games occurring with the randomizer. I've noticed this happens only with v1.0 of the translation patch, so I'll have to figure out why this is the case. In the meantime, use v0.99b for testing.
 * It should be noted that I am testing using the 0.99b version of the Redux translation patch. Quickly testing out the v1.0 version of the patch seems to yield some odd issues with infinite vulneraries, which I'll have to look into. You can find the Redux translation patch (both 1.0 and older versions) here: http://serenesforest.net/forums/index.php?showtopic=41095
+* The "Uncounterable" trait, which is usually reserved for siege tomes, has been removed from the pool of possible weapon traits that can be randomized, due to the game assuming that it is indeed a siege tome, and animating from 3+ spaces away, causing melee weapons to lock up.
 
 ### FE7 Notes
 
