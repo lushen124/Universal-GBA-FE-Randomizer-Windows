@@ -19,15 +19,18 @@ Fixed an issue where non-weapon items were being given random traits if the trai
 
 Removed Uncounterable from the list of possible traits for weapons in FE6, due to animation lockups when applying to melee weapons.
 
+Fixed an issue where the first item of each table was important data that was being overwritten. This fixes the locking issues in the Redux translation patch v1.0.
+
 ## Purpose
 The intent for this project was to create an easy-to-use and customizable randomizer for use with the Fire Emblem games for Game Boy Advance. This includes Fire Emblem: Sword of Seals (JP), Fire Emblem (NA), and Fire Emblem: The Sacred Stones (NA). This application simply reads the game data (from a *.gba file) and directly modifies the bytes in the data tables to generate a version of the game that may contains randomized classes, growths, items, and so on. 
 
 ### FE6 Notes
 
 * Random classes are available for most playable characters and bosses. Problems arise with playable characters and bosses that are scripted to move in events and can fly (Miledy, Gale, Narcian) and fly across otherwise impassable terrain (bodies of water and mountains). One option is to randomize them only with other flying classes, but that drastically cuts down on the possibilties (basically Wyvern Knight or Pegasus Knight). At the moment, they just won't be randomized.
-* There have been reports of freezing of games occurring with the randomizer. I've noticed this happens only with v1.0 of the translation patch, so I'll have to figure out why this is the case. In the meantime, use v0.99b for testing.
-* It should be noted that I am testing using the 0.99b version of the Redux translation patch. Quickly testing out the v1.0 version of the patch seems to yield some odd issues with infinite vulneraries, which I'll have to look into. You can find the Redux translation patch (both 1.0 and older versions) here: http://serenesforest.net/forums/index.php?showtopic=41095
+* My testing has been using the redux translation patch. I don't know how well it works with other patches (or even unpatched), so I recommend you use the same patch. All issues with v1.0 of the redux translation patch have been ironed out at this point, I think. You can find the Redux translation patch (both 1.0 and older versions) here: http://serenesforest.net/forums/index.php?showtopic=41095
 * The "Uncounterable" trait, which is usually reserved for siege tomes, has been removed from the pool of possible weapon traits that can be randomized, due to the game assuming that it is indeed a siege tome, and animating from 3+ spaces away, causing melee weapons to lock up.
+* Something that's interesting: FE6 gives the seize command to a class that has the Lord flag on it. Normally, this is only on the Lord class, but if you randomize Roy to a different class, I had to apply the same flag to his new class to allow him to seize thrones. Obviously, anybody else with the same class can now seize thrones as well (not to mention, anybody who got the Lord class can do the same). This is a known issue, but there's no real way around it for FE6.
+* Something that's interesting: Bosses randomized as thieves will move off of the throne to steal stuff. Not going to try to fix that one.
 
 ### FE7 Notes
 
