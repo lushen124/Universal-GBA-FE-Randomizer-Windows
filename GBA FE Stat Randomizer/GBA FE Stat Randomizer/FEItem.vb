@@ -276,7 +276,8 @@
                     weaponAbility1 = weaponAbility1 Or Ability1.Ability1MagicDamage
                 End If
             Else
-                If weaponAbility1 And Ability1.Ability1Uncounterable Then
+                ' FE6 does not handle uncounterable very well (forcing it to be animated from 3+ spaces away and locking up weapons that can't do that)
+                If (weaponAbility1 And Ability1.Ability1Uncounterable) Or type = Utilities.GameType.GameTypeFE6 Then
                     assignRandomEffect(rng, type)
                 Else
                     weaponAbility1 = weaponAbility1 Or Ability1.Ability1Uncounterable

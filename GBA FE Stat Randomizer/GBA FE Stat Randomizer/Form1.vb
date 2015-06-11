@@ -373,13 +373,15 @@
 
         If shouldRandomizeItems Then
             For Each item As FEItem In itemList
-                item.randomizeItemDurability(durabilityVariance, minimumDurability, rng)
-                item.randomizeItemMight(mightVariance, minimumMight, rng)
-                item.randomizeItemHit(hitVariance, minimumHit, rng)
-                item.randomizeItemWeight(weightVariance, minimumWeight, maximumWeight, rng)
-                item.randomizeItemCritical(criticalVariance, minimumCritical, rng)
-                If randomTraits Then
-                    item.assignRandomEffect(rng, type)
+                If item.isWeapon() Then
+                    item.randomizeItemDurability(durabilityVariance, minimumDurability, rng)
+                    item.randomizeItemMight(mightVariance, minimumMight, rng)
+                    item.randomizeItemHit(hitVariance, minimumHit, rng)
+                    item.randomizeItemWeight(weightVariance, minimumWeight, maximumWeight, rng)
+                    item.randomizeItemCritical(criticalVariance, minimumCritical, rng)
+                    If randomTraits Then
+                        item.assignRandomEffect(rng, type)
+                    End If
                 End If
             Next
         End If
