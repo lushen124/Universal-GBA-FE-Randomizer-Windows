@@ -3,7 +3,17 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
-June 10, 2015 - Created Repository and Initial Check-in of code. Basic functionality works for all games (randomizing growths, bases, CON, MOV, affinities, and items). Random classes only works with FE6 at the moment. Working through issues with FE6 classes. 
+**June 10, 2015**
+
+Created Repository and Initial Check-in of code. Basic functionality works for all games (randomizing growths, bases, CON, MOV, affinities, and items). Random classes only works with FE6 at the moment. Working through issues with FE6 classes.
+
+Fixed an issue where unpromoted female classes were not being randomized
+
+Added Miledy to the blacklist for random classes. Her scripted flying sections cause the game to lock up if she's randomized into a class that can't fly.
+
+Fixed an issue where weapons randomized to have an effectiveness pointer or a stat boost pointer were not being written back to the file.
+
+Reproduced the freezing issue when breaking weapons. Only seems like a problem in v1.0 of the patch though. Will need further investigation.
 
 ## Purpose
 The intent for this project was to create an easy-to-use and customizable randomizer for use with the Fire Emblem games for Game Boy Advance. This includes Fire Emblem: Sword of Seals (JP), Fire Emblem (NA), and Fire Emblem: The Sacred Stones (NA). This application simply reads the game data (from a *.gba file) and directly modifies the bytes in the data tables to generate a version of the game that may contains randomized classes, growths, items, and so on. 
