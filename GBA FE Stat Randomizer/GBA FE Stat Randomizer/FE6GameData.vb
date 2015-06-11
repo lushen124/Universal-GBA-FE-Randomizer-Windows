@@ -1,15 +1,15 @@
 ﻿Public Class FE6GameData
-    Public Const DefaultCharacterTableOffset = &H6076A0
-    Public Const DefaultItemTableOffset = &H60B648
-    Public Const DefaultClassTableOffset = &H60A0E8
+    Public Const DefaultCharacterTableOffset = &H6076A0 ' Length: &H2940 - Default ends at: &H609FE0
+    Public Const DefaultItemTableOffset = &H60B648      ' Length: &H1000 - Default ends at: &H60C648
+    Public Const DefaultClassTableOffset = &H60A0E8     ' Length: &H1560 - Default ends at: &H60B648
 
     Public Const PointerToCharacterTableOffset = &H17680
     Public Const PointerToItemTableOffset = &H17360
     Public Const PointerToClassTableOffset = &H176E0
 
-    Public Const CharacterCount = 227
+    Public Const CharacterCount = 220
     Public Const ItemCount = 128
-    Public Const ClassCount = 75
+    Public Const ClassCount = 76
 
     Public Const CharacterEntrySize = 48
     Public Const ItemEntrySize = 32

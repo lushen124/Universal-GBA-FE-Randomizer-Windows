@@ -757,23 +757,37 @@
 
         fileWriter.Seek(characterTableOffset, IO.SeekOrigin.Begin)
 
+        ' At least for FE6, the first item always seems to be some junk that we don't want to overwrite.
+        ' The ROM uses these addresses in its code though, so I guess it always starts with 1 index.
         For index As Integer = 0 To characterList.Count - 1
-            Dim character As FECharacter = characterList.Item(index)
-            character.writeStatsToCharacterStartingAtOffset(fileWriter, fileWriter.Position, characterEntrySize)
+            If index = 0 Then
+                fileWriter.Seek(characterEntrySize, IO.SeekOrigin.Current)
+            Else
+                Dim character As FECharacter = characterList.Item(index)
+                character.writeStatsToCharacterStartingAtOffset(fileWriter, fileWriter.Position, characterEntrySize)
+            End If
         Next
 
         fileWriter.Seek(classTableOffset, IO.SeekOrigin.Begin)
 
         For index As Integer = 0 To classList.Count - 1
-            Dim currentClass As FEClass = classList.Item(index)
-            currentClass.writeClassStartingAtOffset(fileWriter, fileWriter.Position, classEntrySize, type)
+            If index = 0 Then
+                fileWriter.Seek(classEntrySize, IO.SeekOrigin.Current)
+            Else
+                Dim currentClass As FEClass = classList.Item(index)
+                currentClass.writeClassStartingAtOffset(fileWriter, fileWriter.Position, classEntrySize, type)
+            End If
         Next
 
         fileWriter.Seek(itemTableOffset, IO.SeekOrigin.Begin)
 
         For index As Integer = 0 To itemList.Count - 1
-            Dim currentItem As FEItem = itemList.Item(index)
-            currentItem.writeItemToOffset(fileWriter, fileWriter.Position, itemEntrySize, type)
+            If index = 0 Then
+                fileWriter.Seek(itemEntrySize, IO.SeekOrigin.Current)
+            Else
+                Dim currentItem As FEItem = itemList.Item(index)
+                currentItem.writeItemToOffset(fileWriter, fileWriter.Position, itemEntrySize, type)
+            End If
         Next
 
         If type = Utilities.GameType.GameTypeFE6 Then
