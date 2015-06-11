@@ -1,0 +1,16 @@
+C:\Users\lushe_000\AppData\Local\Temporary Projects\WindowsApplication1\bin\Release\GBA FE Stat Randomizer.exe.manifest
+C:\Users\lushe_000\AppData\Local\Temporary Projects\WindowsApplication1\bin\Release\GBA FE Stat Randomizer.application
+C:\Users\lushe_000\AppData\Local\Temporary Projects\WindowsApplication1\bin\Release\GBA FE Stat Randomizer.exe
+C:\Users\lushe_000\AppData\Local\Temporary Projects\WindowsApplication1\bin\Release\GBA FE Stat Randomizer.pdb
+C:\Users\lushe_000\AppData\Local\Temporary Projects\WindowsApplication1\bin\Release\GBA FE Stat Randomizer.xml
+C:\Users\lushe_000\AppData\Local\Temporary Projects\WindowsApplication1\obj\x86\Release\WindowsApplication1.Form1.resources
+C:\Users\lushe_000\AppData\Local\Temporary Projects\WindowsApplication1\obj\x86\Release\WindowsApplication1.Resources.resources
+C:\Users\lushe_000\AppData\Local\Temporary Projects\WindowsApplication1\obj\x86\Release\GBA FE Stat Randomizer.vbproj.GenerateResource.Cache
+C:\Users\lushe_000\AppData\Local\Temporary Projects\WindowsApplication1\obj\x86\Release\GBA FE Stat Randomizer.exe.manifest
+C:\Users\lushe_000\AppData\Local\Temporary Projects\WindowsApplication1\obj\x86\Release\GBA FE Stat Randomizer.application
+C:\Users\lushe_000\AppData\Local\Temporary Projects\WindowsApplication1\obj\x86\Release\GBA FE Stat Randomizer.exe
+C:\Users\lushe_000\AppData\Local\Temporary Projects\WindowsApplication1\obj\x86\Release\GBA FE Stat Randomizer.xml
+C:\Users\lushe_000\AppData\Local\Temporary Projects\WindowsApplication1\obj\x86\Release\GBA FE Stat Randomizer.pdb
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Release\GBA FE Stat Randomizer.exe
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Release\GBA FE Stat Randomizer.xml
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Release\GBA FE Stat Randomizer.pdb

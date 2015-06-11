@@ -1,0 +1,14 @@
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\bin\Debug\GBA FE Randomizer.exe.config
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\bin\Debug\GBA FE Randomizer.exe.manifest
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\bin\Debug\GBA FE Randomizer.application
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\bin\Debug\GBA FE Randomizer.exe
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\bin\Debug\GBA FE Randomizer.pdb
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\bin\Debug\GBA FE Randomizer.xml
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\WindowsApplication1.Form1.resources
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\WindowsApplication1.Resources.resources
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\GBA FE Randomizer.vbproj.GenerateResource.Cache
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\GBA FE Randomizer.exe.manifest
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\GBA FE Randomizer.application
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\GBA FE Randomizer.exe
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\GBA FE Randomizer.xml
+C:\Users\lushe_000\documents\visual studio 2010\Projects\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\GBA FE Randomizer.pdb

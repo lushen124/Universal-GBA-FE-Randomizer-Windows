@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
+  <asmv1:assemblyIdentity name="GBA FE Randomizer.exe" version="1.0.0.6" publicKeyToken="ca6c35120d9537e1" language="neutral" processorArchitecture="x86" type="win32" />
+  <description asmv2:iconFile="GBARandIcon.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
+  <application />
+  <entryPoint>
+    <assemblyIdentity name="GBA FE Randomizer" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
+    <commandLine file="GBA FE Randomizer.exe" parameters="" />
+  </entryPoint>
+  <trustInfo>
+    <security>
+      <applicationRequestMinimum>
+        <PermissionSet Unrestricted="true" ID="Custom" SameSite="site" />
+        <defaultAssemblyRequest permissionSetReference="Custom" />
+      </applicationRequestMinimum>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <!-- UAC Manifest Options
+            If you want to change the Windows User Account Control level replace the 
+            requestedExecutionLevel node with one of the following.
+
+        <requestedExecutionLevel  level="asInvoker" uiAccess="false" />
+        <requestedExecutionLevel  level="requireAdministrator" uiAccess="false" />
+        <requestedExecutionLevel  level="highestAvailable" uiAccess="false" />
+
+            Specifying requestedExecutionLevel node will disable file and registry virtualization.
+            If you want to utilize File and Registry Virtualization for backward 
+            compatibility then delete the requestedExecutionLevel node.
+        -->
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+  <dependency>
+    <dependentOS>
+      <osVersionInfo>
+        <os majorVersion="5" minorVersion="1" buildNumber="2600" servicePackMajor="0" />
+      </osVersionInfo>
+    </dependentOS>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
+      <assemblyIdentity name="Microsoft.Windows.CommonLanguageRuntime" version="4.0.30319.0" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="GBA FE Randomizer.exe" size="2299904">
+      <assemblyIdentity name="GBA FE Randomizer" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+        <dsig:DigestValue>DpP79fo7sQhqYCXIcG2umGqnKMk=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <file name="GBA FE Randomizer.exe.config" size="2074">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>JKky4+AP4UzbF9dIMfk8FB+xeOg=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="GBARandIcon.ico" size="1081406">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>CVBwrfL4Cy2wa2476HpgGPB4bA0=</dsig:DigestValue>
+    </hash>
+  </file>
+  <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+    <application>
+      <!-- A list of all Windows versions that this application is designed to work with. Windows will automatically select the most compatible environment.-->
+      <!-- If your application is designed to work with Windows 7, uncomment the following supportedOS node-->
+      <!--<supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/>-->
+    </application>
+  </compatibility>
+<publisherIdentity name="CN=LU\lushe_000" issuerKeyHash="8e9b0d02fd5acbe2f532b6a277c56e28a51fdfd7" /><Signature Id="StrongNameSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /><DigestValue>n+DWWWvcqdt0gxsXVDZX/enqTPM=</DigestValue></Reference></SignedInfo><SignatureValue>mrbJIxOaycpouITZw59su2IyrGgg7uvVft4Lft76CDwTovplIZjXhgxHVJTqIDYZq7QZSz28sEOaNA0tF4n5dK2OIkXhJnS3JOu5AzdsbSYvQQAI2iHozXv/iXnlJTpfba2S7eL6kcVH9xlYvE62w9BSiSQKF+AkrzG/JvngfCs=</SignatureValue><KeyInfo Id="StrongNameKeyInfo"><KeyValue><RSAKeyValue><Modulus>tbGYwTPrkK2thIcckKXXUYDBWhXSVHM7AQsNKPu9OBltqJvqwKyhDeMsuW+fV8FqxctPWrhGonDhpkAy1m/PQFxq+wGpikGcS3oorSTV/zB0tOALvopd4ANU1/lpRHSSlj91iRYseX1jTQD/LStmkS+fLT0Cj0PAdj5MiFpU2bM=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><msrel:RelData xmlns:msrel="http://schemas.microsoft.com/windows/rel/2005/reldata"><r:license xmlns:r="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:as="http://schemas.microsoft.com/windows/pki/2005/Authenticode"><r:grant><as:ManifestInformation Hash="f34ceae9fd573654171b8374dba9dc6b59d6e09f" Description="" Url=""><as:assemblyIdentity name="GBA FE Randomizer.exe" version="1.0.0.6" publicKeyToken="ca6c35120d9537e1" language="neutral" processorArchitecture="x86" type="win32" /></as:ManifestInformation><as:SignedBy /><as:AuthenticodePublisher><as:X509SubjectName>CN=LU\lushe_000</as:X509SubjectName></as:AuthenticodePublisher></r:grant><r:issuer><Signature Id="AuthenticodeSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /><DigestValue>tQQJtrgAmXHqjsRhEX2XfARrjzM=</DigestValue></Reference></SignedInfo><SignatureValue>skxCO3rNNDb48yEnyvu8BJeHHyAue5tZjwmR1oMU6r9gRQFSQnuTZptrfv6JdQvER1MP9D5HQL1lndoPkpYkBMHCAEDnTUSX4ey7tR6wEGOj3pBg6xUc1qqMAPPKLpKD+ZrHB6Ux/B+Sl1KLq3p6In6Crcg3XhJTEMDZYPHPyb0=</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>tbGYwTPrkK2thIcckKXXUYDBWhXSVHM7AQsNKPu9OBltqJvqwKyhDeMsuW+fV8FqxctPWrhGonDhpkAy1m/PQFxq+wGpikGcS3oorSTV/zB0tOALvopd4ANU1/lpRHSSlj91iRYseX1jTQD/LStmkS+fLT0Cj0PAdj5MiFpU2bM=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>MIIByTCCATKgAwIBAgIQWZwAjLeUb5xEv1ktWr9obTANBgkqhkiG9w0BAQUFADAjMSEwHwYDVQQDHhgATABVAFwAbAB1AHMAaABlAF8AMAAwADAwHhcNMTUwNTAzMTkyMDEzWhcNMTYwNTAzMDEyMDEzWjAjMSEwHwYDVQQDHhgATABVAFwAbAB1AHMAaABlAF8AMAAwADAwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALWxmMEz65CtrYSHHJCl11GAwVoV0lRzOwELDSj7vTgZbaib6sCsoQ3jLLlvn1fBasXLT1q4RqJw4aZAMtZvz0BcavsBqYpBnEt6KK0k1f8wdLTgC76KXeADVNf5aUR0kpY/dYkWLHl9Y00A/y0rZpEvny09Ao9DwHY+TIhaVNmzAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEAOsuZY5N8wSOOl11u9YI+htrLoNsXewP54VCZtf7XGskNuKYPK6pVvsTxDjYTBP8Va1O0j1vfR25Ak0ySTnXOp7mTdy8UrWB5/zyP/noXvOM4pJ0dsPZntec8XT14D/xTpkacJCazO9pSXI88OIijko2UfBTEdcx2caCQY3UGYpk=</X509Certificate></X509Data></KeyInfo></Signature></r:issuer></r:license></msrel:RelData></KeyInfo></Signature></asmv1:assembly>
