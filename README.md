@@ -21,7 +21,7 @@ The intent for this project was to create an easy-to-use and customizable random
 ### FE6 Notes
 
 * Random classes are available for most playable characters and bosses. Problems arise with playable characters and bosses that are scripted to move in events and can fly (Miledy, Gale, Narcian) and fly across otherwise impassable terrain (bodies of water and mountains). One option is to randomize them only with other flying classes, but that drastically cuts down on the possibilties (basically Wyvern Knight or Pegasus Knight). At the moment, they just won't be randomized.
-* There have been reports of freezing of games occurring with the randomizer. I have not yet been able to reproduce on my end, but if you do encounter this, please let me know what parameters you used and under what condition you managed to do so. A UPS patch of the result would also be very helpful. NUPS can help you create one if you have the randomized game as well as the base game.
+* There have been reports of freezing of games occurring with the randomizer. I've noticed this happens only with v1.0 of the translation patch, so I'll have to figure out why this is the case. In the meantime, use v0.99b for testing.
 * It should be noted that I am testing using the 0.99b version of the Redux translation patch. Quickly testing out the v1.0 version of the patch seems to yield some odd issues with infinite vulneraries, which I'll have to look into. You can find the Redux translation patch (both 1.0 and older versions) here: http://serenesforest.net/forums/index.php?showtopic=41095
 
 ### FE7 Notes
