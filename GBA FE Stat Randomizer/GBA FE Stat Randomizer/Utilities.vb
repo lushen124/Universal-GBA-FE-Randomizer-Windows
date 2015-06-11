@@ -16,6 +16,13 @@
         Return result
     End Function
 
+    Public Shared Sub WriteWord(ByRef filePtr As IO.FileStream, ByVal wordToWrite As UInteger)
+        filePtr.WriteByte(wordToWrite And &HFF)
+        filePtr.WriteByte((wordToWrite >> 8) And &HFF)
+        filePtr.WriteByte((wordToWrite >> 16) And &HFF)
+        filePtr.WriteByte((wordToWrite >> 24) And &HFF)
+    End Sub
+
     Public Shared Function ReadWordIntoArrayListFromFile(ByRef filePtr As IO.FileStream) As ArrayList
         Dim array As ArrayList = New ArrayList(4)
         For i As Integer = 1 To 4

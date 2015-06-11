@@ -140,6 +140,10 @@
             filePtr.WriteByte(weaponAbility3)
         End If
 
+        filePtr.Seek(offset + 12, IO.SeekOrigin.Begin)
+        Utilities.WriteWord(filePtr, statBonus)
+        Utilities.WriteWord(filePtr, effectiveness)
+
         filePtr.Seek(offset + 20, IO.SeekOrigin.Begin)
         filePtr.WriteByte(durability)
         filePtr.WriteByte(might)

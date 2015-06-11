@@ -171,6 +171,8 @@
             Do
                 newClass = classListUnpromoted.Item(rng.Next(0, classListUnpromoted.Count - 1))
             Loop While newClass = original
+
+            Return newClass
         Else
             ' Old class was probably promoted, so look for promoted classes.
             Dim classListPromoted As ArrayList = New ArrayList
@@ -334,6 +336,10 @@
         list.Add(CharacterList.Idoun_Dragon)
         list.Add(CharacterList.Idoun_Shaman)
         list.Add(CharacterList.Yahn)
+
+        ' Some characters cause problems when randomized for scripted events, namely fliers like Miledy who need to do scripted flying.
+        ' We need to black list characters.
+        list.Add(CharacterList.Miledy)
 
         Return list
     End Function
