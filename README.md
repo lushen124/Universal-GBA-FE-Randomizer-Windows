@@ -3,6 +3,10 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**June 11, 2015**
+
+Finished up a first pass at Reverse Recruitment. Characters have not been leveled (or rather de-leveled) properly yet, so the game is hilariously broken. Will figure out a way of de-leveling next (probably just the reverse of leveling, i.e. growths become a chance to stat down instead of up).
+
 **June 10, 2015**
 
 Created Repository and Initial Check-in of code. Basic functionality works for all games (randomizing growths, bases, CON, MOV, affinities, and items). Random classes only works with FE6 at the moment. Working through issues with FE6 classes.
@@ -31,6 +35,7 @@ The intent for this project was to create an easy-to-use and customizable random
 * The "Uncounterable" trait, which is usually reserved for siege tomes, has been removed from the pool of possible weapon traits that can be randomized, due to the game assuming that it is indeed a siege tome, and animating from 3+ spaces away, causing melee weapons to lock up.
 * Something that's interesting: FE6 gives the seize command to a class that has the Lord flag on it. Normally, this is only on the Lord class, but if you randomize Roy to a different class, I had to apply the same flag to his new class to allow him to seize thrones. Obviously, anybody else with the same class can now seize thrones as well (not to mention, anybody who got the Lord class can do the same). This is a known issue, but there's no real way around it for FE6.
 * Something that's interesting: Bosses randomized as thieves will move off of the throne to steal stuff. Not going to try to fix that one.
+* For Reverse Recruitment, the randomizer will use the same random starting inventory system as when randomizing classes. I assume most patches for reverse recruitment hard code in an inventory for each person. I can add an option to do so as well, if random starting inventories are not desirable.
 
 ### FE7 Notes
 
