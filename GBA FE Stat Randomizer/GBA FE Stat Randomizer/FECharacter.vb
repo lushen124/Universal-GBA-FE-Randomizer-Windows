@@ -26,8 +26,53 @@
     Property lightLevel As Byte 'offset 26, 1 byte
     Property darkLevel As Byte 'offset 27, 1 byte
 
+    Property nameIndex As UShort 'offset 0, 2 bytes (should only be swapped with another valid address)
+    Property bioIndex As UShort 'offset 2, 2 bytes (should only be swapped with another valid address)
+
     Property characterId As Byte 'offset 4, 1 byte
     Property classId As Byte 'offset 5, 1 byte
+
+    Property portraitIndex As Byte 'offset 6, 1 byte (should only be swapped with another valid index)
+
+    Public Function Copy() As FECharacter
+        Dim copiedCharacter As FECharacter = New FECharacter()
+        copiedCharacter.characterAffinity = characterAffinity
+        copiedCharacter.baseHP = baseHP
+        copiedCharacter.baseStr = baseStr
+        copiedCharacter.baseSkl = baseSkl
+        copiedCharacter.baseSpd = baseSpd
+        copiedCharacter.baseDef = baseDef
+        copiedCharacter.baseRes = baseRes
+        copiedCharacter.baseLck = baseLck
+        copiedCharacter.baseCon = baseCon
+
+        copiedCharacter.hpGrowth = hpGrowth
+        copiedCharacter.strGrowth = strGrowth
+        copiedCharacter.sklGrowth = sklGrowth
+        copiedCharacter.spdGrowth = spdGrowth
+        copiedCharacter.defGrowth = defGrowth
+        copiedCharacter.resGrowth = resGrowth
+        copiedCharacter.lckGrowth = lckGrowth
+
+        copiedCharacter.swordLevel = swordLevel
+        copiedCharacter.spearLevel = spearLevel
+        copiedCharacter.axeLevel = axeLevel
+        copiedCharacter.bowLevel = bowLevel
+        copiedCharacter.staffLevel = staffLevel
+        copiedCharacter.animaLevel = animaLevel
+        copiedCharacter.lightLevel = lightLevel
+        copiedCharacter.darkLevel = darkLevel
+
+        copiedCharacter.nameIndex = nameIndex
+        copiedCharacter.bioIndex = bioIndex
+
+        copiedCharacter.characterId = characterId
+        copiedCharacter.classId = classId
+
+        copiedCharacter.portraitIndex = portraitIndex
+
+        Return copiedCharacter
+    End Function
 
     Enum Affinity
         AffinityNone = &H0
@@ -41,9 +86,14 @@
     End Enum
 
     Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer)
-        filePtr.Seek(offset + 4, IO.SeekOrigin.Begin)
+
+        nameIndex = Utilities.ReadHalfWord(filePtr)
+        bioIndex = Utilities.ReadHalfWord(filePtr)
+
         characterId = filePtr.ReadByte()
         classId = filePtr.ReadByte()
+
+        portraitIndex = filePtr.ReadByte()
 
         filePtr.Seek(offset + 9, IO.SeekOrigin.Begin)
         characterAffinity = filePtr.ReadByte()
@@ -79,8 +129,14 @@
     End Sub
 
     Public Sub writeStatsToCharacterStartingAtOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer)
-        filePtr.Seek(offset + 5, IO.SeekOrigin.Begin)
+
+        Utilities.WriteHalfWord(filePtr, nameIndex)
+        Utilities.WriteHalfWord(filePtr, bioIndex)
+
+        filePtr.WriteByte(characterId)
         filePtr.WriteByte(classId)
+
+        filePtr.WriteByte(portraitIndex)
 
         filePtr.Seek(offset + 9, IO.SeekOrigin.Begin)
         filePtr.WriteByte(characterAffinity)

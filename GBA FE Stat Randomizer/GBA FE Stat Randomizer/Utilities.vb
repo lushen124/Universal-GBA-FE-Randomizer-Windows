@@ -16,11 +16,25 @@
         Return result
     End Function
 
+    Public Shared Function ReadHalfWord(ByRef filePtr As IO.FileStream) As UShort
+        Dim result As UShort = 0
+
+        result = result Or filePtr.ReadByte()
+        result = result Or (filePtr.ReadByte() << 8)
+
+        Return result
+    End Function
+
     Public Shared Sub WriteWord(ByRef filePtr As IO.FileStream, ByVal wordToWrite As UInteger)
         filePtr.WriteByte(wordToWrite And &HFF)
         filePtr.WriteByte((wordToWrite >> 8) And &HFF)
         filePtr.WriteByte((wordToWrite >> 16) And &HFF)
         filePtr.WriteByte((wordToWrite >> 24) And &HFF)
+    End Sub
+
+    Public Shared Sub WriteHalfWord(ByRef filePtr As IO.FileStream, ByVal halfwordToWrite As UShort)
+        filePtr.WriteByte(halfwordToWrite And &HFF)
+        filePtr.WriteByte((halfwordToWrite >> 8) And &HFF)
     End Sub
 
     Public Shared Function ReadWordIntoArrayListFromFile(ByRef filePtr As IO.FileStream) As ArrayList

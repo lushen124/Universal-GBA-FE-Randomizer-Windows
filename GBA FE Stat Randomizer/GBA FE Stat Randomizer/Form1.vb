@@ -347,6 +347,51 @@
 
         Dim rng As Random = New Random
 
+        If recruitment <> RecruitmentType.RecruitmentTypeNormal Then
+            ' Since events reference characters by ID, the easiest way to do this
+            ' is to modify what character is mapped to which ID.
+            Dim playableCharactersList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, New ArrayList(FE6GameData.playableCharacterIDs), New ArrayList())
+            ' We can't copy it, so we're going to just rebuild the list.
+            Dim newCharacterList As ArrayList = New ArrayList()
+            For i As Integer = 0 To characterList.Count - 1
+                ' Grab the original character in this spot.
+                Dim character As FECharacter = characterList.Item(i)
+                Dim characterIDObject = IIf(type = Utilities.GameType.GameTypeFE6, System.Enum.ToObject(GetType(FE6GameData.CharacterList), character.characterId), Nothing)
+                ' Make sure he's somebody we want to move.
+                If playableCharactersList.Contains(characterIDObject) Then
+                    ' Determine his replacement.
+                    Dim replacement As Byte = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.reversedRecruitmentMappingForCharacter(characterIDObject)), Nothing)
+                    If Not IsNothing(replacement) Then
+                        ' Find the character and drop him in.
+                        Dim replacementCharacter As FECharacter = characterLookup.Item(replacement)
+                        If Not IsNothing(replacementCharacter) Then
+                            replacementCharacter = replacementCharacter.Copy()
+                            newCharacterList.Add(replacementCharacter)
+                            ' Update the replacement's character ID to the original character's ID.
+                            replacementCharacter.characterId = character.characterId
+                        Else
+                            ' If we didn't get a replacement, add the old character back into his spot (no change)
+                            newCharacterList.Add(character)
+                        End If
+                    Else
+                        ' The character has no replacement. (no change)
+                        newCharacterList.Add(character)
+                    End If
+                Else
+                    ' If he's not a playable character, add him as is (no change)
+                    newCharacterList.Add(character)
+                End If
+            Next
+
+            ' Now that newCharacterList has the updated list, replace the old one with it.
+            characterList = newCharacterList
+            ' Update the lookup for consistency.
+            characterLookup.Clear()
+            For Each character As FECharacter In characterList
+                Utilities.setObjectForKey(characterLookup, character, character.characterId)
+            Next
+        End If
+
         For Each character As FECharacter In characterList
             If shouldRandomizeBases Then
                 character.randomizeBases(baseVariance, rng)
@@ -386,7 +431,7 @@
             Next
         End If
 
-        If shouldRandomizeClasses Then
+        If shouldRandomizeClasses Or recruitment <> RecruitmentType.RecruitmentTypeNormal Then
             ' Cache results as they happen so that we maintain consistency.
             Dim targetClasses As Hashtable = New Hashtable()
             Dim targetInventory As Hashtable = New Hashtable()
@@ -444,7 +489,11 @@
                                 Dim oldClass As FEClass = classLookup.Item(currentCharacter.classId)
                                 wasLord = oldClass.isLord
                                 wasThief = oldClass.isThief
-                                newClassId = FE6GameData.randomClassFromOriginalClass(oldClassIDObject, randomLords, randomThieves, uniqueClasses, rng)
+                                If shouldRandomizeClasses Then
+                                    newClassId = FE6GameData.randomClassFromOriginalClass(oldClassIDObject, randomLords, randomThieves, uniqueClasses, rng)
+                                Else
+                                    newClassId = currentCharacter.classId
+                                End If
                             End If
 
                             Dim newClass As FEClass = classLookup.Item(newClassId)
@@ -746,7 +795,7 @@
                             unit.item4Id = validatedInventory.Item(3)
 
                             targetInventory.Add(characterIDObject, validatedInventory)
-                        End If
+                            End If
                     End If
                 Next
             Next
@@ -928,12 +977,10 @@
             BuffBossesToggle.Enabled = IncreaseEnemyGrowthsToggle.Checked
         End If
 
-        ' If type = Utilities.GameType.GameTypeFE6 Then
-        ' Not supported yet
-        If False Then
+        If type = Utilities.GameType.GameTypeFE6 Then
             NormalRecruitmentOption.Enabled = True
             ReverseRecruitmentOption.Enabled = True
-            RandomRecruitmentOption.Enabled = True
+            RandomRecruitmentOption.Enabled = False 'Not supported yet
         End If
 
         RandomizeButton.Enabled = type <> Utilities.GameType.GameTypeUnknown

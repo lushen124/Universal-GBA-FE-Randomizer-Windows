@@ -50,35 +50,8 @@
         StatBonusPointer_15STR_15SKL_20DEF_15RES = &H86627B0
     End Enum
 
-    Public Shared Function randomEffectiveness(ByRef rng As Random)
-        Dim result = rng.Next(2, 5)
-        If result = 2 Then Return EffectivenessPointers.EffectivenessPointerKnights
-        If result = 3 Then Return EffectivenessPointers.EffectivenessPointerDragons
-        If result = 4 Then Return EffectivenessPointers.EffectivenessPointerCavalry
-        If result = 5 Then Return EffectivenessPointers.EffectivenessPointerFliers
-
-        Return EffectivenessPointers.EffectivenessPointerNone
-    End Function
-
-    Public Shared Function randomStatBonus(ByRef rng As Random)
-        ' Seems too OP if it randomizes a dragonstone bonus on, say, an Iron Axe...
-        Dim result = rng.Next(2, 9)
-        If result = 2 Then Return StatBonusPointers.StatBonusPointer_5STR
-        If result = 3 Then Return StatBonusPointers.StatBonusPointer_5DEF_5RES
-        If result = 4 Then Return StatBonusPointers.StatBonusPointer_5SKL
-        If result = 5 Then Return StatBonusPointers.StatBonusPointer_5DEF
-        If result = 6 Then Return StatBonusPointers.StatBonusPointer_5SPD
-        If result = 7 Then Return StatBonusPointers.StatBonusPointer_5LCK
-        If result = 8 Then Return StatBonusPointers.StatBonusPointer_5RES
-        If result = 9 Then Return StatBonusPointers.StatBonusPointer_5MAG
-        If result = 10 Then Return StatBonusPointers.StatBonusPointer_10STR_10SKL_20DEF_5RES
-        If result = 11 Then Return StatBonusPointers.StatBonusPointer_12STR_12SKL_15DEF_25RES
-        If result = 12 Then Return StatBonusPointers.StatBonusPointer_15STR_15SKL_20DEF_15RES
-
-        Return StatBonusPointers.StatBonusPointerNone
-    End Function
-
     Public Enum ClassList
+        None = &H0
         Lord = &H1
         Mercenary = &H2
         Mercenary_F = &H3 ' Does this work?
@@ -143,225 +116,8 @@
         MasterLord = &H43
     End Enum
 
-    Public Shared Function randomClassFromOriginalClass(ByVal original As ClassList, ByVal allowLord As Boolean, ByVal allowThief As Boolean, ByVal allowUnique As Boolean, ByRef rng As Random) As ClassList
-        Dim classListUnpromoted As ArrayList = New ArrayList
-
-        ' Not sure if Mercenary_F is allowed so we won't use it.
-        classListUnpromoted.Add(ClassList.Myrmidon_F)
-        classListUnpromoted.Add(ClassList.ArmorKnight_F)
-        classListUnpromoted.Add(ClassList.Archer_F)
-        classListUnpromoted.Add(ClassList.Sister)
-        classListUnpromoted.Add(ClassList.Mage_F)
-        classListUnpromoted.Add(ClassList.Shaman_F)
-        ' Paladins have screwy palettes, so we son't use it.
-        classListUnpromoted.Add(ClassList.Troubadour)
-        classListUnpromoted.Add(ClassList.Nomad_F)
-        classListUnpromoted.Add(ClassList.PegasusKnight)
-        classListUnpromoted.Add(ClassList.DragonKnight_F)
-        If allowThief Then
-            classListUnpromoted.Add(ClassList.Thief_F)
-        End If
-        If allowUnique Then
-            classListUnpromoted.Add(ClassList.Dancer)
-            classListUnpromoted.Add(ClassList.Manakete_F)
-        End If
-
-        If classListUnpromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
-            Dim newClass As ClassList
-            Do
-                newClass = classListUnpromoted.Item(rng.Next(0, classListUnpromoted.Count - 1))
-            Loop While newClass = original
-
-            Return newClass
-        Else
-            ' Old class was probably promoted, so look for promoted classes.
-            Dim classListPromoted As ArrayList = New ArrayList
-
-            classListPromoted.Add(ClassList.Hero_F)
-            classListPromoted.Add(ClassList.Swordmaster_F)
-            classListPromoted.Add(ClassList.Sniper_F)
-            classListPromoted.Add(ClassList.Bishop_F)
-            classListPromoted.Add(ClassList.Sage_F)
-            classListPromoted.Add(ClassList.Druid_F)
-            classListPromoted.Add(ClassList.Valkyrie)
-            classListPromoted.Add(ClassList.NomadTrooper_F)
-            classListPromoted.Add(ClassList.FalconKnight)
-            classListPromoted.Add(ClassList.DragonMaster_F)
-
-            If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
-                Dim newClass As ClassList
-                Do
-                    newClass = classListPromoted.Item(rng.Next(0, classListPromoted.Count - 1))
-                Loop While newClass = original
-
-                Return newClass
-            End If
-        End If
-
-        classListUnpromoted.Clear()
-
-        If allowLord Then
-            classListUnpromoted.Add(ClassList.Lord)
-        End If
-        classListUnpromoted.Add(ClassList.Mercenary)
-        classListUnpromoted.Add(ClassList.Myrmidon)
-        classListUnpromoted.Add(ClassList.Fighter)
-        classListUnpromoted.Add(ClassList.ArmorKnight)
-        classListUnpromoted.Add(ClassList.Archer)
-        classListUnpromoted.Add(ClassList.Priest)
-        classListUnpromoted.Add(ClassList.Mage)
-        classListUnpromoted.Add(ClassList.Shaman)
-        classListUnpromoted.Add(ClassList.Cavalier)
-        classListUnpromoted.Add(ClassList.Nomad)
-        classListUnpromoted.Add(ClassList.Bandit)
-        classListUnpromoted.Add(ClassList.Pirate)
-        classListUnpromoted.Add(ClassList.DragonKnight)
-        If allowThief Then
-            classListUnpromoted.Add(ClassList.Thief)
-        End If
-        If allowUnique Then
-            classListUnpromoted.Add(ClassList.Soldier)
-            classListUnpromoted.Add(ClassList.Bard)
-            classListUnpromoted.Add(ClassList.Manakete)
-        End If
-
-        If classListUnpromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
-            Dim newClass As ClassList
-            Do
-                newClass = classListUnpromoted.Item(rng.Next(0, classListUnpromoted.Count - 1))
-            Loop While newClass = original
-
-            Return newClass
-        Else
-            ' Old class was probably promoted, so look for promoted classes.
-            Dim classListPromoted As ArrayList = New ArrayList
-
-            classListPromoted.Add(ClassList.Hero)
-            classListPromoted.Add(ClassList.Swordmaster)
-            classListPromoted.Add(ClassList.Sniper)
-            classListPromoted.Add(ClassList.Bishop)
-            classListPromoted.Add(ClassList.Sage)
-            classListPromoted.Add(ClassList.Druid)
-            classListPromoted.Add(ClassList.Warrior)
-            classListPromoted.Add(ClassList.NomadTrooper)
-            classListPromoted.Add(ClassList.Berserker)
-            classListPromoted.Add(ClassList.DragonMaster)
-            classListPromoted.Add(ClassList.Paladin)
-
-            If allowLord Then
-                classListPromoted.Add(ClassList.MasterLord)
-            End If
-
-            If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
-                Dim newClass As ClassList
-                Do
-                    newClass = classListPromoted.Item(rng.Next(0, classListPromoted.Count - 1))
-                Loop While newClass = original
-
-                Return newClass
-            End If
-        End If
-
-        ' We shouldn't get this far but if we do, just return the original (i.e. no change)
-        Return original
-    End Function
-
-    Public Shared Function lordCharacterIDs() As ArrayList
-        Dim list As ArrayList = New ArrayList()
-        list.Add(CharacterList.Roy)
-        Return list
-    End Function
-
-    Public Shared Function thiefCharacterIDs() As ArrayList
-        Dim list As ArrayList = New ArrayList()
-        list.Add(CharacterList.Astore)
-        list.Add(CharacterList.Chad)
-        list.Add(CharacterList.Cath)
-        Return list
-    End Function
-
-    Public Shared Function bossCharacterIDs() As ArrayList
-        Dim list As ArrayList = New ArrayList()
-        list.Add(CharacterList.Damas)
-        list.Add(CharacterList.Rude)
-        list.Add(CharacterList.Slater)
-        list.Add(CharacterList.Erik)
-        list.Add(CharacterList.Dory)
-        list.Add(CharacterList.Wagner)
-        list.Add(CharacterList.Devias)
-        list.Add(CharacterList.Reigans)
-        list.Add(CharacterList.Scott)
-        list.Add(CharacterList.Nord)
-        list.Add(CharacterList.Flaer)
-        list.Add(CharacterList.Oro)
-        list.Add(CharacterList.Aine)
-        list.Add(CharacterList.Narshen)
-        list.Add(CharacterList.Randy)
-        list.Add(CharacterList.Maggie)
-        list.Add(CharacterList.Rose)
-        list.Add(CharacterList.Raeth)
-        list.Add(CharacterList.Arcard)
-        list.Add(CharacterList.Martel)
-        list.Add(CharacterList.Sigune)
-        list.Add(CharacterList.Roartz)
-        list.Add(CharacterList.Murdock)
-        list.Add(CharacterList.Brunya)
-        list.Add(CharacterList.Zeke)
-        list.Add(CharacterList.Monke)
-        list.Add(CharacterList.Kel)
-
-        list.Add(CharacterList.Henning)
-        list.Add(CharacterList.Scouran)
-        list.Add(CharacterList.Grero)
-        list.Add(CharacterList.Ohtz)
-        list.Add(CharacterList.Teck)
-
-        list.Add(CharacterList.Thoril)
-        list.Add(CharacterList.Brakul)
-        list.Add(CharacterList.Kudoka)
-        list.Add(CharacterList.Maral)
-        list.Add(CharacterList.Kabul)
-        list.Add(CharacterList.Chan)
-        list.Add(CharacterList.Pereth)
-        list.Add(CharacterList.Windam)
-        list.Add(CharacterList.Morgan)
-
-        Return list
-    End Function
-
-    Public Shared Function exemptCharacterIDs() As ArrayList
-        Dim list As ArrayList = New ArrayList()
-
-        list.Add(CharacterList.Zephiel)
-        list.Add(CharacterList.Idoun_Dragon)
-        list.Add(CharacterList.Idoun_Shaman)
-        list.Add(CharacterList.Yahn)
-
-        ' Some characters cause problems when randomized for scripted events, namely fliers like Miledy who need to do scripted flying.
-        ' We need to black list characters.
-        list.Add(CharacterList.Miledy)
-
-        Return list
-    End Function
-
-    Public Shared Function randomizedFromThiefEquipment() As ArrayList
-        Dim list As ArrayList = New ArrayList()
-
-        list.Add(ItemList.DoorKeys)
-        list.Add(ItemList.ChestKeys)
-
-        Return list
-    End Function
-
-    Public Shared Function randomizedToThiefEquipment() As ArrayList
-        Dim list As ArrayList = New ArrayList()
-
-        list.Add(ItemList.Lockpick)
-
-        Return list
-    End Function
-
     Public Enum CharacterList
+        None = &H0
         Roy = &H1
         Clarine = &H2
         Fa = &H3
@@ -523,51 +279,6 @@
         FinalChapter = &H681D04
     End Enum
 
-    Public Shared Function UnitsInEachChapter() As ArrayList
-        Dim arrayList As ArrayList = New ArrayList()
-
-        arrayList.Add(28)   ' Chapter 1
-        arrayList.Add(46)   ' Chapter 2
-        arrayList.Add(57)   ' Chapter 3
-        arrayList.Add(56)   ' Chapter 4
-        arrayList.Add(59)   ' Chapter 5
-        arrayList.Add(92)   ' Chapter 6
-        arrayList.Add(66)   ' Chapter 7
-        arrayList.Add(105)  ' Chapter 8
-        arrayList.Add(78)   ' Chapter 8x
-        arrayList.Add(70)   ' Chapter 9
-        arrayList.Add(67)   ' Chapter 10A
-        arrayList.Add(82)   ' Chapter 10B
-        arrayList.Add(94)   ' Chapter 11A
-        arrayList.Add(85)   ' Chapter 11B
-        arrayList.Add(66)   ' Chapter 12
-        arrayList.Add(36)   ' Chapter 12x
-        arrayList.Add(94)   ' Chapter 13
-        arrayList.Add(79)   ' Chapter 14
-        arrayList.Add(44)   ' Chapter 14x
-        arrayList.Add(64)   ' Chapter 15
-        arrayList.Add(71)   ' Chapter 16
-        arrayList.Add(49)   ' Chapter 16x
-        arrayList.Add(64)   ' Chapter 17A
-        arrayList.Add(56)   ' Chapter 17B
-        arrayList.Add(58)   ' Chapter 18A
-        arrayList.Add(90)   ' Chapter 18B
-        arrayList.Add(61)   ' Chapter 19A
-        arrayList.Add(82)   ' Chapter 19B
-        arrayList.Add(65)   ' Chapter 20A
-        arrayList.Add(55)   ' Chapter 20Ax
-        arrayList.Add(64)   ' Chapter 20B
-        arrayList.Add(96)   ' Chapter 20Bx
-        arrayList.Add(126)  ' Chapter 21
-        arrayList.Add(69)   ' Chapter 21x
-        arrayList.Add(115)  ' Chapter 22
-        arrayList.Add(63)   ' Chapter 23
-        arrayList.Add(53)   ' Chapter 24
-        arrayList.Add(27)   ' Final
-
-        Return arrayList
-    End Function
-
     Public Enum ItemList
         IronSword = &H1
         IronBlade = &H2
@@ -714,4 +425,534 @@
         Spear = &H7E
         Tomahawk = &H7F
     End Enum
+
+    Public Shared Function randomEffectiveness(ByRef rng As Random)
+        Dim result = rng.Next(2, 5)
+        If result = 2 Then Return EffectivenessPointers.EffectivenessPointerKnights
+        If result = 3 Then Return EffectivenessPointers.EffectivenessPointerDragons
+        If result = 4 Then Return EffectivenessPointers.EffectivenessPointerCavalry
+        If result = 5 Then Return EffectivenessPointers.EffectivenessPointerFliers
+
+        Return EffectivenessPointers.EffectivenessPointerNone
+    End Function
+
+    Public Shared Function randomStatBonus(ByRef rng As Random)
+        ' Seems too OP if it randomizes a dragonstone bonus on, say, an Iron Axe...
+        Dim result = rng.Next(2, 9)
+        If result = 2 Then Return StatBonusPointers.StatBonusPointer_5STR
+        If result = 3 Then Return StatBonusPointers.StatBonusPointer_5DEF_5RES
+        If result = 4 Then Return StatBonusPointers.StatBonusPointer_5SKL
+        If result = 5 Then Return StatBonusPointers.StatBonusPointer_5DEF
+        If result = 6 Then Return StatBonusPointers.StatBonusPointer_5SPD
+        If result = 7 Then Return StatBonusPointers.StatBonusPointer_5LCK
+        If result = 8 Then Return StatBonusPointers.StatBonusPointer_5RES
+        If result = 9 Then Return StatBonusPointers.StatBonusPointer_5MAG
+        If result = 10 Then Return StatBonusPointers.StatBonusPointer_10STR_10SKL_20DEF_5RES
+        If result = 11 Then Return StatBonusPointers.StatBonusPointer_12STR_12SKL_15DEF_25RES
+        If result = 12 Then Return StatBonusPointers.StatBonusPointer_15STR_15SKL_20DEF_15RES
+
+        Return StatBonusPointers.StatBonusPointerNone
+    End Function
+
+    Public Shared Function randomClassFromOriginalClass(ByVal original As ClassList, ByVal allowLord As Boolean, ByVal allowThief As Boolean, ByVal allowUnique As Boolean, ByRef rng As Random) As ClassList
+        Dim classListUnpromoted As ArrayList = New ArrayList
+
+        ' Not sure if Mercenary_F is allowed so we won't use it.
+        classListUnpromoted.Add(ClassList.Myrmidon_F)
+        classListUnpromoted.Add(ClassList.ArmorKnight_F)
+        classListUnpromoted.Add(ClassList.Archer_F)
+        classListUnpromoted.Add(ClassList.Sister)
+        classListUnpromoted.Add(ClassList.Mage_F)
+        classListUnpromoted.Add(ClassList.Shaman_F)
+        ' Paladins have screwy palettes, so we son't use it.
+        classListUnpromoted.Add(ClassList.Troubadour)
+        classListUnpromoted.Add(ClassList.Nomad_F)
+        classListUnpromoted.Add(ClassList.PegasusKnight)
+        classListUnpromoted.Add(ClassList.DragonKnight_F)
+        If allowThief Then
+            classListUnpromoted.Add(ClassList.Thief_F)
+        End If
+        If allowUnique Then
+            classListUnpromoted.Add(ClassList.Dancer)
+            classListUnpromoted.Add(ClassList.Manakete_F)
+        End If
+
+        If classListUnpromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
+            Dim newClass As ClassList
+            Do
+                newClass = classListUnpromoted.Item(rng.Next(0, classListUnpromoted.Count - 1))
+            Loop While newClass = original
+
+            Return newClass
+        Else
+            ' Old class was probably promoted, so look for promoted classes.
+            Dim classListPromoted As ArrayList = New ArrayList
+
+            classListPromoted.Add(ClassList.Hero_F)
+            classListPromoted.Add(ClassList.Swordmaster_F)
+            classListPromoted.Add(ClassList.Sniper_F)
+            classListPromoted.Add(ClassList.Bishop_F)
+            classListPromoted.Add(ClassList.Sage_F)
+            classListPromoted.Add(ClassList.Druid_F)
+            classListPromoted.Add(ClassList.Valkyrie)
+            classListPromoted.Add(ClassList.NomadTrooper_F)
+            classListPromoted.Add(ClassList.FalconKnight)
+            classListPromoted.Add(ClassList.DragonMaster_F)
+
+            If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
+                Dim newClass As ClassList
+                Do
+                    newClass = classListPromoted.Item(rng.Next(0, classListPromoted.Count - 1))
+                Loop While newClass = original
+
+                Return newClass
+            End If
+        End If
+
+        classListUnpromoted.Clear()
+
+        If allowLord Then
+            classListUnpromoted.Add(ClassList.Lord)
+        End If
+        classListUnpromoted.Add(ClassList.Mercenary)
+        classListUnpromoted.Add(ClassList.Myrmidon)
+        classListUnpromoted.Add(ClassList.Fighter)
+        classListUnpromoted.Add(ClassList.ArmorKnight)
+        classListUnpromoted.Add(ClassList.Archer)
+        classListUnpromoted.Add(ClassList.Priest)
+        classListUnpromoted.Add(ClassList.Mage)
+        classListUnpromoted.Add(ClassList.Shaman)
+        classListUnpromoted.Add(ClassList.Cavalier)
+        classListUnpromoted.Add(ClassList.Nomad)
+        classListUnpromoted.Add(ClassList.Bandit)
+        classListUnpromoted.Add(ClassList.Pirate)
+        classListUnpromoted.Add(ClassList.DragonKnight)
+        If allowThief Then
+            classListUnpromoted.Add(ClassList.Thief)
+        End If
+        If allowUnique Then
+            classListUnpromoted.Add(ClassList.Soldier)
+            classListUnpromoted.Add(ClassList.Bard)
+            classListUnpromoted.Add(ClassList.Manakete)
+        End If
+
+        If classListUnpromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
+            Dim newClass As ClassList
+            Do
+                newClass = classListUnpromoted.Item(rng.Next(0, classListUnpromoted.Count - 1))
+            Loop While newClass = original
+
+            Return newClass
+        Else
+            ' Old class was probably promoted, so look for promoted classes.
+            Dim classListPromoted As ArrayList = New ArrayList
+
+            classListPromoted.Add(ClassList.Hero)
+            classListPromoted.Add(ClassList.Swordmaster)
+            classListPromoted.Add(ClassList.Sniper)
+            classListPromoted.Add(ClassList.Bishop)
+            classListPromoted.Add(ClassList.Sage)
+            classListPromoted.Add(ClassList.Druid)
+            classListPromoted.Add(ClassList.Warrior)
+            classListPromoted.Add(ClassList.NomadTrooper)
+            classListPromoted.Add(ClassList.Berserker)
+            classListPromoted.Add(ClassList.DragonMaster)
+            classListPromoted.Add(ClassList.Paladin)
+
+            If allowLord Then
+                classListPromoted.Add(ClassList.MasterLord)
+            End If
+
+            If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
+                Dim newClass As ClassList
+                Do
+                    newClass = classListPromoted.Item(rng.Next(0, classListPromoted.Count - 1))
+                Loop While newClass = original
+
+                Return newClass
+            End If
+        End If
+
+        ' We shouldn't get this far but if we do, just return the original (i.e. no change)
+        Return original
+    End Function
+
+    Public Shared Function playableCharacterIDs() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+
+        list.Add(CharacterList.Roy)
+        list.Add(CharacterList.Marcus)
+        list.Add(CharacterList.Alan)
+        list.Add(CharacterList.Lance)
+        list.Add(CharacterList.Wolt)
+        list.Add(CharacterList.Bors)
+        list.Add(CharacterList.Ellen)
+        list.Add(CharacterList.Dieck)
+        list.Add(CharacterList.Wade)
+        list.Add(CharacterList.Lot)
+        list.Add(CharacterList.Thany)
+        list.Add(CharacterList.Chad)
+        list.Add(CharacterList.Lugh)
+        list.Add(CharacterList.Clarine)
+        list.Add(CharacterList.Rutger)
+        list.Add(CharacterList.Saul)
+        list.Add(CharacterList.Dorothy)
+        list.Add(CharacterList.Sue)
+        list.Add(CharacterList.Zealot)
+        list.Add(CharacterList.Treck)
+        list.Add(CharacterList.Noah)
+        list.Add(CharacterList.Astore)
+        list.Add(CharacterList.Lilina)
+        list.Add(CharacterList.Wendy)
+        list.Add(CharacterList.Barth)
+        list.Add(CharacterList.Oujay)
+        list.Add(CharacterList.Fir)
+        list.Add(CharacterList.Shin)
+        list.Add(CharacterList.Gonzales_A)
+        list.Add(CharacterList.Gonzales_B)
+        list.Add(CharacterList.Geese)
+        list.Add(CharacterList.Klein)
+        list.Add(CharacterList.Tate)
+        list.Add(CharacterList.Lalum)
+        list.Add(CharacterList.Echidna)
+        list.Add(CharacterList.Elphin)
+        list.Add(CharacterList.Bartre)
+        list.Add(CharacterList.Ray)
+        list.Add(CharacterList.Cath)
+        list.Add(CharacterList.Miledy)
+        list.Add(CharacterList.Percival)
+        list.Add(CharacterList.Cecilia)
+        list.Add(CharacterList.Sophia)
+        list.Add(CharacterList.Igrene)
+        list.Add(CharacterList.Garret)
+        list.Add(CharacterList.Fa)
+        list.Add(CharacterList.Hugh)
+        list.Add(CharacterList.Zeiss)
+        list.Add(CharacterList.Douglas)
+        list.Add(CharacterList.Niime)
+        list.Add(CharacterList.Dayan)
+        list.Add(CharacterList.Yuuno)
+        list.Add(CharacterList.Yodel)
+        list.Add(CharacterList.Karel)
+
+        Return list
+    End Function
+
+    Public Shared Function lordCharacterIDs() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+        list.Add(CharacterList.Roy)
+        Return list
+    End Function
+
+    Public Shared Function thiefCharacterIDs() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+        list.Add(CharacterList.Astore)
+        list.Add(CharacterList.Chad)
+        list.Add(CharacterList.Cath)
+        Return list
+    End Function
+
+    Public Shared Function bossCharacterIDs() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+        list.Add(CharacterList.Damas)
+        list.Add(CharacterList.Rude)
+        list.Add(CharacterList.Slater)
+        list.Add(CharacterList.Erik)
+        list.Add(CharacterList.Dory)
+        list.Add(CharacterList.Wagner)
+        list.Add(CharacterList.Devias)
+        list.Add(CharacterList.Reigans)
+        list.Add(CharacterList.Scott)
+        list.Add(CharacterList.Nord)
+        list.Add(CharacterList.Flaer)
+        list.Add(CharacterList.Oro)
+        list.Add(CharacterList.Aine)
+        list.Add(CharacterList.Narshen)
+        list.Add(CharacterList.Randy)
+        list.Add(CharacterList.Maggie)
+        list.Add(CharacterList.Rose)
+        list.Add(CharacterList.Raeth)
+        list.Add(CharacterList.Arcard)
+        list.Add(CharacterList.Martel)
+        list.Add(CharacterList.Sigune)
+        list.Add(CharacterList.Roartz)
+        list.Add(CharacterList.Murdock)
+        list.Add(CharacterList.Brunya)
+        list.Add(CharacterList.Zeke)
+        list.Add(CharacterList.Monke)
+        list.Add(CharacterList.Kel)
+
+        list.Add(CharacterList.Henning)
+        list.Add(CharacterList.Scouran)
+        list.Add(CharacterList.Grero)
+        list.Add(CharacterList.Ohtz)
+        list.Add(CharacterList.Teck)
+
+        list.Add(CharacterList.Thoril)
+        list.Add(CharacterList.Brakul)
+        list.Add(CharacterList.Kudoka)
+        list.Add(CharacterList.Maral)
+        list.Add(CharacterList.Kabul)
+        list.Add(CharacterList.Chan)
+        list.Add(CharacterList.Pereth)
+        list.Add(CharacterList.Windam)
+        list.Add(CharacterList.Morgan)
+
+        Return list
+    End Function
+
+    Public Shared Function exemptCharacterIDs() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+        list.Add(CharacterList.None)
+
+        list.Add(CharacterList.Zephiel)
+        list.Add(CharacterList.Idoun_Dragon)
+        list.Add(CharacterList.Idoun_Shaman)
+        list.Add(CharacterList.Yahn)
+
+        ' Some characters cause problems when randomized for scripted events, namely fliers like Miledy who need to do scripted flying.
+        ' We need to black list characters.
+        list.Add(CharacterList.Miledy)
+
+        Return list
+    End Function
+
+    Public Shared Function randomizedFromThiefEquipment() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+
+        list.Add(ItemList.DoorKeys)
+        list.Add(ItemList.ChestKeys)
+
+        Return list
+    End Function
+
+    Public Shared Function randomizedToThiefEquipment() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+
+        list.Add(ItemList.Lockpick)
+
+        Return list
+    End Function
+
+    Public Shared Sub generateRandomizedRecruitment()
+
+    End Sub
+
+    ' Reverse Recruitment Mapping.
+    'Roy				Karel			Myrmidon
+    'Marcus				Yodel			Bishop
+    'Allen				Juno			Pegasus Knight
+    'Lance				Dayan			Nomad
+    'Wolt				Niime			Shaman (F)
+    'Bors				Douglas			Armor Knight
+    'Elen				Zeiss			Wyvern Knight
+    'Dieck				Hugh			Mage
+    'Wade				Fae				Manakete (F)
+    'Lot				Garret			Bandit
+    'Shanna				Igrene			Archer (F)
+    'Chad				Sophia			Shaman (F)
+    'Lugh				Cecilia			Troubadour
+    'Clarine			Perceval		Cavalier
+    'Rutger				Miledy			Wyvern Knight (F)
+    'Saul				Cath			Thief (F)
+    'Dorothy			Raigh			Shaman
+    'Sue				Bartre			Fighter
+    'Zealot				Elphin			Bard (!)
+    'Treck				Echidna			Mercenary (F) (!)
+    'Noah				Lalum			Dancer
+    'Astore				Tate			Pegasus Knight
+    'Lilina				Klein			Archer
+    'Wendy				Geese			Pirate
+    'Barth				Gonzales		Bandit
+    'Oujay				Shin			Nomad
+    'Fir				Fir				Myrmidon (F)
+    'Shin				Oujay			Mercenary
+    'Gonzales			Barth			Armor Knight
+    'Geese				Wendy			Armor Knight
+    'Klein				Lilina			Sage (F)
+    'Tate				Astore			Thief
+    'Lalum				Noah			Cavalier
+    'Echidna			Treck			Paladin
+    'Elphin				Zealot			Cavalier
+    'Bartre				Sue				Nomadic Trooper (F)
+    'Raigh				Dorothy			Archer (F)
+    'Cath				Saul			Priest
+    'Miledy				Rutger			Myrmidon
+    'Perceval			Clarine			Valkyrie
+    'Cecilia			Lugh			Sage
+    'Sophia				Chad			Thief
+    'Igrene				Shanna			Falcoknight
+    'Garret				Lot				Warrior
+    'Fae				Wade			Fighter
+    'Hugh				Dieck			Mercenary
+    'Zeiss				Elen			Cleric		
+    'Douglas			Bors			General
+    'Niime				Wolt			Sniper
+    'Dayan				Lance			Paladin
+    'Juno				Allen			Paladin
+    'Yodel				Marcus			Paladin
+    'Karel				Roy				Master Lord
+
+    Public Shared Function reversedRecruitmentMappingForCharacter(ByVal originalCharacter As CharacterList) As CharacterList
+        If originalCharacter = CharacterList.Roy Then Return CharacterList.Karel
+        If originalCharacter = CharacterList.Marcus Then Return CharacterList.Yodel
+        If originalCharacter = CharacterList.Alan Then Return CharacterList.Yuuno
+        If originalCharacter = CharacterList.Lance Then Return CharacterList.Dayan
+        If originalCharacter = CharacterList.Wolt Then Return CharacterList.Niime
+        If originalCharacter = CharacterList.Bors Then Return CharacterList.Douglas
+        If originalCharacter = CharacterList.Ellen Then Return CharacterList.Zeiss
+        If originalCharacter = CharacterList.Dieck Then Return CharacterList.Hugh
+        If originalCharacter = CharacterList.Wade Then Return CharacterList.Fa
+        If originalCharacter = CharacterList.Lot Then Return CharacterList.Garret
+        If originalCharacter = CharacterList.Thany Then Return CharacterList.Igrene
+        If originalCharacter = CharacterList.Chad Then Return CharacterList.Sophia
+        If originalCharacter = CharacterList.Lugh Then Return CharacterList.Cecilia
+        If originalCharacter = CharacterList.Clarine Then Return CharacterList.Percival
+        If originalCharacter = CharacterList.Rutger Then Return CharacterList.Miledy
+        If originalCharacter = CharacterList.Saul Then Return CharacterList.Cath
+        If originalCharacter = CharacterList.Dorothy Then Return CharacterList.Ray
+        If originalCharacter = CharacterList.Sue Then Return CharacterList.Bartre
+        If originalCharacter = CharacterList.Zealot Then Return CharacterList.Echidna ' Going to switch these two around to avoid issues with not having a Female Mercenary class.
+        If originalCharacter = CharacterList.Treck Then Return CharacterList.Elphin
+        If originalCharacter = CharacterList.Noah Then Return CharacterList.Lalum
+        If originalCharacter = CharacterList.Astore Then Return CharacterList.Tate
+        If originalCharacter = CharacterList.Lilina Then Return CharacterList.Klein
+        If originalCharacter = CharacterList.Wendy Then Return CharacterList.Geese
+        If originalCharacter = CharacterList.Barth Then Return CharacterList.Gonzales_A
+        If originalCharacter = CharacterList.Oujay Then Return CharacterList.Shin
+        If originalCharacter = CharacterList.Fir Then Return CharacterList.Fir
+        If originalCharacter = CharacterList.Shin Then Return CharacterList.Oujay
+        If originalCharacter = CharacterList.Gonzales_A Or originalCharacter = CharacterList.Gonzales_B Then Return CharacterList.Barth
+        If originalCharacter = CharacterList.Geese Then Return CharacterList.Wendy
+        If originalCharacter = CharacterList.Klein Then Return CharacterList.Lilina
+        If originalCharacter = CharacterList.Tate Then Return CharacterList.Astore
+        If originalCharacter = CharacterList.Lalum Then Return CharacterList.Noah
+        If originalCharacter = CharacterList.Echidna Then Return CharacterList.Zealot
+        If originalCharacter = CharacterList.Elphin Then Return CharacterList.Treck
+        If originalCharacter = CharacterList.Bartre Then Return CharacterList.Sue
+        If originalCharacter = CharacterList.Ray Then Return CharacterList.Dorothy
+        If originalCharacter = CharacterList.Cath Then Return CharacterList.Saul
+        If originalCharacter = CharacterList.Miledy Then Return CharacterList.Rutger
+        If originalCharacter = CharacterList.Percival Then Return CharacterList.Clarine
+        If originalCharacter = CharacterList.Cecilia Then Return CharacterList.Lugh
+        If originalCharacter = CharacterList.Sophia Then Return CharacterList.Chad
+        If originalCharacter = CharacterList.Igrene Then Return CharacterList.Thany
+        If originalCharacter = CharacterList.Garret Then Return CharacterList.Lot
+        If originalCharacter = CharacterList.Fa Then Return CharacterList.Wade
+        If originalCharacter = CharacterList.Hugh Then Return CharacterList.Dieck
+        If originalCharacter = CharacterList.Zeiss Then Return CharacterList.Ellen
+        If originalCharacter = CharacterList.Douglas Then Return CharacterList.Bors
+        If originalCharacter = CharacterList.Niime Then Return CharacterList.Wolt
+        If originalCharacter = CharacterList.Dayan Then Return CharacterList.Lance
+        If originalCharacter = CharacterList.Yuuno Then Return CharacterList.Alan
+        If originalCharacter = CharacterList.Yodel Then Return CharacterList.Marcus
+        If originalCharacter = CharacterList.Karel Then Return CharacterList.Roy
+        ' Shouldn't happen, but we need to return something.
+        Return CharacterList.None
+    End Function
+
+    Public Shared Function reversedRecruitmentClassMappingForCharacter(ByVal originalCharacter As CharacterList) As ClassList
+        If originalCharacter = CharacterList.Roy Then Return ClassList.MasterLord
+        If originalCharacter = CharacterList.Marcus Then Return ClassList.Paladin
+        If originalCharacter = CharacterList.Alan Then Return ClassList.Paladin
+        If originalCharacter = CharacterList.Lance Then Return ClassList.Paladin
+        If originalCharacter = CharacterList.Wolt Then Return ClassList.Sniper
+        If originalCharacter = CharacterList.Bors Then Return ClassList.General
+        If originalCharacter = CharacterList.Ellen Then Return ClassList.Sister
+        If originalCharacter = CharacterList.Dieck Then Return ClassList.Mercenary
+        If originalCharacter = CharacterList.Wade Then Return ClassList.Fighter
+        If originalCharacter = CharacterList.Lot Then Return ClassList.Warrior
+        If originalCharacter = CharacterList.Thany Then Return ClassList.FalconKnight
+        If originalCharacter = CharacterList.Chad Then Return ClassList.Thief
+        If originalCharacter = CharacterList.Lugh Then Return ClassList.Sage
+        If originalCharacter = CharacterList.Clarine Then Return ClassList.Valkyrie
+        If originalCharacter = CharacterList.Rutger Then Return ClassList.Myrmidon
+        If originalCharacter = CharacterList.Saul Then Return ClassList.Priest
+        If originalCharacter = CharacterList.Dorothy Then Return ClassList.Archer_F
+        If originalCharacter = CharacterList.Sue Then Return ClassList.NomadTrooper_F
+        If originalCharacter = CharacterList.Zealot Then Return ClassList.Paladin
+        If originalCharacter = CharacterList.Treck Then Return ClassList.Cavalier
+        If originalCharacter = CharacterList.Noah Then Return ClassList.Cavalier
+        If originalCharacter = CharacterList.Astore Then Return ClassList.Thief
+        If originalCharacter = CharacterList.Lilina Then Return ClassList.Sage_F
+        If originalCharacter = CharacterList.Wendy Then Return ClassList.ArmorKnight_F
+        If originalCharacter = CharacterList.Barth Then Return ClassList.ArmorKnight
+        If originalCharacter = CharacterList.Oujay Then Return ClassList.Mercenary
+        If originalCharacter = CharacterList.Fir Then Return ClassList.Myrmidon_F
+        If originalCharacter = CharacterList.Shin Then Return ClassList.Nomad
+        If originalCharacter = CharacterList.Gonzales_A Or originalCharacter = CharacterList.Gonzales_B Then Return ClassList.Bandit
+        If originalCharacter = CharacterList.Geese Then Return ClassList.Pirate
+        If originalCharacter = CharacterList.Klein Then Return ClassList.Archer
+        If originalCharacter = CharacterList.Tate Then Return ClassList.PegasusKnight
+        If originalCharacter = CharacterList.Lalum Then Return ClassList.Dancer
+        If originalCharacter = CharacterList.Echidna Then Return ClassList.Hero_F
+        If originalCharacter = CharacterList.Elphin Then Return ClassList.Bard
+        If originalCharacter = CharacterList.Bartre Then Return ClassList.Fighter
+        If originalCharacter = CharacterList.Ray Then Return ClassList.Shaman
+        If originalCharacter = CharacterList.Cath Then Return ClassList.Thief_F
+        If originalCharacter = CharacterList.Miledy Then Return ClassList.DragonKnight_F
+        If originalCharacter = CharacterList.Percival Then Return ClassList.Cavalier
+        If originalCharacter = CharacterList.Cecilia Then Return ClassList.Troubadour
+        If originalCharacter = CharacterList.Sophia Then Return ClassList.Shaman_F
+        If originalCharacter = CharacterList.Igrene Then Return ClassList.Archer_F
+        If originalCharacter = CharacterList.Garret Then Return ClassList.Bandit
+        If originalCharacter = CharacterList.Fa Then Return ClassList.Manakete_F
+        If originalCharacter = CharacterList.Hugh Then Return ClassList.Mage
+        If originalCharacter = CharacterList.Zeiss Then Return ClassList.DragonKnight
+        If originalCharacter = CharacterList.Douglas Then Return ClassList.ArmorKnight
+        If originalCharacter = CharacterList.Niime Then Return ClassList.Shaman_F
+        If originalCharacter = CharacterList.Dayan Then Return ClassList.Nomad
+        If originalCharacter = CharacterList.Yuuno Then Return ClassList.PegasusKnight
+        If originalCharacter = CharacterList.Yodel Then Return ClassList.Bishop
+        If originalCharacter = CharacterList.Karel Then Return ClassList.Myrmidon
+
+        ' Shouldn't get here, but we need to return something
+        Return ClassList.None
+    End Function
+
+    Public Shared Function UnitsInEachChapter() As ArrayList
+        Dim arrayList As ArrayList = New ArrayList()
+
+        arrayList.Add(28)   ' Chapter 1
+        arrayList.Add(46)   ' Chapter 2
+        arrayList.Add(57)   ' Chapter 3
+        arrayList.Add(56)   ' Chapter 4
+        arrayList.Add(59)   ' Chapter 5
+        arrayList.Add(92)   ' Chapter 6
+        arrayList.Add(66)   ' Chapter 7
+        arrayList.Add(105)  ' Chapter 8
+        arrayList.Add(78)   ' Chapter 8x
+        arrayList.Add(70)   ' Chapter 9
+        arrayList.Add(67)   ' Chapter 10A
+        arrayList.Add(82)   ' Chapter 10B
+        arrayList.Add(94)   ' Chapter 11A
+        arrayList.Add(85)   ' Chapter 11B
+        arrayList.Add(66)   ' Chapter 12
+        arrayList.Add(36)   ' Chapter 12x
+        arrayList.Add(94)   ' Chapter 13
+        arrayList.Add(79)   ' Chapter 14
+        arrayList.Add(44)   ' Chapter 14x
+        arrayList.Add(64)   ' Chapter 15
+        arrayList.Add(71)   ' Chapter 16
+        arrayList.Add(49)   ' Chapter 16x
+        arrayList.Add(64)   ' Chapter 17A
+        arrayList.Add(56)   ' Chapter 17B
+        arrayList.Add(58)   ' Chapter 18A
+        arrayList.Add(90)   ' Chapter 18B
+        arrayList.Add(61)   ' Chapter 19A
+        arrayList.Add(82)   ' Chapter 19B
+        arrayList.Add(65)   ' Chapter 20A
+        arrayList.Add(55)   ' Chapter 20Ax
+        arrayList.Add(64)   ' Chapter 20B
+        arrayList.Add(96)   ' Chapter 20Bx
+        arrayList.Add(126)  ' Chapter 21
+        arrayList.Add(69)   ' Chapter 21x
+        arrayList.Add(115)  ' Chapter 22
+        arrayList.Add(63)   ' Chapter 23
+        arrayList.Add(53)   ' Chapter 24
+        arrayList.Add(27)   ' Final
+
+        Return arrayList
+    End Function
+
 End Class
