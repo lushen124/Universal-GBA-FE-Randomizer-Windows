@@ -369,6 +369,26 @@
                             newCharacterList.Add(replacementCharacter)
                             ' Update the replacement's character ID to the original character's ID.
                             replacementCharacter.characterId = character.characterId
+                            ' Go ahead and change his class if it needs changing and delevel (or level him) as necessary
+                            Dim originalLevel As Integer = replacementCharacter.level
+                            Dim targetLevel As Integer = character.level
+                            Dim newClassID As Byte = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.reversedRecruitmentClassMappingForCharacter(replacement)), Nothing)
+                            If Not IsNothing(newClassID) Then
+                                Dim originalClass As FEClass = classLookup.Item(replacementCharacter.classId)
+                                Dim replacementClass As FEClass = classLookup.Item(newClassID)
+                                If Not IsNothing(replacementClass) Then
+                                    ' Assume promotion at level 10 for calculating levels.
+                                    If originalClass.ability2 And FEClass.ClassAbility2.Promoted Then originalLevel += 9
+                                    If replacementClass.ability2 And FEClass.ClassAbility2.Promoted Then targetLevel += 9
+                                    If originalLevel > targetLevel Then
+                                        replacementCharacter.levelWithClass(replacementClass, originalLevel - targetLevel, True, rng)
+                                    ElseIf targetLevel > originalLevel Then
+                                        replacementCharacter.levelWithClass(replacementClass, targetLevel - originalLevel, False, rng)
+                                    End If
+                                    replacementCharacter.level = IIf(replacementClass.ability2 And FEClass.ClassAbility2.Promoted, targetLevel - 9, targetLevel)
+                                    replacementCharacter.classId = newClassID
+                                End If
+                            End If
                         Else
                             ' If we didn't get a replacement, add the old character back into his spot (no change)
                             newCharacterList.Add(character)
@@ -446,6 +466,12 @@
                 weaponLevelIncreaseChance += 8
                 ' For every unit found in the chapter data
                 For Each unit As FEChapterUnit In chapterUnits
+
+                    ' Skip units with id = 0 (The game uses these as dividers between groups of units)
+                    If unit.characterId = 0 Then
+                        Continue For
+                    End If
+
                     ' If it's a real character (i.e. not a random mook) then see if we already had something for
                     ' him or her.
                     Dim characterIDObject As Object = System.Enum.ToObject(GetType(FE6GameData.CharacterList), unit.characterId)
@@ -462,14 +488,18 @@
                         Else
                             ' First time this character shows up. Figure out what he should be.
                             ' If he's one of the units we shouldn't touch, then skip it.
-                            If Not randomLords And lordCharacters.Contains(characterIDObject) Then
-                                Continue For
-                            ElseIf Not randomThieves And thiefCharacters.Contains(characterIDObject) Then
-                                Continue For
-                            ElseIf Not randomBosses And bossCharacters.Contains(characterIDObject) Then
-                                Continue For
-                            ElseIf exemptCharacters.Contains(characterIDObject) Then
-                                Continue For
+                            ' Don't skip if we're not randomizing though, because we still want to
+                            ' take advantage of the random starting items.
+                            If shouldRandomizeClasses Then
+                                If Not randomLords And lordCharacters.Contains(characterIDObject) Then
+                                    Continue For
+                                ElseIf Not randomThieves And thiefCharacters.Contains(characterIDObject) Then
+                                    Continue For
+                                ElseIf Not randomBosses And bossCharacters.Contains(characterIDObject) Then
+                                    Continue For
+                                ElseIf exemptCharacters.Contains(characterIDObject) Then
+                                    Continue For
+                                End If
                             End If
 
                             ' If we got this far, he/she's getting randomized
@@ -795,7 +825,7 @@
                             unit.item4Id = validatedInventory.Item(3)
 
                             targetInventory.Add(characterIDObject, validatedInventory)
-                            End If
+                        End If
                     End If
                 Next
             Next

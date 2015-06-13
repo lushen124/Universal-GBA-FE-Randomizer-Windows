@@ -11,6 +11,13 @@
     Property baseCon As Byte            'offset 17, 1 byte
     Property baseMov As Byte            'offset 18, 1 byte
 
+    Property hpCap As Byte              'offset 19, 1 byte
+    Property strCap As Byte             'offset 20, 1 byte
+    Property sklCap As Byte             'offset 21, 1 byte
+    Property spdCap As Byte             'offset 22, 1 byte
+    Property defCap As Byte             'offset 23, 1 byte
+    Property resCap As Byte             'offset 24, 1 byte
+
     Property hpGrowth As Byte           'offset 27, 1 byte
     Property strGrowth As Byte          'offset 28, 1 byte
     Property sklGrowth As Byte          'offset 29, 1 byte
@@ -104,6 +111,13 @@
         baseRes = filePtr.ReadByte()
         baseCon = filePtr.ReadByte()
         baseMov = filePtr.ReadByte()
+
+        hpCap = filePtr.ReadByte()
+        strCap = filePtr.ReadByte()
+        sklCap = filePtr.ReadByte()
+        spdCap = filePtr.ReadByte()
+        defCap = filePtr.ReadByte()
+        resCap = filePtr.ReadByte()
 
         filePtr.Seek(offset + 27, IO.SeekOrigin.Begin)
         hpGrowth = filePtr.ReadByte()

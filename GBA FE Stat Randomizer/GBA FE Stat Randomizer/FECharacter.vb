@@ -1,5 +1,7 @@
 ﻿Public Class FECharacter
     Property characterAffinity As Short 'offset 9, 1 byte
+    Property level As Byte 'offset 11, 1 byte
+
     Property baseHP As SByte 'offset 12, 1 byte
     Property baseStr As SByte 'offset 13, 1 byte
     Property baseSkl As SByte 'offset 14, 1 byte
@@ -37,6 +39,7 @@
     Public Function Copy() As FECharacter
         Dim copiedCharacter As FECharacter = New FECharacter()
         copiedCharacter.characterAffinity = characterAffinity
+        copiedCharacter.level = level
         copiedCharacter.baseHP = baseHP
         copiedCharacter.baseStr = baseStr
         copiedCharacter.baseSkl = baseSkl
@@ -98,7 +101,8 @@
         filePtr.Seek(offset + 9, IO.SeekOrigin.Begin)
         characterAffinity = filePtr.ReadByte()
 
-        filePtr.Seek(offset + 12, IO.SeekOrigin.Begin)
+        filePtr.Seek(offset + 11, IO.SeekOrigin.Begin)
+        level = filePtr.ReadByte()
         baseHP = Utilities.signedByteFromByte(filePtr.ReadByte())
         baseStr = Utilities.signedByteFromByte(filePtr.ReadByte())
         baseSkl = Utilities.signedByteFromByte(filePtr.ReadByte())
@@ -141,7 +145,8 @@
         filePtr.Seek(offset + 9, IO.SeekOrigin.Begin)
         filePtr.WriteByte(characterAffinity)
 
-        filePtr.Seek(offset + 12, IO.SeekOrigin.Begin)
+        filePtr.Seek(offset + 11, IO.SeekOrigin.Begin)
+        filePtr.WriteByte(level)
         filePtr.WriteByte(Utilities.unsignedByteFromSignedByte(baseHP))
         filePtr.WriteByte(Utilities.unsignedByteFromSignedByte(baseStr))
         filePtr.WriteByte(Utilities.unsignedByteFromSignedByte(baseSkl))
@@ -700,5 +705,118 @@
         End If
 
     End Sub
+
+    Public Sub levelWithClass(ByRef targetClass As FEClass, ByVal levelsToShift As Integer, ByVal delevel As Boolean, ByRef rng As Random)
+        If Not IsNothing(targetClass) And levelsToShift > 0 Then
+            For i As Integer = 1 To levelsToShift
+                Dim growth As Integer
+
+                growth = hpGrowth
+                While growth >= 100
+                    baseHP = IIf(delevel, baseHP - 1, baseHP + 1)
+                    growth = growth - 100
+                End While
+                If growth > 0 Then
+                    Dim shouldShift As Boolean = rng.Next(0, 100) < growth
+                    If shouldShift Then
+                        baseHP = IIf(delevel, baseHP - 1, baseHP + 1)
+                    End If
+                End If
+
+                growth = strGrowth
+                While growth >= 100
+                    baseStr = IIf(delevel, baseStr - 1, baseStr + 1)
+                    growth = growth - 100
+                End While
+                If growth > 0 Then
+                    Dim shouldShift As Boolean = rng.Next(0, 100) < growth
+                    If shouldShift Then
+                        baseStr = IIf(delevel, baseStr - 1, baseStr + 1)
+                    End If
+                End If
+
+                growth = sklGrowth
+                While growth >= 100
+                    baseSkl = IIf(delevel, baseSkl - 1, baseSkl + 1)
+                    growth = growth - 100
+                End While
+                If growth > 0 Then
+                    Dim shouldShift As Boolean = rng.Next(0, 100) < growth
+                    If shouldShift Then
+                        baseSkl = IIf(delevel, baseSkl - 1, baseSkl + 1)
+                    End If
+                End If
+
+                growth = spdGrowth
+                While growth >= 100
+                    baseSpd = IIf(delevel, baseSpd - 1, baseSpd + 1)
+                    growth = growth - 100
+                End While
+                If growth > 0 Then
+                    Dim shouldShift As Boolean = rng.Next(0, 100) < growth
+                    If shouldShift Then
+                        baseSpd = IIf(delevel, baseSpd - 1, baseSpd + 1)
+                    End If
+                End If
+
+                growth = lckGrowth
+                While growth >= 100
+                    baseLck = IIf(delevel, baseLck - 1, baseLck + 1)
+                    growth = growth - 100
+                End While
+                If growth > 0 Then
+                    Dim shouldShift As Boolean = rng.Next(0, 100) < growth
+                    If shouldShift Then
+                        baseLck = IIf(delevel, baseLck - 1, baseLck + 1)
+                    End If
+                End If
+
+                growth = defGrowth
+                While growth >= 100
+                    baseDef = IIf(delevel, baseDef - 1, baseDef + 1)
+                    growth = growth - 100
+                End While
+                If growth > 0 Then
+                    Dim shouldShift As Boolean = rng.Next(0, 100) < growth
+                    If shouldShift Then
+                        baseDef = IIf(delevel, baseDef - 1, baseDef + 1)
+                    End If
+                End If
+                growth = resGrowth
+                While growth >= 100
+                    baseRes = IIf(delevel, baseRes - 1, baseRes + 1)
+                    growth = growth - 100
+                End While
+                If growth > 0 Then
+                    Dim shouldShift As Boolean = rng.Next(0, 100) < growth
+                    If shouldShift Then
+                        baseRes = IIf(delevel, baseRes - 1, baseRes + 1)
+                    End If
+                End If
+            Next
+
+            ' Make sure we're still in line with valid values (no negative stats and
+            ' no stats that exceed stat caps)
+            baseHP = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(targetClass.baseHP), 1, Convert.ToInt16(targetClass.hpCap), baseHP))
+            baseStr = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(targetClass.baseStr), 0, Convert.ToInt16(targetClass.strCap), baseStr))
+            baseSkl = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(targetClass.baseSkl), 0, Convert.ToInt16(targetClass.sklCap), baseSkl))
+            baseSpd = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(targetClass.baseSpd), 0, Convert.ToInt16(targetClass.spdCap), baseSpd))
+            ' Lck has no class base and a universal cap of 30.
+            baseLck = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(0, 0, 30, baseLck))
+            baseDef = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(targetClass.baseDef), 0, Convert.ToInt16(targetClass.defCap), baseDef))
+            baseRes = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(targetClass.baseRes), 0, Convert.ToInt16(targetClass.resCap), baseRes))
+
+        End If
+    End Sub
+
+    Private Function clampBaseStatWithClassBaseAndCap(ByVal classBase As Short, ByVal minimumValue As Short, ByVal classCap As Short, ByVal proposedBase As Short) As Short
+        If classBase + proposedBase < minimumValue Then
+            Return minimumValue - classBase
+        ElseIf classBase + proposedBase > classCap Then
+            Return classCap - classBase
+        Else
+            Return proposedBase
+        End If
+    End Function
 
 End Class
