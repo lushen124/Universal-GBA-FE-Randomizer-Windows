@@ -3,6 +3,12 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**June 13, 2015**
+
+Added a Support Manager to handle re-mapping of support conversations when the recruitment order is modified.
+
+Fixed the logic for assigning lord status to a single character instead of a class (why the game doesn't do this to begin with is beyond me).
+
 **June 12, 2015**
 
 Added logic to demote and delevel units as necessary. Need to figure out some better deleveling logic because RR Karel starts with straight 0s and 1 HP with his growths. Meanwhile, crappy growth characters like Niime and Yodel barely have any stats taken off. There's also the problem of needing to repoint DQs and support IDs since the characters have their IDs changed.
