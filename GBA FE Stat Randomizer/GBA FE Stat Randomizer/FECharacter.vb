@@ -797,9 +797,10 @@
 
             ' Make sure we're still in line with valid values (no negative stats and
             ' no stats that exceed stat caps)
-            baseHP = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(targetClass.baseHP), 1, Convert.ToInt16(targetClass.hpCap), baseHP))
-            baseStr = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(targetClass.baseStr), 0, Convert.ToInt16(targetClass.strCap), baseStr))
-            baseSkl = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(targetClass.baseSkl), 0, Convert.ToInt16(targetClass.sklCap), baseSkl))
+            ' Since our delevel is more harsh than leveling, apply a baseline of stats so that we don't get completely screwed.
+            baseHP = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(targetClass.baseHP), 8, Convert.ToInt16(targetClass.hpCap), baseHP))
+            baseStr = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(targetClass.baseStr), 2, Convert.ToInt16(targetClass.strCap), baseStr))
+            baseSkl = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(targetClass.baseSkl), 5, Convert.ToInt16(targetClass.sklCap), baseSkl))
             baseSpd = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(targetClass.baseSpd), 0, Convert.ToInt16(targetClass.spdCap), baseSpd))
             ' Lck has no class base and a universal cap of 30.
             baseLck = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(0, 0, 30, baseLck))

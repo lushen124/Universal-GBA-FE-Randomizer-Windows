@@ -152,6 +152,8 @@
         Dim bossCharacters As ArrayList = New ArrayList()
         Dim exemptCharacters As ArrayList = New ArrayList()
 
+        Dim quoteManager As QuoteManager = Nothing
+
         Dim fileReader = IO.File.OpenRead(OpenFileDialog1.FileName)
 
         If type = Utilities.GameType.GameTypeFE6 Then
@@ -208,6 +210,8 @@
             thiefCharacters = FE6GameData.thiefCharacterIDs()
             bossCharacters = FE6GameData.bossCharacterIDs()
             exemptCharacters = FE6GameData.exemptCharacterIDs()
+
+            quoteManager = New QuoteManager(Utilities.GameType.GameTypeFE6, fileReader)
 
         ElseIf type = Utilities.GameType.GameTypeFE7 Then
 
@@ -368,6 +372,9 @@
                             replacementCharacter = replacementCharacter.Copy()
                             newCharacterList.Add(replacementCharacter)
                             ' Update the replacement's character ID to the original character's ID.
+                            If Not IsNothing(quoteManager) Then
+                                quoteManager.updateCharacterIDs(replacementCharacter.characterId, character.characterId)
+                            End If
                             replacementCharacter.characterId = character.characterId
                             ' Go ahead and change his class if it needs changing and delevel (or level him) as necessary
                             Dim originalLevel As Integer = replacementCharacter.level
@@ -381,7 +388,8 @@
                                     If originalClass.ability2 And FEClass.ClassAbility2.Promoted Then originalLevel += 9
                                     If replacementClass.ability2 And FEClass.ClassAbility2.Promoted Then targetLevel += 9
                                     If originalLevel > targetLevel Then
-                                        replacementCharacter.levelWithClass(replacementClass, originalLevel - targetLevel, True, rng)
+                                        ' 10 extra levels to remove if we're deleveling, since a lot of units that join first have crap growths and deleving won't go anywhere.
+                                        replacementCharacter.levelWithClass(replacementClass, originalLevel - targetLevel + 10, True, rng)
                                     ElseIf targetLevel > originalLevel Then
                                         replacementCharacter.levelWithClass(replacementClass, targetLevel - originalLevel, False, rng)
                                     End If
@@ -884,6 +892,10 @@
                     unit.writeChapterUnitToOffset(fileWriter, fileWriter.Position, FE6GameData.ChapterUnitEntrySize, Utilities.GameType.GameTypeFE6)
                 Next
             Next
+        End If
+
+        If Not IsNothing(quoteManager) Then
+            quoteManager.commitChanges(fileWriter)
         End If
 
         fileWriter.Close()
