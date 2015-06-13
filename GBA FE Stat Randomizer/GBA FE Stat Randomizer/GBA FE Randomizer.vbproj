@@ -111,6 +111,7 @@
     <Compile Include="FEChapterUnit.vb" />
     <Compile Include="FEClass.vb" />
     <Compile Include="QuoteManager.vb" />
+    <Compile Include="SupportManager.vb" />
     <Compile Include="Utilities.vb" />
     <Compile Include="FEItem.vb" />
     <Compile Include="FE6GameData.vb" />

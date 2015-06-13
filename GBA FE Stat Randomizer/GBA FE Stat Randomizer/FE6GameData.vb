@@ -717,6 +717,18 @@
         Return list
     End Function
 
+    Public Shared Function isBlacklisted(ByVal itemID As Byte) As Boolean
+        Dim itemIDObject As ItemList = System.Enum.ToObject(GetType(ItemList), itemID)
+        If itemIDObject = ItemList.Unused_BridgeKey Or
+            itemIDObject = ItemList.Unused_Gold Or
+            itemIDObject = ItemList.Unused_Shield Or
+            itemIDObject = ItemList.Unused_Watch Then
+            Return True
+        End If
+
+        Return False
+    End Function
+
     Public Shared Function randomizedFromThiefEquipment() As ArrayList
         Dim list As ArrayList = New ArrayList()
 

@@ -36,6 +36,52 @@
 
     Property portraitIndex As Byte 'offset 6, 1 byte (should only be swapped with another valid index)
 
+    Property paletteIndex As Byte 'offset 35, 1 byte (unavailable in FE8)
+    Property promotedPaletteIndex As Byte 'offset 36, 1 byte (unavailable in FE8)
+
+    Property ability1 As Byte 'offset 40, 1 byte
+    Property ability2 As Byte 'offset 41, 1 byte
+    Property ability3 As Byte 'offset 42, 1 byte
+    Property ability4 As Byte 'offset 43, 1 byte
+
+    Property supportDataPointer As Integer 'offset 44, 4 bytes (address)
+
+    Enum ClassAbility1 'Bitmaskable
+        None = &H0
+        MountedAidSystem = &H1
+        MoveAgain = &H2
+        Steal = &H4
+        ThiefKey = &H8
+        Dance = &H10
+        Play = &H20
+        CriticalBoost = &H40 '+30 for FE6, +15 for FE7 and FE8
+        Ballista = &H80
+    End Enum
+
+    Enum ClassAbility2 'Bitmaskable
+        None = &H0
+        Promoted = &H1
+        SupplyDepot = &H2
+        ShowHorseIcon = &H4
+        ShowDragonIcon = &H8
+        ShowPegasusIcon = &H10
+        Lord = &H20
+        Female = &H40
+        Boss = &H80
+    End Enum
+
+    Enum ClassAbility3 'Bitmaskable
+        None = &H0
+        LordPrfWeaponLock = &H1 'Only in FE6
+        WoDaoWeaponLock = &H2 'Shamshir in FE8
+        DragonstoneLock = &H4 'Monster weapons in FE8
+        MorphsMaxLevel10 = &H8 'Morphs in FE7, Max Level 10 in FE8
+        Uncontrollable = &H10 'Unknown in FE6
+        PegasusKnightTriangle = &H20
+        ArmorKnightTriangle = &H40 'Only in FE6
+        StartsAsNPC = &H80 'Only in FE6
+    End Enum
+
     Public Function Copy() As FECharacter
         Dim copiedCharacter As FECharacter = New FECharacter()
         copiedCharacter.characterAffinity = characterAffinity
@@ -73,6 +119,16 @@
         copiedCharacter.classId = classId
 
         copiedCharacter.portraitIndex = portraitIndex
+
+        copiedCharacter.paletteIndex = paletteIndex
+        copiedCharacter.promotedPaletteIndex = promotedPaletteIndex
+
+        copiedCharacter.ability1 = ability1
+        copiedCharacter.ability2 = ability2
+        copiedCharacter.ability3 = ability3
+        copiedCharacter.ability4 = ability4
+
+        copiedCharacter.supportDataPointer = supportDataPointer
 
         Return copiedCharacter
     End Function
@@ -129,6 +185,21 @@
         resGrowth = filePtr.ReadByte()
         lckGrowth = filePtr.ReadByte()
 
+        paletteIndex = filePtr.ReadByte()
+        promotedPaletteIndex = filePtr.ReadByte()
+
+        ' Use the promoted one if the unpromoted one is nil
+        If paletteIndex = 0 Then paletteIndex = promotedPaletteIndex
+
+        filePtr.Seek(offset + 40, IO.SeekOrigin.Begin)
+
+        ability1 = filePtr.ReadByte()
+        ability2 = filePtr.ReadByte()
+        ability3 = filePtr.ReadByte()
+        ability4 = filePtr.ReadByte()
+
+        supportDataPointer = Utilities.ReadWord(filePtr, False)
+
         filePtr.Seek(offset + entrySize, IO.SeekOrigin.Begin)
     End Sub
 
@@ -172,6 +243,17 @@
         filePtr.WriteByte(defGrowth)
         filePtr.WriteByte(resGrowth)
         filePtr.WriteByte(lckGrowth)
+
+        filePtr.WriteByte(paletteIndex)
+        filePtr.WriteByte(promotedPaletteIndex)
+
+        filePtr.Seek(offset + 40, IO.SeekOrigin.Begin)
+        filePtr.WriteByte(ability1)
+        filePtr.WriteByte(ability2)
+        filePtr.WriteByte(ability3)
+        filePtr.WriteByte(ability4)
+
+        Utilities.WriteWord(filePtr, supportDataPointer)
 
         filePtr.Seek(offset + entrySize, IO.SeekOrigin.Begin)
     End Sub

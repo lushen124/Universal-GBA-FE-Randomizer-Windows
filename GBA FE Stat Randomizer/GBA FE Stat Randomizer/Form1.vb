@@ -153,6 +153,7 @@
         Dim exemptCharacters As ArrayList = New ArrayList()
 
         Dim quoteManager As QuoteManager = Nothing
+        Dim supportManager As SupportManager = Nothing
 
         Dim fileReader = IO.File.OpenRead(OpenFileDialog1.FileName)
 
@@ -212,7 +213,7 @@
             exemptCharacters = FE6GameData.exemptCharacterIDs()
 
             quoteManager = New QuoteManager(Utilities.GameType.GameTypeFE6, fileReader)
-
+            supportManager = New SupportManager(Utilities.GameType.GameTypeFE6, fileReader)
         ElseIf type = Utilities.GameType.GameTypeFE7 Then
 
             fileReader.Seek(FE7GameData.PointerToCharacterTableOffset, IO.SeekOrigin.Begin)
@@ -332,6 +333,9 @@
             ' The list starts with a terminal 0 item, skip that one.
             If itemEntry.weaponID = 0 Then Continue For
 
+            ' Be on the lookout for any blacklisted items.
+            If type = Utilities.GameType.GameTypeFE6 And FE6GameData.isBlacklisted(itemEntry.weaponID) Then Continue For
+
             Dim weaponType As FEItem.WeaponType = itemEntry.type
             Dim weaponList As ArrayList = itemByType.Item(weaponType)
             If IsNothing(weaponList) Then
@@ -360,6 +364,8 @@
             For i As Integer = 0 To characterList.Count - 1
                 ' Grab the original character in this spot.
                 Dim character As FECharacter = characterList.Item(i)
+                Dim characterClass As FEClass = classLookup.Item(character.classId)
+                Dim replacingLordCharacter As Boolean = characterClass.ability2 And FEClass.ClassAbility2.Lord
                 Dim characterIDObject = IIf(type = Utilities.GameType.GameTypeFE6, System.Enum.ToObject(GetType(FE6GameData.CharacterList), character.characterId), Nothing)
                 ' Make sure he's somebody we want to move.
                 If playableCharactersList.Contains(characterIDObject) Then
@@ -375,6 +381,10 @@
                             If Not IsNothing(quoteManager) Then
                                 quoteManager.updateCharacterIDs(replacementCharacter.characterId, character.characterId)
                             End If
+                            ' Also update supports
+                            If Not IsNothing(supportManager) Then
+                                supportManager.updateCharacterIDs(replacementCharacter.characterId, character.characterId)
+                            End If
                             replacementCharacter.characterId = character.characterId
                             ' Go ahead and change his class if it needs changing and delevel (or level him) as necessary
                             Dim originalLevel As Integer = replacementCharacter.level
@@ -388,8 +398,8 @@
                                     If originalClass.ability2 And FEClass.ClassAbility2.Promoted Then originalLevel += 9
                                     If replacementClass.ability2 And FEClass.ClassAbility2.Promoted Then targetLevel += 9
                                     If originalLevel > targetLevel Then
-                                        ' 10 extra levels to remove if we're deleveling, since a lot of units that join first have crap growths and deleving won't go anywhere.
-                                        replacementCharacter.levelWithClass(replacementClass, originalLevel - targetLevel + 10, True, rng)
+                                        ' 10 extra levels to remove if we're demoting, since a lot of units that join first have crap growths and deleving won't go anywhere.
+                                        replacementCharacter.levelWithClass(replacementClass, originalLevel - targetLevel + IIf(originalClass.ability2 And FEClass.ClassAbility2.Promoted, 10, 0), True, rng)
                                     ElseIf targetLevel > originalLevel Then
                                         replacementCharacter.levelWithClass(replacementClass, targetLevel - originalLevel, False, rng)
                                     End If
@@ -508,6 +518,11 @@
                                 ElseIf exemptCharacters.Contains(characterIDObject) Then
                                     Continue For
                                 End If
+                            Else
+                                ' Never touch bosses if we're not randomizing classes
+                                If bossCharacters.Contains(characterIDObject) Then
+                                    Continue For
+                                End If
                             End If
 
                             ' If we got this far, he/she's getting randomized
@@ -536,10 +551,10 @@
 
                             Dim newClass As FEClass = classLookup.Item(newClassId)
 
-                            ' If the old class was a lord (i.e. this is a lord character)
-                            ' then his/her new class also needs lord privileges (ability to Seize)
+                            ' If the old class was a lord, then apply the lord status on the 
+                            ' character (not the class!)
                             If wasLord Then
-                                newClass.ability2 = newClass.ability2 Or FEClass.ClassAbility2.Lord
+                                currentCharacter.ability2 = currentCharacter.ability2 Or FECharacter.ClassAbility2.Lord
                             End If
 
                             ' Update the character's class in the object.
@@ -896,6 +911,9 @@
 
         If Not IsNothing(quoteManager) Then
             quoteManager.commitChanges(fileWriter)
+        End If
+        If Not IsNothing(supportManager) Then
+            supportManager.commitChanges(fileWriter)
         End If
 
         fileWriter.Close()
