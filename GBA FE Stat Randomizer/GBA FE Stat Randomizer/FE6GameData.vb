@@ -454,27 +454,166 @@
         Return StatBonusPointers.StatBonusPointerNone
     End Function
 
+    Public Shared Function unpromotedClassList(ByVal female As Boolean) As ArrayList
+        Dim list As ArrayList = New ArrayList()
+        If female Then
+            list.Add(ClassList.Myrmidon_F)
+            list.Add(ClassList.ArmorKnight_F)
+            list.Add(ClassList.Archer_F)
+            list.Add(ClassList.Sister)
+            list.Add(ClassList.Mage_F)
+            list.Add(ClassList.Shaman_F)
+            list.Add(ClassList.Troubadour)
+            list.Add(ClassList.Nomad_F)
+            list.Add(ClassList.PegasusKnight)
+            list.Add(ClassList.DragonKnight_F)
+            list.Add(ClassList.Thief_F)
+            list.Add(ClassList.Dancer)
+            list.Add(ClassList.Manakete_F)
+        Else
+            list.Add(ClassList.Lord)
+            list.Add(ClassList.Mercenary)
+            list.Add(ClassList.Myrmidon)
+            list.Add(ClassList.Fighter)
+            list.Add(ClassList.ArmorKnight)
+            list.Add(ClassList.Archer)
+            list.Add(ClassList.Priest)
+            list.Add(ClassList.Mage)
+            list.Add(ClassList.Shaman)
+            list.Add(ClassList.Cavalier)
+            list.Add(ClassList.Nomad)
+            list.Add(ClassList.Bandit)
+            list.Add(ClassList.Pirate)
+            list.Add(ClassList.DragonKnight)
+            list.Add(ClassList.Thief)
+            list.Add(ClassList.Soldier)
+            list.Add(ClassList.Bard)
+            list.Add(ClassList.Manakete)
+        End If
+
+        Return list
+    End Function
+
+    Public Shared Function promotedClassList(ByVal female As Boolean) As ArrayList
+        Dim list As ArrayList = New ArrayList()
+        If female Then
+            list.Add(ClassList.Hero_F)
+            list.Add(ClassList.Swordmaster_F)
+            list.Add(ClassList.Sniper_F)
+            list.Add(ClassList.Bishop_F)
+            list.Add(ClassList.Sage_F)
+            list.Add(ClassList.Druid_F)
+            list.Add(ClassList.Valkyrie)
+            list.Add(ClassList.NomadTrooper_F)
+            list.Add(ClassList.FalconKnight)
+            list.Add(ClassList.DragonMaster_F)
+        Else
+            list.Add(ClassList.Hero)
+            list.Add(ClassList.Swordmaster)
+            list.Add(ClassList.Sniper)
+            list.Add(ClassList.Bishop)
+            list.Add(ClassList.Sage)
+            list.Add(ClassList.Druid)
+            list.Add(ClassList.Warrior)
+            list.Add(ClassList.NomadTrooper)
+            list.Add(ClassList.Berserker)
+            list.Add(ClassList.DragonMaster)
+            list.Add(ClassList.Paladin)
+            list.Add(ClassList.MasterLord)
+        End If
+
+        Return list
+    End Function
+
+    Public Shared Function promotedClassForUnpromotedClass(ByVal unpromotedClassId As ClassList) As ClassList
+        If unpromotedClassId = ClassList.Archer Then Return ClassList.Sniper
+        If unpromotedClassId = ClassList.Archer_F Then Return ClassList.Sniper_F
+        If unpromotedClassId = ClassList.ArmorKnight Then Return ClassList.General
+        If unpromotedClassId = ClassList.ArmorKnight_F Then Return ClassList.General_F
+        If unpromotedClassId = ClassList.Bandit Then Return ClassList.Berserker
+        If unpromotedClassId = ClassList.Cavalier Then Return ClassList.Paladin
+        If unpromotedClassId = ClassList.DragonKnight Then Return ClassList.DragonMaster
+        If unpromotedClassId = ClassList.DragonKnight_F Then Return ClassList.DragonMaster_F
+        If unpromotedClassId = ClassList.Fighter Then Return ClassList.Warrior
+        If unpromotedClassId = ClassList.Lord Then Return ClassList.MasterLord
+        If unpromotedClassId = ClassList.Mage Then Return ClassList.Sage
+        If unpromotedClassId = ClassList.Mage_F Then Return ClassList.Sage_F
+        If unpromotedClassId = ClassList.Mercenary Then Return ClassList.Hero
+        If unpromotedClassId = ClassList.Myrmidon Then Return ClassList.Swordmaster
+        If unpromotedClassId = ClassList.Myrmidon_F Then Return ClassList.Swordmaster_F
+        If unpromotedClassId = ClassList.Nomad Then Return ClassList.NomadTrooper
+        If unpromotedClassId = ClassList.Nomad_F Then Return ClassList.NomadTrooper_F
+        If unpromotedClassId = ClassList.PegasusKnight Then Return ClassList.FalconKnight
+        If unpromotedClassId = ClassList.Pirate Then Return ClassList.Berserker
+        If unpromotedClassId = ClassList.Priest Then Return ClassList.Bishop
+        If unpromotedClassId = ClassList.Shaman Then Return ClassList.Druid
+        If unpromotedClassId = ClassList.Shaman_F Then Return ClassList.Druid_F
+        If unpromotedClassId = ClassList.Sister Then Return ClassList.Bishop_F
+        If unpromotedClassId = ClassList.Troubadour Then Return ClassList.Valkyrie
+        Return ClassList.None
+    End Function
+
+    Public Shared Function unpromotedClassForPromotedClass(ByVal promotedClassId As ClassList) As ClassList
+        If promotedClassId = ClassList.Sniper Then Return ClassList.Archer
+        If promotedClassId = ClassList.Sniper_F Then Return ClassList.Archer_F
+        If promotedClassId = ClassList.General Then Return ClassList.ArmorKnight
+        If promotedClassId = ClassList.General_F Then Return ClassList.ArmorKnight_F
+        If promotedClassId = ClassList.Berserker Then Return ClassList.Bandit
+        If promotedClassId = ClassList.Paladin Then Return ClassList.Cavalier
+        If promotedClassId = ClassList.DragonMaster Then Return ClassList.DragonKnight
+        If promotedClassId = ClassList.DragonMaster_F Then Return ClassList.DragonKnight_F
+        If promotedClassId = ClassList.Warrior Then Return ClassList.Fighter
+        If promotedClassId = ClassList.MasterLord Then Return ClassList.Lord
+        If promotedClassId = ClassList.Sage Then Return ClassList.Mage
+        If promotedClassId = ClassList.Sage_F Then Return ClassList.Mage_F
+        If promotedClassId = ClassList.Hero Then Return ClassList.Mercenary
+        If promotedClassId = ClassList.Swordmaster Then Return ClassList.Myrmidon
+        If promotedClassId = ClassList.Swordmaster_F Then Return ClassList.Myrmidon_F
+        If promotedClassId = ClassList.NomadTrooper Then Return ClassList.Nomad
+        If promotedClassId = ClassList.NomadTrooper_F Then Return ClassList.Nomad_F
+        If promotedClassId = ClassList.FalconKnight Then Return ClassList.PegasusKnight
+        If promotedClassId = ClassList.Bishop Then Return ClassList.Priest
+        If promotedClassId = ClassList.Druid Then Return ClassList.Shaman
+        If promotedClassId = ClassList.Druid_F Then Return ClassList.Shaman_F
+        If promotedClassId = ClassList.Bishop_F Then Return ClassList.Sister
+        If promotedClassId = ClassList.Valkyrie Then Return ClassList.Troubadour
+        Return ClassList.None
+    End Function
+
+    Public Shared Function isValidClass(ByVal characterClass As Byte) As Boolean
+        Return characterClass <= Convert.ToByte(ClassList.King) Or characterClass = Convert.ToByte(ClassList.MasterLord)
+    End Function
+
+    Public Shared Function shouldNotDemoteCharacterIDs() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+
+        list.Add(CharacterList.Echidna)
+
+        Return list
+    End Function
+
+    Public Shared Function canNotPromoteCharacterIDs() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+
+        list.Add(CharacterList.Fa)
+        list.Add(CharacterList.Chad)
+        list.Add(CharacterList.Astore)
+        list.Add(CharacterList.Cath)
+
+        Return list
+    End Function
+
     Public Shared Function randomClassFromOriginalClass(ByVal original As ClassList, ByVal allowLord As Boolean, ByVal allowThief As Boolean, ByVal allowUnique As Boolean, ByRef rng As Random) As ClassList
         Dim classListUnpromoted As ArrayList = New ArrayList
 
+        classListUnpromoted = unpromotedClassList(True)
         ' Not sure if Mercenary_F is allowed so we won't use it.
-        classListUnpromoted.Add(ClassList.Myrmidon_F)
-        classListUnpromoted.Add(ClassList.ArmorKnight_F)
-        classListUnpromoted.Add(ClassList.Archer_F)
-        classListUnpromoted.Add(ClassList.Sister)
-        classListUnpromoted.Add(ClassList.Mage_F)
-        classListUnpromoted.Add(ClassList.Shaman_F)
-        ' Paladins have screwy palettes, so we son't use it.
-        classListUnpromoted.Add(ClassList.Troubadour)
-        classListUnpromoted.Add(ClassList.Nomad_F)
-        classListUnpromoted.Add(ClassList.PegasusKnight)
-        classListUnpromoted.Add(ClassList.DragonKnight_F)
-        If allowThief Then
-            classListUnpromoted.Add(ClassList.Thief_F)
+        If Not allowThief Then
+            classListUnpromoted.Remove(ClassList.Thief_F)
         End If
-        If allowUnique Then
-            classListUnpromoted.Add(ClassList.Dancer)
-            classListUnpromoted.Add(ClassList.Manakete_F)
+        If Not allowUnique Then
+            classListUnpromoted.Remove(ClassList.Dancer)
+            classListUnpromoted.Remove(ClassList.Manakete_F)
         End If
 
         If classListUnpromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
@@ -486,18 +625,7 @@
             Return newClass
         Else
             ' Old class was probably promoted, so look for promoted classes.
-            Dim classListPromoted As ArrayList = New ArrayList
-
-            classListPromoted.Add(ClassList.Hero_F)
-            classListPromoted.Add(ClassList.Swordmaster_F)
-            classListPromoted.Add(ClassList.Sniper_F)
-            classListPromoted.Add(ClassList.Bishop_F)
-            classListPromoted.Add(ClassList.Sage_F)
-            classListPromoted.Add(ClassList.Druid_F)
-            classListPromoted.Add(ClassList.Valkyrie)
-            classListPromoted.Add(ClassList.NomadTrooper_F)
-            classListPromoted.Add(ClassList.FalconKnight)
-            classListPromoted.Add(ClassList.DragonMaster_F)
+            Dim classListPromoted As ArrayList = promotedClassList(True)
 
             If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
                 Dim newClass As ClassList
@@ -509,31 +637,18 @@
             End If
         End If
 
-        classListUnpromoted.Clear()
+        classListUnpromoted = unpromotedClassList(False)
 
-        If allowLord Then
-            classListUnpromoted.Add(ClassList.Lord)
+        If Not allowLord Then
+            classListUnpromoted.Remove(ClassList.Lord)
         End If
-        classListUnpromoted.Add(ClassList.Mercenary)
-        classListUnpromoted.Add(ClassList.Myrmidon)
-        classListUnpromoted.Add(ClassList.Fighter)
-        classListUnpromoted.Add(ClassList.ArmorKnight)
-        classListUnpromoted.Add(ClassList.Archer)
-        classListUnpromoted.Add(ClassList.Priest)
-        classListUnpromoted.Add(ClassList.Mage)
-        classListUnpromoted.Add(ClassList.Shaman)
-        classListUnpromoted.Add(ClassList.Cavalier)
-        classListUnpromoted.Add(ClassList.Nomad)
-        classListUnpromoted.Add(ClassList.Bandit)
-        classListUnpromoted.Add(ClassList.Pirate)
-        classListUnpromoted.Add(ClassList.DragonKnight)
-        If allowThief Then
-            classListUnpromoted.Add(ClassList.Thief)
+        If Not allowThief Then
+            classListUnpromoted.Remove(ClassList.Thief)
         End If
-        If allowUnique Then
-            classListUnpromoted.Add(ClassList.Soldier)
-            classListUnpromoted.Add(ClassList.Bard)
-            classListUnpromoted.Add(ClassList.Manakete)
+        If Not allowUnique Then
+            classListUnpromoted.Remove(ClassList.Soldier)
+            classListUnpromoted.Remove(ClassList.Bard)
+            classListUnpromoted.Remove(ClassList.Manakete)
         End If
 
         If classListUnpromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
@@ -545,22 +660,10 @@
             Return newClass
         Else
             ' Old class was probably promoted, so look for promoted classes.
-            Dim classListPromoted As ArrayList = New ArrayList
+            Dim classListPromoted As ArrayList = promotedClassList(False)
 
-            classListPromoted.Add(ClassList.Hero)
-            classListPromoted.Add(ClassList.Swordmaster)
-            classListPromoted.Add(ClassList.Sniper)
-            classListPromoted.Add(ClassList.Bishop)
-            classListPromoted.Add(ClassList.Sage)
-            classListPromoted.Add(ClassList.Druid)
-            classListPromoted.Add(ClassList.Warrior)
-            classListPromoted.Add(ClassList.NomadTrooper)
-            classListPromoted.Add(ClassList.Berserker)
-            classListPromoted.Add(ClassList.DragonMaster)
-            classListPromoted.Add(ClassList.Paladin)
-
-            If allowLord Then
-                classListPromoted.Add(ClassList.MasterLord)
+            If Not allowLord Then
+                classListPromoted.Remove(ClassList.MasterLord)
             End If
 
             If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
@@ -698,6 +801,10 @@
         list.Add(CharacterList.Windam)
         list.Add(CharacterList.Morgan)
 
+        list.Add(CharacterList.Zephiel)
+        list.Add(CharacterList.Idoun_Dragon)
+        list.Add(CharacterList.Yahn)
+
         Return list
     End Function
 
@@ -745,10 +852,6 @@
 
         Return list
     End Function
-
-    Public Shared Sub generateRandomizedRecruitment()
-
-    End Sub
 
     ' Reverse Recruitment Mapping.
     'Roy				Karel			Myrmidon

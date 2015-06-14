@@ -40,6 +40,14 @@
     Property lightLevel As Byte         'offset 50, 1 byte (offset 46 in FE6)
     Property darkLevel As Byte          'offset 51, 1 byte (offset 47 in FE6)
 
+    Property hpGrowthDelta As Byte
+    Property strGrowthDelta As Byte
+    Property sklGrowthDelta As Byte
+    Property spdGrowthDelta As Byte
+    Property lckGrowthDelta As Byte
+    Property defGrowthDelta As Byte
+    Property resGrowthDelta As Byte
+
     Enum WeaponRank
         WeaponRankNone = &H0
         WeaponRankE = &H1
@@ -190,6 +198,185 @@
     Public Function isThief() As Boolean
         Return ability1 And ClassAbility1.Steal
     End Function
+
+    Public Sub buffByAmount(ByVal amount As Integer)
+        If amount + hpGrowth < 256 Then
+            hpGrowth = hpGrowth + amount
+            hpGrowthDelta = amount
+        Else
+            hpGrowthDelta = 255 - hpGrowth
+            hpGrowth = 255
+        End If
+
+        If amount + strGrowth < 256 Then
+            strGrowth = strGrowth + amount
+            strGrowthDelta = amount
+        Else
+            strGrowthDelta = 255 - strGrowth
+            strGrowth = 255
+        End If
+
+        If amount + sklGrowth < 256 Then
+            sklGrowthDelta = amount
+            sklGrowth = sklGrowth + amount
+        Else
+            sklGrowthDelta = 255 - sklGrowth
+            sklGrowth = 255
+        End If
+
+        If amount + spdGrowth < 256 Then
+            spdGrowthDelta = amount
+            spdGrowth = spdGrowth + amount
+        Else
+            spdGrowthDelta = 255 - spdGrowth
+            spdGrowth = 255
+        End If
+
+        If amount + lckGrowth < 256 Then
+            lckGrowthDelta = amount
+            lckGrowth = lckGrowth + amount
+        Else
+            lckGrowthDelta = 255 - lckGrowth
+            lckGrowth = 255
+        End If
+
+        If amount + defGrowth < 256 Then
+            defGrowthDelta = amount
+            defGrowth = defGrowth + amount
+        Else
+            defGrowthDelta = 255 - amount
+            defGrowth = 255
+        End If
+
+        If amount + resGrowth < 256 Then
+            resGrowthDelta = amount
+            resGrowth = resGrowth + amount
+        Else
+            resGrowthDelta = 255 - resGrowth
+            resGrowth = 255
+        End If
+    End Sub
+
+    Public Sub buffAtLeastAmount(ByVal minimumAmount As Integer, ByRef rng As Random)
+        Dim amount As Byte = rng.Next(minimumAmount, 256)
+        If hpGrowth < 255 - minimumAmount Then
+            Do
+                amount = rng.Next(minimumAmount, 256)
+            Loop While 256 - amount <= hpGrowth
+            hpGrowth = hpGrowth + amount
+            hpGrowthDelta = amount
+        End If
+
+        If strGrowth < 255 - minimumAmount Then
+            Do
+                amount = rng.Next(minimumAmount, 256)
+            Loop While 256 - amount <= strGrowth
+            strGrowth = strGrowth + amount
+            strGrowthDelta = amount
+        End If
+
+        If sklGrowth < 255 - minimumAmount Then
+            Do
+                amount = rng.Next(minimumAmount, 256)
+            Loop While 256 - amount <= sklGrowth
+            sklGrowth = sklGrowth + amount
+            sklGrowthDelta = amount
+        End If
+
+        If spdGrowth < 255 - minimumAmount Then
+            Do
+                amount = rng.Next(minimumAmount, 256)
+            Loop While 256 - amount <= spdGrowth
+            spdGrowth = spdGrowth + amount
+            spdGrowthDelta = amount
+        End If
+
+        If lckGrowth < 255 - minimumAmount Then
+            Do
+                amount = rng.Next(minimumAmount, 256)
+            Loop While 256 - amount <= lckGrowth
+            lckGrowth = lckGrowth + amount
+            lckGrowthDelta = amount
+        End If
+
+        If defGrowth < 255 - minimumAmount Then
+            Do
+                amount = rng.Next(minimumAmount, 256)
+            Loop While 256 - amount <= defGrowth
+            defGrowth = defGrowth + amount
+            defGrowthDelta = amount
+        End If
+
+        If resGrowth < 255 - minimumAmount Then
+            Do
+                amount = rng.Next(minimumAmount, 256)
+            Loop While 256 - amount <= resGrowth
+            resGrowth = resGrowth + amount
+            resGrowthDelta = amount
+        End If
+
+    End Sub
+
+    Public Sub buffUpToAmount(ByVal maximumAmount As Integer, ByRef rng As Random)
+        Dim amount As Byte
+
+        If hpGrowth < 255 Then
+            Do
+                amount = rng.Next(maximumAmount)
+            Loop While 256 - amount <= hpGrowth
+            hpGrowth = hpGrowth + amount
+            hpGrowthDelta = amount
+        End If
+
+        If strGrowth < 255 Then
+            Do
+                amount = rng.Next(maximumAmount)
+            Loop While 256 - amount <= strGrowth
+            strGrowth = strGrowth + amount
+            strGrowthDelta = amount
+        End If
+
+        If sklGrowth < 255 Then
+            Do
+                amount = rng.Next(maximumAmount)
+            Loop While 256 - amount <= sklGrowth
+            sklGrowth = sklGrowth + amount
+            sklGrowthDelta = amount
+        End If
+
+        If spdGrowth < 255 Then
+            Do
+                amount = rng.Next(maximumAmount)
+            Loop While 256 - amount <= spdGrowth
+            spdGrowth = spdGrowth + amount
+            spdGrowthDelta = amount
+        End If
+
+        If lckGrowth < 255 Then
+            Do
+                amount = rng.Next(maximumAmount)
+            Loop While 256 - amount <= lckGrowth
+            lckGrowth = lckGrowth + amount
+            lckGrowthDelta = amount
+        End If
+
+        If defGrowth < 255 Then
+            Do
+                amount = rng.Next(maximumAmount)
+            Loop While 256 - amount <= defGrowth
+            defGrowth = defGrowth + amount
+            defGrowthDelta = amount
+        End If
+
+        If resGrowth < 255 Then
+            Do
+                amount = rng.Next(maximumAmount)
+            Loop While 256 - amount <= resGrowth
+            resGrowth = resGrowth + amount
+            resGrowthDelta = amount
+        End If
+
+    End Sub
 
 End Class
 

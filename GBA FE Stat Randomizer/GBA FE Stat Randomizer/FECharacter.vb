@@ -352,10 +352,10 @@
         End While
     End Sub
 
-    Public Sub randomizeCON(ByVal minimumCON As Integer, ByRef charClass As FEClass, ByRef rng As Random)
-        If IsNothing(charClass) Then Return
+    Public Sub randomizeCON(ByVal minimumCON As Integer, ByRef variance As Integer, ByRef charClass As FEClass, ByRef rng As Random)
+        If IsNothing(charClass) Or variance <= 0 Then Return
 
-        Dim adjustment = rng.Next(0, 10) - 5
+        Dim adjustment = rng.Next(0, variance * 2) - variance
         baseCon += adjustment
         If baseCon + charClass.baseCon < minimumCON Then
             baseCon = minimumCON - charClass.baseCon
@@ -786,6 +786,97 @@
             staffLevel = sRank
         End If
 
+    End Sub
+
+    Public Sub buffHPWithAdditionalLevelsAtRate(ByVal numberOfLevels As Integer, ByVal growth As Integer, ByVal maxValue As Integer, ByRef rng As Random)
+        If numberOfLevels > 0 And growth > 0 And Not IsNothing(rng) Then
+            For i As Integer = 1 To numberOfLevels
+                Dim shouldIncrease As Boolean = rng.Next(100) < growth
+                If shouldIncrease Then
+                    If maxValue > 0 And baseHP < maxValue Then
+                        baseHP = baseHP + 1
+                    End If
+                End If
+            Next
+        End If
+    End Sub
+
+    Public Sub buffStrWithAdditionalLevelsAtRate(ByVal numberOfLevels As Integer, ByVal growth As Integer, ByVal maxValue As Integer, ByRef rng As Random)
+        If numberOfLevels > 0 And growth > 0 And Not IsNothing(rng) Then
+            For i As Integer = 1 To numberOfLevels
+                Dim shouldIncrease As Boolean = rng.Next(100) < growth
+                If shouldIncrease Then
+                    If maxValue > 0 And baseStr < maxValue Then
+                        baseStr = baseStr + 1
+                    End If
+                End If
+            Next
+        End If
+    End Sub
+
+    Public Sub buffSklWithAdditionalLevelsAtRate(ByVal numberOfLevels As Integer, ByVal growth As Integer, ByVal maxValue As Integer, ByRef rng As Random)
+        If numberOfLevels > 0 And growth > 0 And Not IsNothing(rng) Then
+            For i As Integer = 1 To numberOfLevels
+                Dim shouldIncrease As Boolean = rng.Next(100) < growth
+                If shouldIncrease Then
+                    If maxValue > 0 And baseSkl < maxValue Then
+                        baseSkl = baseSkl + 1
+                    End If
+                End If
+            Next
+        End If
+    End Sub
+
+    Public Sub buffSpdWithAdditionalLevelsAtRate(ByVal numberOfLevels As Integer, ByVal growth As Integer, ByVal maxValue As Integer, ByRef rng As Random)
+        If numberOfLevels > 0 And growth > 0 And Not IsNothing(rng) Then
+            For i As Integer = 1 To numberOfLevels
+                Dim shouldIncrease As Boolean = rng.Next(100) < growth
+                If shouldIncrease Then
+                    If maxValue > 0 And baseSpd < maxValue Then
+                        baseSpd = baseSpd + 1
+                    End If
+                End If
+            Next
+        End If
+    End Sub
+
+    Public Sub buffLckWithAdditionalLevelsAtRate(ByVal numberOfLevels As Integer, ByVal growth As Integer, ByVal maxValue As Integer, ByRef rng As Random)
+        If numberOfLevels > 0 And growth > 0 And Not IsNothing(rng) Then
+            For i As Integer = 1 To numberOfLevels
+                Dim shouldIncrease As Boolean = rng.Next(100) < growth
+                If shouldIncrease Then
+                    If maxValue > 0 And baseLck < maxValue Then
+                        baseLck = baseLck + 1
+                    End If
+                End If
+            Next
+        End If
+    End Sub
+
+    Public Sub buffDefWithAdditionalLevelsAtRate(ByVal numberOfLevels As Integer, ByVal growth As Integer, ByVal maxValue As Integer, ByRef rng As Random)
+        If numberOfLevels > 0 And growth > 0 And Not IsNothing(rng) Then
+            For i As Integer = 1 To numberOfLevels
+                Dim shouldIncrease As Boolean = rng.Next(100) < growth
+                If shouldIncrease Then
+                    If maxValue > 0 And baseDef < maxValue Then
+                        baseDef = baseDef + 1
+                    End If
+                End If
+            Next
+        End If
+    End Sub
+
+    Public Sub buffResWithAdditionalLevelsAtRate(ByVal numberOfLevels As Integer, ByVal growth As Integer, ByVal maxValue As Integer, ByRef rng As Random)
+        If numberOfLevels > 0 And growth > 0 And Not IsNothing(rng) Then
+            For i As Integer = 1 To numberOfLevels
+                Dim shouldIncrease As Boolean = rng.Next(100) < growth
+                If shouldIncrease Then
+                    If maxValue > 0 And baseRes < maxValue Then
+                        baseRes = baseRes + 1
+                    End If
+                End If
+            Next
+        End If
     End Sub
 
     Public Sub levelWithClass(ByRef targetClass As FEClass, ByVal levelsToShift As Integer, ByVal delevel As Boolean, ByRef rng As Random)

@@ -26,15 +26,13 @@
     Private shouldRandomizeBases As Boolean
     Private baseVariance As Integer
     Private shouldRandomizeCON As Boolean
+    Private CONVariance As Integer
     Private minimumCON As Integer
     Private shouldRandomizeMOV As Boolean
     Private minimumMOV As Integer
     Private maximumMOV As Integer
 
     Private shouldRandomizeAffinity As Boolean
-
-    Private shouldRandomizeAffinityBonuses As Boolean
-    Private affinityBonusMaxMultiplier As Integer
 
     Private shouldRandomizeClasses As Boolean
     Private randomLords As Boolean
@@ -356,21 +354,41 @@
         Dim rng As Random = New Random
 
         If recruitment <> RecruitmentType.RecruitmentTypeNormal Then
+            Dim usedCharacters As ArrayList = New ArrayList()
+
             ' Since events reference characters by ID, the easiest way to do this
             ' is to modify what character is mapped to which ID.
-            Dim playableCharactersList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, New ArrayList(FE6GameData.playableCharacterIDs), New ArrayList())
+            Dim playableCharactersList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.playableCharacterIDs, New ArrayList())
+            Dim exemptCharacterList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.exemptCharacterIDs, New ArrayList())
             ' We can't copy it, so we're going to just rebuild the list.
             Dim newCharacterList As ArrayList = New ArrayList()
             For i As Integer = 0 To characterList.Count - 1
                 ' Grab the original character in this spot.
                 Dim character As FECharacter = characterList.Item(i)
-                Dim characterClass As FEClass = classLookup.Item(character.classId)
-                Dim replacingLordCharacter As Boolean = characterClass.ability2 And FEClass.ClassAbility2.Lord
                 Dim characterIDObject = IIf(type = Utilities.GameType.GameTypeFE6, System.Enum.ToObject(GetType(FE6GameData.CharacterList), character.characterId), Nothing)
                 ' Make sure he's somebody we want to move.
-                If playableCharactersList.Contains(characterIDObject) Then
+                If playableCharactersList.Contains(characterIDObject) And Not exemptCharacterList.Contains(characterIDObject) Then
+                    Dim characterClass As FEClass = classLookup.Item(character.classId)
+                    Dim replacingLordCharacter As Boolean = characterClass.ability2 And FEClass.ClassAbility2.Lord
                     ' Determine his replacement.
-                    Dim replacement As Byte = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.reversedRecruitmentMappingForCharacter(characterIDObject)), Nothing)
+                    Dim replacement As Byte
+                    If recruitment = RecruitmentType.RecruitmentTypeReverse Then
+                        replacement = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.reversedRecruitmentMappingForCharacter(characterIDObject)), Nothing)
+                    Else
+                        Dim shouldNotDemoteList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.shouldNotDemoteCharacterIDs(), New ArrayList())
+                        Dim canNotPromoteList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.canNotPromoteCharacterIDs(), New ArrayList())
+                        Dim targetClassIsPromoted As Boolean = characterClass.ability2 And FEClass.ClassAbility2.Promoted
+                        Dim characterListType As Type = IIf(type = Utilities.GameType.GameTypeFE6, GetType(FE6GameData.CharacterList), Nothing)
+                        Do
+                            replacement = playableCharactersList.Item(rng.Next(playableCharactersList.Count))
+                        Loop While usedCharacters.Contains(replacement) Or
+                            ((Not targetClassIsPromoted) And shouldNotDemoteList.Contains(System.Enum.ToObject(characterListType, replacement))) Or
+                            (replacingLordCharacter And canNotPromoteList.Contains(System.Enum.ToObject(characterListType, replacement))) Or
+                            (targetClassIsPromoted And canNotPromoteList.Contains(System.Enum.ToObject(characterListType, replacement))) Or
+                            exemptCharacterList.Contains(System.Enum.ToObject(characterListType, replacement))
+                        usedCharacters.Add(replacement)
+                    End If
+
                     If Not IsNothing(replacement) Then
                         ' Find the character and drop him in.
                         Dim replacementCharacter As FECharacter = characterLookup.Item(replacement)
@@ -386,12 +404,32 @@
                                 supportManager.updateCharacterIDs(replacementCharacter.characterId, character.characterId)
                             End If
                             replacementCharacter.characterId = character.characterId
+                            If replacingLordCharacter Then
+                                replacementCharacter.ability2 = replacementCharacter.ability2 Or FECharacter.ClassAbility2.Lord
+                            End If
                             ' Go ahead and change his class if it needs changing and delevel (or level him) as necessary
                             Dim originalLevel As Integer = replacementCharacter.level
                             Dim targetLevel As Integer = character.level
-                            Dim newClassID As Byte = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.reversedRecruitmentClassMappingForCharacter(replacement)), Nothing)
+                            Dim originalClass As FEClass = classLookup.Item(replacementCharacter.classId)
+                            Dim newClassID As Byte
+                            If recruitment = RecruitmentType.RecruitmentTypeReverse Then
+                                newClassID = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.reversedRecruitmentClassMappingForCharacter(replacement)), Nothing)
+                            Else
+                                ' Assume no change first.
+                                newClassID = replacementCharacter.classId
+                                Dim shouldBePromoted As Boolean = characterClass.ability2 And FEClass.ClassAbility2.Promoted
+                                Dim isPromoted As Boolean = originalClass.ability2 And FEClass.ClassAbility2.Promoted
+                                If shouldBePromoted And Not isPromoted Then
+                                    newClassID = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.promotedClassForUnpromotedClass(System.Enum.ToObject(GetType(FE6GameData.ClassList), replacementCharacter.classId))), Nothing)
+                                ElseIf Not shouldBePromoted And isPromoted Then
+                                    newClassID = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.unpromotedClassForPromotedClass(System.Enum.ToObject(GetType(FE6GameData.ClassList), replacementCharacter.classId))), Nothing)
+                                End If
+
+                                If newClassID = FE6GameData.ClassList.None Then newClassID = replacementCharacter.classId
+
+                            End If
+
                             If Not IsNothing(newClassID) Then
-                                Dim originalClass As FEClass = classLookup.Item(replacementCharacter.classId)
                                 Dim replacementClass As FEClass = classLookup.Item(newClassID)
                                 If Not IsNothing(replacementClass) Then
                                     ' Assume promotion at level 10 for calculating levels.
@@ -430,6 +468,41 @@
             Next
         End If
 
+        If buffEnemies Then
+            If buffType = EnemyBuffType.BuffTypeSetConstant Then
+                For Each characterClass As FEClass In classList
+                    characterClass.buffByAmount(buffAmount)
+                Next
+            ElseIf buffType = EnemyBuffType.BuffTypeSetMaximum Then
+                For Each characterClass As FEClass In classList
+                    characterClass.buffUpToAmount(buffAmount, rng)
+                Next
+            ElseIf buffType = EnemyBuffType.BuffTypeSetMinimum Then
+                For Each characterClass As FEClass In classList
+                    characterClass.buffAtLeastAmount(buffAmount, rng)
+                Next
+            End If
+
+            If buffBosses Then
+                If type = Utilities.GameType.GameTypeFE6 Then
+                    Dim bossList As ArrayList = New ArrayList(FE6GameData.bossCharacterIDs)
+                    For Each character As FECharacter In characterList
+                        Dim characterIDObject As FE6GameData.CharacterList = System.Enum.ToObject(GetType(FE6GameData.CharacterList), character.characterId)
+                        If bossList.Contains(characterIDObject) Then
+                            Dim characterClass As FEClass = classList.Item(character.classId)
+                            character.buffHPWithAdditionalLevelsAtRate(character.level, characterClass.hpGrowthDelta, characterClass.hpCap, rng)
+                            character.buffStrWithAdditionalLevelsAtRate(character.level, characterClass.strGrowthDelta, characterClass.strCap, rng)
+                            character.buffSklWithAdditionalLevelsAtRate(character.level, characterClass.sklGrowthDelta, characterClass.sklCap, rng)
+                            character.buffSpdWithAdditionalLevelsAtRate(character.level, characterClass.spdGrowthDelta, characterClass.spdCap, rng)
+                            character.buffLckWithAdditionalLevelsAtRate(character.level, characterClass.lckGrowthDelta, 30, rng)
+                            character.buffDefWithAdditionalLevelsAtRate(character.level, characterClass.defGrowthDelta, characterClass.defCap, rng)
+                            character.buffResWithAdditionalLevelsAtRate(character.level, characterClass.resGrowthDelta, characterClass.resCap, rng)
+                        End If
+                    Next
+                End If
+            End If
+        End If
+
         For Each character As FECharacter In characterList
             If shouldRandomizeBases Then
                 character.randomizeBases(baseVariance, rng)
@@ -440,7 +513,7 @@
             End If
 
             If shouldRandomizeCON Then
-                character.randomizeCON(minimumCON, classLookup.Item(character.classId), rng)
+                character.randomizeCON(minimumCON, CONVariance, classLookup.Item(character.classId), rng)
             End If
 
             If shouldRandomizeAffinity Then
@@ -489,6 +562,12 @@
                     If unit.characterId = 0 Then
                         Continue For
                     End If
+                    ' Make sure their classID is valid, otherwise don't touch it.
+                    If type = Utilities.GameType.GameTypeFE6 Then
+                        If Not FE6GameData.isValidClass(unit.classId) Then
+                            Continue For
+                        End If
+                    End If
 
                     ' If it's a real character (i.e. not a random mook) then see if we already had something for
                     ' him or her.
@@ -497,7 +576,20 @@
                         ' If we do, go ahead and use what we've stored if we have it.
                         If targetClasses.ContainsKey(characterIDObject) Then
                             Dim targetClassId = targetClasses.Item(characterIDObject)
-                            unit.classId = targetClassId
+
+                            ' Be wary of some other classes. FE6 likes to use characters
+                            ' for NPCs temporarily, so don't mess with those.
+                            If type = Utilities.GameType.GameTypeFE6 Then
+                                If Not FE6GameData.isValidClass(unit.classId) Then
+                                    Console.WriteLine("Skipping invalid classID: " + unit.classId)
+                                    Continue For
+                                Else
+                                    unit.classId = targetClassId
+                                End If
+                            Else
+                                unit.classId = targetClassId
+                            End If
+
                             Dim targetInventoryList As ArrayList = targetInventory.Item(characterIDObject)
                             unit.item1Id = targetInventoryList.Item(0)
                             unit.item2Id = targetInventoryList.Item(1)
@@ -578,7 +670,19 @@
                             targetClasses.Add(characterIDObject, newClass.classId)
 
                             ' Remember to update their class in the chapter data.
-                            unit.classId = newClass.classId
+                            ' Be wary of some other classes. FE6 likes to use characters
+                            ' for NPCs temporarily, so don't mess with those.
+                            ' Be wary of some other classes. FE6 likes to use characters
+                            ' for NPCs temporarily, so don't mess with those.
+                            If type = Utilities.GameType.GameTypeFE6 Then
+                                If Not FE6GameData.isValidClass(unit.classId) Then
+                                    Console.WriteLine("Skipping invalid classID: " + unit.classId)
+                                Else
+                                    unit.classId = newClass.classId
+                                End If
+                            Else
+                                unit.classId = newClass.classId
+                            End If
 
                             ' Validate their inventory too.
                             ' Check each item and make sure weapons they start with are usable.
@@ -935,15 +1039,13 @@
         RandomizeBasesToggle.Enabled = False
         BaseVarianceControl.Enabled = False
         RandomizeCONToggle.Enabled = False
+        CONVarianceControl.Enabled = False
         MinimumCONControl.Enabled = False
         RandomizeMOVToggle.Enabled = False
         MinimumMOVControl.Enabled = False
         MaximumMOVControl.Enabled = False
 
         RandomizeAffinityToggle.Enabled = False
-
-        RandomizeAffinityBonusToggle.Enabled = False
-        AffinityBonusAmountControl.Enabled = False
 
         RandomizeClassesToggle.Enabled = False
         IncludeLordsToggle.Enabled = False
@@ -991,6 +1093,7 @@
         BaseVarianceControl.Enabled = RandomizeBasesToggle.Checked
 
         RandomizeCONToggle.Enabled = True
+        CONVarianceControl.Enabled = RandomizeCONToggle.Checked
         MinimumCONControl.Enabled = RandomizeCONToggle.Checked
 
         RandomizeMOVToggle.Enabled = True
@@ -998,12 +1101,6 @@
         MaximumMOVControl.Enabled = RandomizeMOVToggle.Checked
 
         RandomizeAffinityToggle.Enabled = True
-
-        ' Not supported yet.
-        If False Then
-            RandomizeAffinityBonusToggle.Enabled = True
-            AffinityBonusAmountControl.Enabled = RandomizeAffinityBonusToggle.Checked
-        End If
 
         If type = Utilities.GameType.GameTypeFE6 Then
             RandomizeClassesToggle.Enabled = True
@@ -1027,20 +1124,17 @@
         DurabilityVarianceControl.Enabled = RandomizeItemsToggle.Checked
         AllowRandomTraitsToggle.Enabled = RandomizeItemsToggle.Checked
 
-        ' Not supported yet.
-        If False Then
-            IncreaseEnemyGrowthsToggle.Enabled = True
-            EnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
-            SetMinimumEnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
-            SetMaximumEnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
-            SetConstantEnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
-            BuffBossesToggle.Enabled = IncreaseEnemyGrowthsToggle.Checked
-        End If
+        IncreaseEnemyGrowthsToggle.Enabled = True
+        EnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
+        SetMinimumEnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
+        SetMaximumEnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
+        SetConstantEnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
+        BuffBossesToggle.Enabled = IncreaseEnemyGrowthsToggle.Checked
 
         If type = Utilities.GameType.GameTypeFE6 Then
             NormalRecruitmentOption.Enabled = True
             ReverseRecruitmentOption.Enabled = True
-            RandomRecruitmentOption.Enabled = False 'Not supported yet
+            RandomRecruitmentOption.Enabled = True
         End If
 
         RandomizeButton.Enabled = type <> Utilities.GameType.GameTypeUnknown
@@ -1084,6 +1178,11 @@
     Private Sub RandomizeCONToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeCONToggle.CheckedChanged
         shouldRandomizeCON = RandomizeCONToggle.Checked
         MinimumCONControl.Enabled = shouldRandomizeCON
+        CONVarianceControl.Enabled = shouldRandomizeCON
+    End Sub
+
+    Private Sub CONVarianceControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CONVarianceControl.ValueChanged
+        CONVariance = CONVarianceControl.Value
     End Sub
 
     Private Sub RandomizeMOVToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeMOVToggle.CheckedChanged
@@ -1114,16 +1213,6 @@
 
     Private Sub RandomizeAffinityToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeAffinityToggle.CheckedChanged
         shouldRandomizeAffinity = RandomizeAffinityToggle.Checked
-    End Sub
-
-    Private Sub RandomizeAffinityBonusToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeAffinityBonusToggle.CheckedChanged
-        shouldRandomizeAffinityBonuses = RandomizeAffinityBonusToggle.Checked
-
-        AffinityBonusAmountControl.Enabled = shouldRandomizeAffinityBonuses
-    End Sub
-
-    Private Sub AffinityBonusAmountControl_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AffinityBonusAmountControl.SelectedIndexChanged
-        affinityBonusMaxMultiplier = AffinityBonusAmountControl.SelectedIndex + 1
     End Sub
 
     Private Sub RandomizeItemsToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeItemsToggle.CheckedChanged
@@ -1330,9 +1419,6 @@
         ' The default min MOV is 1 and the default max MOV is 9
         minimumMOV = 1
         maximumMOV = 9
-        ' The default multiplier if it is enabled is 1.
-        affinityBonusMaxMultiplier = 1
-        AffinityBonusAmountControl.SelectedIndex = 0
         ' The default weapon max weapon weight is 20 and the default min weapon weight is 1
         minimumWeight = 1
         maximumWeight = 20
@@ -1369,9 +1455,11 @@
                                        & "and the amount entered is either added or subtracted from the" + vbCrLf _
                                        & "character's total growth. Maximum variance is 10.")
 
-        CONTooltip.SetToolTip(RandomizeCONToggle, "Generates a random number between -5 and +5 and applies" + vbCrLf _
-                              & "it to a character's original CON adjustment. This applies to" + vbCrLf _
+        CONTooltip.SetToolTip(RandomizeCONToggle, "Generates a random number with a magnitude specified by the Variance" + vbCrLf _
+                              & "and applies it to a character's original CON adjustment. This applies to" + vbCrLf _
                               & "both playable characters and bosses.")
+        CONVarianceTooltip.SetToolTip(CONVarianceControl, "Determines the maximum magnitude of any CON change. Values will" + vbCrLf _
+                                      & "range from the -x and +x where x is the number shown here.")
         MinimumCONTooltip.SetToolTip(MinimumCONControl, "Enforces a minimum value for the CON stat for all characters." + vbCrLf _
                                      & "The CON value specified should be the final CON after applying adjustments." + vbCrLf _
                                      & "Any unit with a CON less than this value will have it brought up to this value.")
@@ -1387,15 +1475,6 @@
         RandomAffinityTooltip.SetToolTip(RandomizeAffinityToggle, "Sets a random affinity for every character (playable" + vbCrLf _
                                          & "and bosses). Most enemies don't get support bonuses, so it really only" + vbCrLf _
                                          & "affects playable characters.")
-        RandomAffinityBonusTooltip.SetToolTip(RandomizeAffinityBonusToggle, "Randomizes the bonuses given for support pairs. The bonuses available" + vbCrLf _
-                                              & "Attack, Defense, Accuracy, Avoid, Critical, And Critical Evade." + vbCrLf _
-                                              & "4 of the above are selected for each affinity and assigned a bonus value.")
-        AffinityBonusAmountTooltip.SetToolTip(AffinityBonusAmountControl, "Determines the variance for bonus amounts. Values for" + vbCrLf _
-                                              & "ATK/DEF vary from 1 to the number shown. Values for HIT/AVD/CRT/EVD vary from" + vbCrLf _
-                                              & "5 to the number shown, in increments of 5 (i.e. 5, 10, 15, 20, etc.)." + vbCrLf _
-                                              & "All values shown are bonuses given to a pair with the same affinity (e.g. Fire x Fire)" + vbCrLf _
-                                              & "so the actual bonuses for any single affinity is halved and then added to" + vbCrLf _
-                                              & "the other affinity (also halved) if pairing different affinities.")
 
         RandomItemsTooltip.SetToolTip(RandomizeItemsToggle, "Iterates through all weapons and applies a random adjustment to their" + vbCrLf _
                                       & "relevant stats. Only weapons are affected by this. Items are ignored.")
@@ -1455,13 +1534,14 @@
 
         EnemyBuffTooltip.SetToolTip(IncreaseEnemyGrowthsToggle, "Increases the growths of all classes by a constant or random amount." + vbCrLf _
                                     & "Playable characters override this growth so this does not affect them.")
-        BuffAmountTooltip.SetToolTip(EnemyBuffControl, "Sets the amount to buff all class growths by. The options below" + vbCrLf _
+        BuffAmountTooltip.SetToolTip(EnemyBuffControl, "Sets the amount to buff all class growths by. The buff amount is in percentages" + vbCrLf _
+                                     & "and the result is added to the every class's growth rates. The options below" + vbCrLf _
                                      & "dictate how to use this value." + vbCrLf _
                                      & """Up To Amount"" generates a random value beween 0 and the value specified to be added to growths." + vbCrLf _
                                      & """Exactly Amount"" adds the listed value to all stat areas for all classes." + vbCrLf _
                                      & """At Least Amount"" adds a random value between the listed amount and 255 to the growths (capping at 255 growth).")
         BossBuffTooltip.SetToolTip(BuffBossesToggle, "By default, bosses also override growths and will not autolevel to match their" + vbCrLf _
-                                   & "subordinates. Enabling this adjusts this by applying a small amount to bases to correct for that.")
+                                   & "subordinates. Enabling this adjusts this by applying a small (random) amount to bases to correct for that.")
 
         RecruitmentTooltip.SetToolTip(RecruitmentBox, "Modifies the recruitment order for the game." + vbCrLf _
                                       & """Normal"" is the default order." + vbCrLf _
@@ -1469,4 +1549,5 @@
                                       & """Randomized"" takes all of the characters and drops them into random recruitment slots." + vbCrLf _
                                       & "Note that dialogue referring to characters does not change.")
     End Sub
+
 End Class

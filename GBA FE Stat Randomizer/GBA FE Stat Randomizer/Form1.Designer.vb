@@ -69,7 +69,6 @@ Partial Class Form1
         Me.MinimumMOVControl = New System.Windows.Forms.NumericUpDown()
         Me.Label15 = New System.Windows.Forms.Label()
         Me.MaximumMOVControl = New System.Windows.Forms.NumericUpDown()
-        Me.RandomizeAffinityBonusToggle = New System.Windows.Forms.CheckBox()
         Me.RecruitmentBox = New System.Windows.Forms.GroupBox()
         Me.RandomRecruitmentOption = New System.Windows.Forms.RadioButton()
         Me.ReverseRecruitmentOption = New System.Windows.Forms.RadioButton()
@@ -99,8 +98,6 @@ Partial Class Form1
         Me.MinimumMOVTooltip = New System.Windows.Forms.ToolTip(Me.components)
         Me.MaximumMOVTooltip = New System.Windows.Forms.ToolTip(Me.components)
         Me.RandomAffinityTooltip = New System.Windows.Forms.ToolTip(Me.components)
-        Me.RandomAffinityBonusTooltip = New System.Windows.Forms.ToolTip(Me.components)
-        Me.AffinityBonusAmountControl = New System.Windows.Forms.ComboBox()
         Me.AffinityBonusAmountTooltip = New System.Windows.Forms.ToolTip(Me.components)
         Me.RandomItemsTooltip = New System.Windows.Forms.ToolTip(Me.components)
         Me.MightVarianceTooltip = New System.Windows.Forms.ToolTip(Me.components)
@@ -124,6 +121,9 @@ Partial Class Form1
         Me.BuffAmountTooltip = New System.Windows.Forms.ToolTip(Me.components)
         Me.BossBuffTooltip = New System.Windows.Forms.ToolTip(Me.components)
         Me.RecruitmentTooltip = New System.Windows.Forms.ToolTip(Me.components)
+        Me.Label18 = New System.Windows.Forms.Label()
+        Me.CONVarianceControl = New System.Windows.Forms.NumericUpDown()
+        Me.CONVarianceTooltip = New System.Windows.Forms.ToolTip(Me.components)
         CType(Me.GrowthVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.BaseVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.MightVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -142,6 +142,7 @@ Partial Class Form1
         CType(Me.DurabilityVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.EnemyBuffControl, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.MinimumDurabilityControl, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.CONVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'FilenameTextBox
@@ -219,7 +220,7 @@ Partial Class Form1
         'RandomizeAffinityToggle
         '
         Me.RandomizeAffinityToggle.AutoSize = True
-        Me.RandomizeAffinityToggle.Location = New System.Drawing.Point(14, 363)
+        Me.RandomizeAffinityToggle.Location = New System.Drawing.Point(14, 389)
         Me.RandomizeAffinityToggle.Name = "RandomizeAffinityToggle"
         Me.RandomizeAffinityToggle.Size = New System.Drawing.Size(113, 17)
         Me.RandomizeAffinityToggle.TabIndex = 8
@@ -494,7 +495,7 @@ Partial Class Form1
         'Label13
         '
         Me.Label13.AutoSize = True
-        Me.Label13.Location = New System.Drawing.Point(34, 257)
+        Me.Label13.Location = New System.Drawing.Point(41, 277)
         Me.Label13.Name = "Label13"
         Me.Label13.Size = New System.Drawing.Size(74, 13)
         Me.Label13.TabIndex = 38
@@ -502,7 +503,7 @@ Partial Class Form1
         '
         'MinimumCONControl
         '
-        Me.MinimumCONControl.Location = New System.Drawing.Point(112, 255)
+        Me.MinimumCONControl.Location = New System.Drawing.Point(116, 275)
         Me.MinimumCONControl.Maximum = New Decimal(New Integer() {5, 0, 0, 0})
         Me.MinimumCONControl.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.MinimumCONControl.Name = "MinimumCONControl"
@@ -513,7 +514,7 @@ Partial Class Form1
         'RandomizeMOVToggle
         '
         Me.RandomizeMOVToggle.AutoSize = True
-        Me.RandomizeMOVToggle.Location = New System.Drawing.Point(16, 283)
+        Me.RandomizeMOVToggle.Location = New System.Drawing.Point(16, 309)
         Me.RandomizeMOVToggle.Name = "RandomizeMOVToggle"
         Me.RandomizeMOVToggle.Size = New System.Drawing.Size(106, 17)
         Me.RandomizeMOVToggle.TabIndex = 40
@@ -523,7 +524,7 @@ Partial Class Form1
         'Label14
         '
         Me.Label14.AutoSize = True
-        Me.Label14.Location = New System.Drawing.Point(35, 310)
+        Me.Label14.Location = New System.Drawing.Point(41, 329)
         Me.Label14.Name = "Label14"
         Me.Label14.Size = New System.Drawing.Size(75, 13)
         Me.Label14.TabIndex = 41
@@ -531,7 +532,7 @@ Partial Class Form1
         '
         'MinimumMOVControl
         '
-        Me.MinimumMOVControl.Location = New System.Drawing.Point(119, 308)
+        Me.MinimumMOVControl.Location = New System.Drawing.Point(125, 327)
         Me.MinimumMOVControl.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
         Me.MinimumMOVControl.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.MinimumMOVControl.Name = "MinimumMOVControl"
@@ -542,7 +543,7 @@ Partial Class Form1
         'Label15
         '
         Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(35, 335)
+        Me.Label15.Location = New System.Drawing.Point(41, 354)
         Me.Label15.Name = "Label15"
         Me.Label15.Size = New System.Drawing.Size(78, 13)
         Me.Label15.TabIndex = 43
@@ -550,23 +551,13 @@ Partial Class Form1
         '
         'MaximumMOVControl
         '
-        Me.MaximumMOVControl.Location = New System.Drawing.Point(119, 333)
+        Me.MaximumMOVControl.Location = New System.Drawing.Point(125, 352)
         Me.MaximumMOVControl.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
         Me.MaximumMOVControl.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.MaximumMOVControl.Name = "MaximumMOVControl"
         Me.MaximumMOVControl.Size = New System.Drawing.Size(56, 20)
         Me.MaximumMOVControl.TabIndex = 44
         Me.MaximumMOVControl.Value = New Decimal(New Integer() {9, 0, 0, 0})
-        '
-        'RandomizeAffinityBonusToggle
-        '
-        Me.RandomizeAffinityBonusToggle.AutoSize = True
-        Me.RandomizeAffinityBonusToggle.Location = New System.Drawing.Point(14, 386)
-        Me.RandomizeAffinityBonusToggle.Name = "RandomizeAffinityBonusToggle"
-        Me.RandomizeAffinityBonusToggle.Size = New System.Drawing.Size(157, 17)
-        Me.RandomizeAffinityBonusToggle.TabIndex = 45
-        Me.RandomizeAffinityBonusToggle.Text = "Randomize Affinity Bonuses"
-        Me.RandomizeAffinityBonusToggle.UseVisualStyleBackColor = True
         '
         'RecruitmentBox
         '
@@ -809,23 +800,6 @@ Partial Class Form1
         Me.RandomAffinityTooltip.InitialDelay = 500
         Me.RandomAffinityTooltip.ReshowDelay = 100
         '
-        'RandomAffinityBonusTooltip
-        '
-        Me.RandomAffinityBonusTooltip.AutoPopDelay = 30000
-        Me.RandomAffinityBonusTooltip.InitialDelay = 500
-        Me.RandomAffinityBonusTooltip.ReshowDelay = 100
-        '
-        'AffinityBonusAmountControl
-        '
-        Me.AffinityBonusAmountControl.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.AffinityBonusAmountControl.DropDownWidth = 300
-        Me.AffinityBonusAmountControl.FormattingEnabled = True
-        Me.AffinityBonusAmountControl.Items.AddRange(New Object() {"1 ATK/DEF, 5 HIT/AVD/CRT/EVD (Default - No Variance)", "2 ATK/DEF, 10 HIT/AVD/CRT/EVD", "3 ATK/DEF, 15 HIT/AVD/CRT/EVD", "4 ATK/DEF, 20 HIT/AVD/CRT/EVD", "5 ATK/DEF, 25 HIT/AVD/CRT/EVD (Medium Variance)", "6 ATK/DEF, 30 HIT/AVD/CRT/EVD", "7 ATK/DEF, 35 HIT/AVD/CRT/EVD", "8 ATK/DEF, 40 HIT/AVD/CRT/EVD", "9 ATK/DEF, 45 HIT/AVD/CRT/EVD", "10 ATK/DEF, 50 HIT/AVD/CRT/EVD (High Variance)"})
-        Me.AffinityBonusAmountControl.Location = New System.Drawing.Point(44, 410)
-        Me.AffinityBonusAmountControl.Name = "AffinityBonusAmountControl"
-        Me.AffinityBonusAmountControl.Size = New System.Drawing.Size(159, 21)
-        Me.AffinityBonusAmountControl.TabIndex = 62
-        '
         'AffinityBonusAmountTooltip
         '
         Me.AffinityBonusAmountTooltip.AutoPopDelay = 30000
@@ -916,12 +890,30 @@ Partial Class Form1
         Me.RandomizeBossesTooltip.InitialDelay = 500
         Me.RandomizeBossesTooltip.ReshowDelay = 100
         '
+        'Label18
+        '
+        Me.Label18.AutoSize = True
+        Me.Label18.Location = New System.Drawing.Point(41, 252)
+        Me.Label18.Name = "Label18"
+        Me.Label18.Size = New System.Drawing.Size(75, 13)
+        Me.Label18.TabIndex = 62
+        Me.Label18.Text = "CON Variance"
+        '
+        'CONVarianceControl
+        '
+        Me.CONVarianceControl.Location = New System.Drawing.Point(116, 250)
+        Me.CONVarianceControl.Maximum = New Decimal(New Integer() {10, 0, 0, 0})
+        Me.CONVarianceControl.Name = "CONVarianceControl"
+        Me.CONVarianceControl.Size = New System.Drawing.Size(57, 20)
+        Me.CONVarianceControl.TabIndex = 63
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(586, 480)
-        Me.Controls.Add(Me.AffinityBonusAmountControl)
+        Me.Controls.Add(Me.CONVarianceControl)
+        Me.Controls.Add(Me.Label18)
         Me.Controls.Add(Me.MinimumDurabilityControl)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.SetMinimumEnemyBuffControl)
@@ -936,7 +928,6 @@ Partial Class Form1
         Me.Controls.Add(Me.Label16)
         Me.Controls.Add(Me.AllowUniqueClassesToggle)
         Me.Controls.Add(Me.RecruitmentBox)
-        Me.Controls.Add(Me.RandomizeAffinityBonusToggle)
         Me.Controls.Add(Me.MaximumMOVControl)
         Me.Controls.Add(Me.Label15)
         Me.Controls.Add(Me.MinimumMOVControl)
@@ -1003,6 +994,7 @@ Partial Class Form1
         CType(Me.DurabilityVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.EnemyBuffControl, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.MinimumDurabilityControl, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.CONVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -1052,7 +1044,6 @@ Partial Class Form1
     Friend WithEvents MinimumMOVControl As System.Windows.Forms.NumericUpDown
     Friend WithEvents Label15 As System.Windows.Forms.Label
     Friend WithEvents MaximumMOVControl As System.Windows.Forms.NumericUpDown
-    Friend WithEvents RandomizeAffinityBonusToggle As System.Windows.Forms.CheckBox
     Friend WithEvents RecruitmentBox As System.Windows.Forms.GroupBox
     Friend WithEvents RandomRecruitmentOption As System.Windows.Forms.RadioButton
     Friend WithEvents ReverseRecruitmentOption As System.Windows.Forms.RadioButton
@@ -1082,8 +1073,6 @@ Partial Class Form1
     Friend WithEvents MinimumMOVTooltip As System.Windows.Forms.ToolTip
     Friend WithEvents MaximumMOVTooltip As System.Windows.Forms.ToolTip
     Friend WithEvents RandomAffinityTooltip As System.Windows.Forms.ToolTip
-    Friend WithEvents RandomAffinityBonusTooltip As System.Windows.Forms.ToolTip
-    Friend WithEvents AffinityBonusAmountControl As System.Windows.Forms.ComboBox
     Friend WithEvents AffinityBonusAmountTooltip As System.Windows.Forms.ToolTip
     Friend WithEvents RandomItemsTooltip As System.Windows.Forms.ToolTip
     Friend WithEvents MightVarianceTooltip As System.Windows.Forms.ToolTip
@@ -1107,5 +1096,8 @@ Partial Class Form1
     Friend WithEvents BuffAmountTooltip As System.Windows.Forms.ToolTip
     Friend WithEvents BossBuffTooltip As System.Windows.Forms.ToolTip
     Friend WithEvents RecruitmentTooltip As System.Windows.Forms.ToolTip
+    Friend WithEvents Label18 As System.Windows.Forms.Label
+    Friend WithEvents CONVarianceControl As System.Windows.Forms.NumericUpDown
+    Friend WithEvents CONVarianceTooltip As System.Windows.Forms.ToolTip
 
 End Class
