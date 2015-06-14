@@ -9,6 +9,14 @@ Added a Support Manager to handle re-mapping of support conversations when the r
 
 Fixed the logic for assigning lord status to a single character instead of a class (why the game doesn't do this to begin with is beyond me).
 
+Added logic for buffing enemies. Should be generic enough to work across all games.
+
+Removed Random affinity bonuses because it just doesn't seem that fun to buff them and it only makes things significantly easier.
+
+Added the ability to specify CON variance as well.
+
+Did a first pass at Reverse Recruitment. Mostly works, though there's some minor issues. Chapter 3's orphanage scene is glitched and causes a hard lock when the children run out with the bishop. This can be skipped, but it also causes a rogue child NPC standing outside of the orphanage afterwards. Secondly, there's a high chance of the randomizer freezing when doing this because some combinations of assignments won't work towards the end when the remaining choices are all labeled as invalid due to being unable to fill some conditions. Will have to work out some better logic for randomly assigning recruitment.
+
 **June 12, 2015**
 
 Added logic to demote and delevel units as necessary. Need to figure out some better deleveling logic because RR Karel starts with straight 0s and 1 HP with his growths. Meanwhile, crappy growth characters like Niime and Yodel barely have any stats taken off. There's also the problem of needing to repoint DQs and support IDs since the characters have their IDs changed.
@@ -47,6 +55,7 @@ The intent for this project was to create an easy-to-use and customizable random
 * The "Uncounterable" trait, which is usually reserved for siege tomes, has been removed from the pool of possible weapon traits that can be randomized, due to the game assuming that it is indeed a siege tome, and animating from 3+ spaces away, causing melee weapons to lock up.
 * Something that's interesting: Bosses randomized as thieves will move off of the throne to steal stuff. Not going to try to fix that one (short of not giving bosses the thief class).
 * For Reverse Recruitment, the randomizer will use the same random starting inventory algorithm as when randomizing classes. I assume most patches for reverse recruitment hard code in an inventory for each person. I can add an option to do so as well, if random starting inventories are not desirable.
+* Note that, for random and reverse recruitment, characters were swapped wholesale. This means their death quotes and support conversations remain intact, but who is used to talk to who has not been updated (makes sense, since you can't get Roy to talk to somebody if Roy hasn't joined yet). So you'll have to remember who certain characters are to recruit people (for example, whoever replaces Clarine has to talk to whoever replaces Klein to recruit him), but whenever you get Clarine and Klein, they can still support each other (even starting from Chapter 1 if they randomly joined then).
 
 ### FE7 Notes
 
@@ -57,10 +66,8 @@ The intent for this project was to create an easy-to-use and customizable random
 The remaining feature list (which you can get a sneak peek at with the app) is as follows:
 
 * Random Classes for FE7 and FE8
-* Random Affinity Bonuses (Seems a bit overpowered since the only direction it can go is up)
-* Option to Buff Enemy Units (via increased growths)
 * Option to Randomize regular enemies
-* Random or Reverse Recruitment Order
+* Random Recruitment Order
 * Attempt to un-messify color palettes for randomized classes.
 
 I still need to implement a Mac version which will be written in Objective-C later. If there is demand for a Linux version, I'll do that after Mac.
