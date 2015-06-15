@@ -3,6 +3,10 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**June 14, 2015**
+
+*Beta Release* - FE6 should be fully functional and ready for beta testing. The only issues known are the ballistas on nomads/warriors graphical glitch (likely won't fix) and every so often, Miledy's script in Ch. 2 causes a hard lock (will have to fix if consistently reproducible (seems to happen randomly for me)).
+
 **June 13, 2015**
 
 Added a Support Manager to handle re-mapping of support conversations when the recruitment order is modified.
@@ -56,6 +60,8 @@ The intent for this project was to create an easy-to-use and customizable random
 * Something that's interesting: Bosses randomized as thieves will move off of the throne to steal stuff. Not going to try to fix that one (short of not giving bosses the thief class).
 * For Reverse Recruitment, the randomizer will use the same random starting inventory algorithm as when randomizing classes. I assume most patches for reverse recruitment hard code in an inventory for each person. I can add an option to do so as well, if random starting inventories are not desirable.
 * Note that, for random and reverse recruitment, characters were swapped wholesale. This means their death quotes and support conversations remain intact, but who is used to talk to who has not been updated (makes sense, since you can't get Roy to talk to somebody if Roy hasn't joined yet). So you'll have to remember who certain characters are to recruit people (for example, whoever replaces Clarine has to talk to whoever replaces Klein to recruit him), but whenever you get Clarine and Klein, they can still support each other (even starting from Chapter 1 if they randomly joined then).
+* When deleveling and demoting characters for reverse and random recruitment, their growths are used to determine how many stats they lose (and may not be balanced initially). Characters with low growth (Niime, Yodel, etc.) will barely lose any stats even after losing a lot of levels, which makes them particularly strong at the start. But remember, their growths are terrible, so I figure it's a tradeoff for being so powerful early on. Think of them as unpromoted Jeigans if they join early.
+* When demoting a character, I assume they promoted at level 10 for the purpose of delevling their stats to reasonable levels. As such, they'll be a bit better than normal if they promote at level 20 (though only slightly, with their growths).
 
 ### FE7 Notes
 
