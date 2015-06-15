@@ -145,7 +145,7 @@
     End Enum
 
     Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer)
-
+        filePtr.Seek(offset, IO.SeekOrigin.Begin)
         nameIndex = Utilities.ReadHalfWord(filePtr)
         bioIndex = Utilities.ReadHalfWord(filePtr)
 
@@ -204,7 +204,7 @@
     End Sub
 
     Public Sub writeStatsToCharacterStartingAtOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer)
-
+        filePtr.Seek(offset, IO.SeekOrigin.Begin)
         Utilities.WriteHalfWord(filePtr, nameIndex)
         Utilities.WriteHalfWord(filePtr, bioIndex)
 

@@ -173,8 +173,8 @@
         Cath = &H35
         Sophia = &H36
         Miledy = &H37
-        Gonzales_A = &H38
-        Gonzales_B = &H39
+        Gonzales = &H38
+        Gonzales_NPC = &H39
         Noah = &H3A
         Treck = &H3B
         Zealot = &H3C
@@ -711,8 +711,7 @@
         list.Add(CharacterList.Oujay)
         list.Add(CharacterList.Fir)
         list.Add(CharacterList.Shin)
-        list.Add(CharacterList.Gonzales_A)
-        list.Add(CharacterList.Gonzales_B)
+        list.Add(CharacterList.Gonzales)
         list.Add(CharacterList.Geese)
         list.Add(CharacterList.Klein)
         list.Add(CharacterList.Tate)
@@ -819,7 +818,7 @@
 
         ' Some characters cause problems when randomized for scripted events, namely fliers like Miledy who need to do scripted flying.
         ' We need to black list characters.
-        list.Add(CharacterList.Miledy)
+        ' list.Add(CharacterList.Miledy)
 
         Return list
     End Function
@@ -933,11 +932,11 @@
         If originalCharacter = CharacterList.Astore Then Return CharacterList.Tate
         If originalCharacter = CharacterList.Lilina Then Return CharacterList.Klein
         If originalCharacter = CharacterList.Wendy Then Return CharacterList.Geese
-        If originalCharacter = CharacterList.Barth Then Return CharacterList.Gonzales_A
+        If originalCharacter = CharacterList.Barth Then Return CharacterList.Gonzales
         If originalCharacter = CharacterList.Oujay Then Return CharacterList.Shin
         If originalCharacter = CharacterList.Fir Then Return CharacterList.Fir
         If originalCharacter = CharacterList.Shin Then Return CharacterList.Oujay
-        If originalCharacter = CharacterList.Gonzales_A Or originalCharacter = CharacterList.Gonzales_B Then Return CharacterList.Barth
+        If originalCharacter = CharacterList.Gonzales Then Return CharacterList.Barth
         If originalCharacter = CharacterList.Geese Then Return CharacterList.Wendy
         If originalCharacter = CharacterList.Klein Then Return CharacterList.Lilina
         If originalCharacter = CharacterList.Tate Then Return CharacterList.Astore
@@ -995,7 +994,7 @@
         If originalCharacter = CharacterList.Oujay Then Return ClassList.Mercenary
         If originalCharacter = CharacterList.Fir Then Return ClassList.Myrmidon_F
         If originalCharacter = CharacterList.Shin Then Return ClassList.Nomad
-        If originalCharacter = CharacterList.Gonzales_A Or originalCharacter = CharacterList.Gonzales_B Then Return ClassList.Bandit
+        If originalCharacter = CharacterList.Gonzales Then Return ClassList.Bandit
         If originalCharacter = CharacterList.Geese Then Return ClassList.Pirate
         If originalCharacter = CharacterList.Klein Then Return ClassList.Archer
         If originalCharacter = CharacterList.Tate Then Return ClassList.PegasusKnight

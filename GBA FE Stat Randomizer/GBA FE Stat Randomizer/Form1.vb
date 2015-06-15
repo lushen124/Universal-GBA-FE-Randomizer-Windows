@@ -354,6 +354,7 @@
         Dim rng As Random = New Random
 
         If recruitment <> RecruitmentType.RecruitmentTypeNormal Then
+StartOver:
             Dim usedCharacters As ArrayList = New ArrayList()
 
             ' Since events reference characters by ID, the easiest way to do this
@@ -379,7 +380,17 @@
                         Dim canNotPromoteList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.canNotPromoteCharacterIDs(), New ArrayList())
                         Dim targetClassIsPromoted As Boolean = characterClass.ability2 And FEClass.ClassAbility2.Promoted
                         Dim characterListType As Type = IIf(type = Utilities.GameType.GameTypeFE6, GetType(FE6GameData.CharacterList), Nothing)
+                        Dim counter = 0
                         Do
+                            ' We're probably in case where we can't fulfill all of the conditions.
+                            ' Just start over in that case. We haven't written anything final to
+                            ' the data yet (since we've been working off of a copy of the character
+                            ' and the newCharacterList)
+                            If counter = 1000 Then
+                                Console.WriteLine("Reached a dead-end in assigning replacement characters. Starting over...")
+                                GoTo StartOver
+                            End If
+                            counter += 1
                             replacement = playableCharactersList.Item(rng.Next(playableCharactersList.Count))
                         Loop While usedCharacters.Contains(replacement) Or
                             ((Not targetClassIsPromoted) And shouldNotDemoteList.Contains(System.Enum.ToObject(characterListType, replacement))) Or
@@ -436,8 +447,7 @@
                                     If originalClass.ability2 And FEClass.ClassAbility2.Promoted Then originalLevel += 9
                                     If replacementClass.ability2 And FEClass.ClassAbility2.Promoted Then targetLevel += 9
                                     If originalLevel > targetLevel Then
-                                        ' 10 extra levels to remove if we're demoting, since a lot of units that join first have crap growths and deleving won't go anywhere.
-                                        replacementCharacter.levelWithClass(replacementClass, originalLevel - targetLevel + IIf(originalClass.ability2 And FEClass.ClassAbility2.Promoted, 10, 0), True, rng)
+                                        replacementCharacter.levelWithClass(replacementClass, originalLevel - targetLevel, True, rng)
                                     ElseIf targetLevel > originalLevel Then
                                         replacementCharacter.levelWithClass(replacementClass, targetLevel - originalLevel, False, rng)
                                     End If
@@ -611,8 +621,10 @@
                                     Continue For
                                 End If
                             Else
-                                ' Never touch bosses if we're not randomizing classes
+                                ' Never touch bosses if we're not randomizing classes (or blacklisted for that matter)
                                 If bossCharacters.Contains(characterIDObject) Then
+                                    Continue For
+                                ElseIf exemptCharacters.Contains(characterIDObject) Then
                                     Continue For
                                 End If
                             End If
@@ -665,6 +677,7 @@
                             ' Add a chance to increase their weapon ranks depending
                             ' on how late they join.
                             currentCharacter.increaseWeaponRanksWithPercentChance(weaponLevelIncreaseChance, type, rng)
+
 
                             ' Cache the result of this character's class.
                             targetClasses.Add(characterIDObject, newClass.classId)
@@ -939,6 +952,18 @@
                                         End If
                                         validatedInventory.Insert(firstEmptySlot, item)
                                     Next
+                                End If
+                            End If
+
+                            If recruitment <> RecruitmentType.RecruitmentTypeNormal Then
+                                If newClass.isThief Then
+                                    Dim lockpickIndex As Integer = validatedInventory.IndexOf(Convert.ToByte(FE6GameData.ItemList.Lockpick))
+                                    If lockpickIndex = -1 Then
+                                        Dim firstEmptySlot As Integer = validatedInventory.IndexOf(0)
+                                        If firstEmptySlot <> -1 Then
+                                            validatedInventory.Insert(firstEmptySlot, Convert.ToByte(FE6GameData.ItemList.Lockpick))
+                                        End If
+                                    End If
                                 End If
                             End If
 
