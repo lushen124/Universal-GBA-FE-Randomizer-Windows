@@ -3,6 +3,10 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**June 15, 2015**
+
+Made initial commit with FE7 game data partially populated.
+
 **June 14, 2015**
 
 *Beta Release* - FE6 should be fully functional and ready for beta testing. The only issues known are the ballistas on nomads/warriors graphical glitch (likely won't fix) and every so often, Miledy's script in Ch. 2 causes a hard lock (will have to fix if consistently reproducible (seems to happen randomly for me)).
@@ -64,6 +68,9 @@ The intent for this project was to create an easy-to-use and customizable random
 * When demoting a character, I assume they promoted at level 10 for the purpose of delevling their stats to reasonable levels. As such, they'll be a bit better than normal if they promote at level 20 (though only slightly, with their growths).
 
 ### FE7 Notes
+
+* It's likely I'll ask for you to avoid Lyn Normal mode for the time being due to the tutorial likely to be screwed by any modifications. Lyn Hard mode should be ok though (as long as the tutorial is off). The other option is that the randomizer automatically applies a tutorial killer patch or something.
+* By default, all classes that don't naturally show up in the game are removed from the pool when randomizing classes. That is, a large chunk of female classes (thief, mercenary, myrmidon, cavalier, nomad, wyvern knight, shaman, and armor knight, I think) will not show up. I'd rather things work well, then deal with glitches.
 
 ### FE8 Notes
 
