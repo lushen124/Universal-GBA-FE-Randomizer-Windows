@@ -71,6 +71,7 @@ The intent for this project was to create an easy-to-use and customizable random
 
 * It's likely I'll ask for you to avoid Lyn Normal mode for the time being due to the tutorial likely to be screwed by any modifications. Lyn Hard mode should be ok though (as long as the tutorial is off). The other option is that the randomizer automatically applies a tutorial killer patch or something.
 * By default, all classes that don't naturally show up in the game are removed from the pool when randomizing classes. That is, a large chunk of female classes (thief, mercenary, myrmidon, cavalier, nomad, wyvern knight, shaman, and armor knight, I think) will not show up. I'd rather things work well, then deal with glitches.
+* Figuring out mappings for reverse recruitment is a bit difficult due to a high chance of Isadora and Vaida getting demoted into classes that may be buggy. We'll roll with it for now and see how badly it breaks.
 
 ### FE8 Notes
 
@@ -82,5 +83,6 @@ The remaining feature list (which you can get a sneak peek at with the app) is a
 * Option to Randomize regular enemies
 * Random Recruitment Order
 * Attempt to un-messify color palettes for randomized classes.
+* Maybe try to get faces consistent in cutscenes when modifying recruitment.
 
 I still need to implement a Mac version which will be written in Objective-C later. If there is demand for a Linux version, I'll do that after Mac.
