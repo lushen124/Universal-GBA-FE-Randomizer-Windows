@@ -944,6 +944,162 @@
         Return list
     End Function
 
+    Public Shared Function linkedCharacterIDsToCharacterID(ByVal characterId As Byte) As ArrayList
+        Dim list As ArrayList = New ArrayList()
+
+        Dim characterIdObject As CharacterList = System.Enum.ToObject(GetType(CharacterList), characterId)
+
+        If characterIdObject = CharacterList.Tutorial_Florina Then
+            list.Add(CharacterList.Florina)
+        ElseIf characterIdObject = CharacterList.Tutorial_Kent Then
+            list.Add(CharacterList.Kent)
+        ElseIf characterIdObject = CharacterList.Tutorial_Lyn Then
+            list.Add(CharacterList.Lyn)
+        ElseIf characterIdObject = CharacterList.Tutorial_Rath Then
+            list.Add(CharacterList.Rath)
+        ElseIf characterIdObject = CharacterList.Tutorial_Sain Then
+            list.Add(CharacterList.Sain)
+        ElseIf characterIdObject = CharacterList.Tutorial_Wil Then
+            list.Add(CharacterList.Wil)
+        ElseIf characterIdObject = CharacterList.Florina Then
+            list.Add(CharacterList.Tutorial_Florina)
+        ElseIf characterIdObject = CharacterList.Kent Then
+            list.Add(CharacterList.Tutorial_Kent)
+        ElseIf characterIdObject = CharacterList.Lyn Then
+            list.Add(CharacterList.Tutorial_Lyn)
+        ElseIf characterIdObject = CharacterList.Rath Then
+            list.Add(CharacterList.Tutorial_Rath)
+        ElseIf characterIdObject = CharacterList.Sain Then
+            list.Add(CharacterList.Tutorial_Sain)
+        ElseIf characterIdObject = CharacterList.Wil Then
+            list.Add(CharacterList.Tutorial_Wil)
+
+        ElseIf characterIdObject = CharacterList.Morph_Brendan Then
+            list.Add(CharacterList.Brendan)
+        ElseIf characterIdObject = CharacterList.Morph_Darin Then
+            list.Add(CharacterList.Darin)
+        ElseIf characterIdObject = CharacterList.Morph_Jerme Then
+            list.Add(CharacterList.Jerme)
+        ElseIf characterIdObject = CharacterList.Morph_Kenneth Then
+            list.Add(CharacterList.Kenneth)
+        ElseIf characterIdObject = CharacterList.Morph_Linus Then
+            list.Add(CharacterList.Linus_A)
+            list.Add(CharacterList.Linus_B)
+        ElseIf characterIdObject = CharacterList.Morph_Lloyd Then
+            list.Add(CharacterList.Lloyd_A)
+            list.Add(CharacterList.Lloyd_B)
+        ElseIf characterIdObject = CharacterList.Morph_Uhai Then
+            list.Add(CharacterList.Uhai)
+        ElseIf characterIdObject = CharacterList.Morph_Ursula Then
+            list.Add(CharacterList.Ursula)
+        ElseIf characterIdObject = CharacterList.Brendan Then
+            list.Add(CharacterList.Morph_Brendan)
+        ElseIf characterIdObject = CharacterList.Darin Then
+            list.Add(CharacterList.Morph_Darin)
+        ElseIf characterIdObject = CharacterList.Jerme Then
+            list.Add(CharacterList.Morph_Jerme)
+        ElseIf characterIdObject = CharacterList.Kenneth Then
+            list.Add(CharacterList.Morph_Kenneth)
+        ElseIf characterIdObject = CharacterList.Linus_A Then
+            list.Add(CharacterList.Morph_Linus)
+            list.Add(CharacterList.Linus_B)
+        ElseIf characterIdObject = CharacterList.Linus_B Then
+            list.Add(CharacterList.Morph_Linus)
+            list.Add(CharacterList.Linus_A)
+        ElseIf characterIdObject = CharacterList.Lloyd_A Then
+            list.Add(CharacterList.Morph_Lloyd)
+            list.Add(CharacterList.Lloyd_B)
+        ElseIf characterIdObject = CharacterList.Lloyd_B Then
+            list.Add(CharacterList.Morph_Lloyd)
+            list.Add(CharacterList.Lloyd_A)
+        ElseIf characterIdObject = CharacterList.Uhai Then
+            list.Add(CharacterList.Morph_Uhai)
+        ElseIf characterIdObject = CharacterList.Ursula Then
+            list.Add(CharacterList.Morph_Ursula)
+        End If
+
+        Return list
+    End Function
+
+    Public Shared Function legendaryWeaponForClass(ByVal classId As Byte) As ItemList
+        Dim classIdObject As ClassList = System.Enum.ToObject(GetType(ClassList), classId)
+
+        If classIdObject = ClassList.Sniper Or classIdObject = ClassList.Sniper_F Or
+            classIdObject = ClassList.NomadTrooper Then
+            Return ItemList.Rienfleche
+        ElseIf classIdObject = ClassList.Bishop_F Or classIdObject = ClassList.Bishop_F Then
+            Return ItemList.Luce
+        ElseIf classIdObject = ClassList.Druid Then
+            Return ItemList.Gespenst
+        ElseIf classIdObject = ClassList.Warrior Or classIdObject = ClassList.Berserker Then
+            Return ItemList.Basilikos
+        ElseIf classIdObject = ClassList.Paladin Or classIdObject = ClassList.Paladin_F Or
+            classIdObject = ClassList.General Or
+            classIdObject = ClassList.WyvernLord Or classIdObject = ClassList.WyvernLord_F Or
+            classIdObject = ClassList.FalconKnight Then
+            Return ItemList.RexHasta
+        ElseIf classIdObject = ClassList.Sage Or classIdObject = ClassList.Sage_F Or
+            classIdObject = ClassList.Valkyrie Then
+            Return ItemList.Excalibur
+        ElseIf classIdObject = ClassList.Swordmaster Or classIdObject = ClassList.Swordmaster_F Or
+            classIdObject = ClassList.Hero Or classIdObject = ClassList.Assassin Then
+            Return ItemList.RegalBlade
+        ElseIf classIdObject = ClassList.LordKnight Then
+            Return ItemList.Durandal
+        ElseIf classIdObject = ClassList.BladeLord Then
+            Return ItemList.SolKatti
+        ElseIf classIdObject = ClassList.GreatLord Then
+            Return ItemList.Armads
+        End If
+
+        Return Nothing
+    End Function
+
+    ' Reverse Recruitment Mapping.
+    'Eliwood        Athos           Mage (?)
+    'Marcus         Karla           Swordmaster (F)
+    'Lowen          Renault         Thief
+    'Rebecca        Nils            Bard
+    'Dorcas         Vaida           Wyvern Knight (F) (!)
+    'Bartre         Jaffar          Thief
+    'Hector         Nino            Mage
+    'Oswin          Harken          Mercenary
+    'Serra          Karel           Myrmidon
+    'Matthew        Louise          Archer (F)
+    'Guy            Pent            Mage
+    'Erk            Farina          Pegasus Knight
+    'Priscilla      Wallace         Armor Knight
+    'Lyn            Geitz           Fighter
+    'Sain           Hawkeye         Pirate
+    'Kent           Heath           Wyvern Knight
+    'Florina        Rath            Nomad
+    'Wil            Isadora         Cavalier (F) (!)
+    'Raven          Ninian          Dancer
+    'Lucius         Legault         Thief
+    'Canas          Fiora           Pegasus Knight
+    'Dart           Dart            Pirate
+    'Fiora          Canas           Shaman
+    'Legault        Lucius          Monk
+    'Ninian         Raven           Mercenary
+    'Isadora        Wil             Sniper
+    'Rath           Florina         Pegasus Knight
+    'Heath          Kent            Cavalier
+    'Hawkeye        Sain            Paladin
+    'Geitz          Lyn             Blade Lord
+    'Wallace        Priscilla       Valkyrie
+    'Farina         Erk             Mage
+    'Pent           Guy             Swordmaster
+    'Louise         Mathew          Assassin
+    'Karel          Serra           Bishop (F)
+    'Harken         Oswin           General
+    'Nino           Hector          HectorLord
+    'Jaffar         Bartre          Warrior
+    'Vaida          Dorcas          Warrior
+    'Nils           Rebecca         Archer (F)
+    'Renault        Lowen           Paladin
+    'Karla          Marcus          Paladin
+    'Athos          Eliwood         Lord Knight
+
     Public Shared Function UnitsInEachChapter() As ArrayList
         Dim arrayList As ArrayList = New ArrayList()
 

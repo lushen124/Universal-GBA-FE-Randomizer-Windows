@@ -438,7 +438,7 @@
 
     Public Shared Function randomStatBonus(ByRef rng As Random)
         ' Seems too OP if it randomizes a dragonstone bonus on, say, an Iron Axe...
-        Dim result = rng.Next(2, 9)
+        Dim result = rng.Next(2, 10)
         If result = 2 Then Return StatBonusPointers.StatBonusPointer_5STR
         If result = 3 Then Return StatBonusPointers.StatBonusPointer_5DEF_5RES
         If result = 4 Then Return StatBonusPointers.StatBonusPointer_5SKL
@@ -599,6 +599,8 @@
         list.Add(CharacterList.Chad)
         list.Add(CharacterList.Astore)
         list.Add(CharacterList.Cath)
+        list.Add(CharacterList.Elphin)
+        list.Add(CharacterList.Lalum)
 
         Return list
     End Function
@@ -619,7 +621,7 @@
         If classListUnpromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
             Dim newClass As ClassList
             Do
-                newClass = classListUnpromoted.Item(rng.Next(0, classListUnpromoted.Count - 1))
+                newClass = classListUnpromoted.Item(rng.Next(classListUnpromoted.Count))
             Loop While newClass = original
 
             Return newClass
@@ -630,7 +632,7 @@
             If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
                 Dim newClass As ClassList
                 Do
-                    newClass = classListPromoted.Item(rng.Next(0, classListPromoted.Count - 1))
+                    newClass = classListPromoted.Item(rng.Next(classListPromoted.Count))
                 Loop While newClass = original
 
                 Return newClass
@@ -654,7 +656,7 @@
         If classListUnpromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
             Dim newClass As ClassList
             Do
-                newClass = classListUnpromoted.Item(rng.Next(0, classListUnpromoted.Count - 1))
+                newClass = classListUnpromoted.Item(rng.Next(classListUnpromoted.Count))
             Loop While newClass = original
 
             Return newClass
@@ -669,7 +671,7 @@
             If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
                 Dim newClass As ClassList
                 Do
-                    newClass = classListPromoted.Item(rng.Next(0, classListPromoted.Count - 1))
+                    newClass = classListPromoted.Item(rng.Next(classListPromoted.Count))
                 Loop While newClass = original
 
                 Return newClass
@@ -815,6 +817,8 @@
         list.Add(CharacterList.Idoun_Dragon)
         list.Add(CharacterList.Idoun_Shaman)
         list.Add(CharacterList.Yahn)
+
+        list.Add(CharacterList.Merlinus)
 
         ' Some characters cause problems when randomized for scripted events, namely fliers like Miledy who need to do scripted flying.
         ' We need to black list characters.
