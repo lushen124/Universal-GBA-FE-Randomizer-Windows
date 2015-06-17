@@ -1056,16 +1056,18 @@
     End Function
 
     ' Reverse Recruitment Mapping.
-    'Eliwood        Athos           Mage (?)
-    'Marcus         Karla           Swordmaster (F)
-    'Lowen          Renault         Thief
-    'Rebecca        Nils            Bard
-    'Dorcas         Vaida           Wyvern Knight (F) (!)
-    'Bartre         Jaffar          Thief
-    'Hector         Nino            Mage
-    'Oswin          Harken          Mercenary
-    'Serra          Karel           Myrmidon
-    'Matthew        Louise          Archer (F)
+    'Hector         Athos           Mage (?)
+    'Matthew        Renault         Monk
+    'Oswin          Karla           Myrmidon (F) (!) ' Uses male battle sprite, but female map sprite.
+    'Serra          Nils            Bard
+
+    'Eliwood        Jaffar          Thief
+    'Marcus         Vaida           Wyvern Lord (F)  ' Flipped with Jaffar for less issues.
+    'Lowen          Nino            Mage (F)
+    'Rebecca        Harken          Mercenary
+    'Dorcas         Karel           Myrmidon
+    'Bartre         Louise          Archer (F)
+    
     'Guy            Pent            Mage
     'Erk            Farina          Pegasus Knight
     'Priscilla      Wallace         Armor Knight
@@ -1073,7 +1075,7 @@
     'Sain           Hawkeye         Pirate
     'Kent           Heath           Wyvern Knight
     'Florina        Rath            Nomad
-    'Wil            Isadora         Cavalier (F) (!)
+    'Wil            Isadora         Cavalier (F) (!) ' This may have to be a sex change here.
     'Raven          Ninian          Dancer
     'Lucius         Legault         Thief
     'Canas          Fiora           Pegasus Knight
@@ -1089,16 +1091,16 @@
     'Wallace        Priscilla       Valkyrie
     'Farina         Erk             Mage
     'Pent           Guy             Swordmaster
-    'Louise         Mathew          Assassin
-    'Karel          Serra           Bishop (F)
-    'Harken         Oswin           General
-    'Nino           Hector          HectorLord
-    'Jaffar         Bartre          Warrior
-    'Vaida          Dorcas          Warrior
-    'Nils           Rebecca         Archer (F)
-    'Renault        Lowen           Paladin
-    'Karla          Marcus          Paladin
-    'Athos          Eliwood         Lord Knight
+    'Louise         Bartre          Warrior
+    'Karel          Dorcas          Warrior
+    'Harken         Rebecca         Sniper (F)
+    'Nino           Lowen           Cavalier
+    'Jaffar         Eliwood         Lord Knight
+    'Vaida          Marcus          Paladin
+    'Nils           Serra           Cleric
+    'Karla          Oswin           General
+    'Renault        Matthew         Assassin
+    'Athos          Hector          Great Lord
 
     Public Shared Function UnitsInEachChapter() As ArrayList
         Dim arrayList As ArrayList = New ArrayList()
