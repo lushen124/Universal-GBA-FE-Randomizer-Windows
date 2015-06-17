@@ -3,6 +3,10 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**June 16, 2015**
+
+Who'd have thought that FE7 reverse recruitment to be the most difficult one to create? Many classes don't exist (especially female versions) and we have two versions of the game to use as a basis. I ended up using Hector Mode as the base (since it has all characters).
+
 **June 15, 2015**
 
 Made initial commit with FE7 game data partially populated.
