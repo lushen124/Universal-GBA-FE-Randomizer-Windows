@@ -5,7 +5,9 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 **June 18, 2015**
 
-Added the ability to apply patches. Currently for use with FE7 to remove the tutorial, using a patch from Blazer. Still need to find a solution for Reverse Recruitment and Athos being demoted. Will probably create a new class, but I'm not sure what. Or he could just be mage -> sage. Athos also has no growths by default, so he'll need to be assigned some.
+Added the ability to apply patches. Currently for use with FE7 to remove the tutorial, using a patch from Blazer. 
+
+Still need to find a solution for Reverse Recruitment and Athos being demoted. Will probably create a new class, but I'm not sure what. Or he could just be mage -> sage. Athos also has no growths by default, so he'll need to be assigned some.
 
 **June 16, 2015**
 
@@ -80,6 +82,7 @@ The intent for this project was to create an easy-to-use and customizable random
 * It's likely I'll ask for you to avoid Lyn Normal mode for the time being due to the tutorial likely to be screwed by any modifications. Lyn Hard mode should be ok though (as long as the tutorial is off). The other option is that the randomizer automatically applies a tutorial killer patch or something.
 * By default, all classes that don't naturally show up in the game are removed from the pool when randomizing classes. That is, a large chunk of female classes (thief, mercenary, myrmidon, cavalier, nomad, wyvern knight, shaman, and armor knight, I think) will not show up. I'd rather things work well, then deal with glitches.
 * Figuring out mappings for reverse recruitment is a bit difficult due to a high chance of Isadora and Vaida getting demoted into classes that may be buggy. We'll roll with it for now and see how badly it breaks.
+* Need a solution for Athos in Reverse Recruitment, as he starts with no stats, and in a unique class that can't promote. Will probably have to create a special class for him.
 
 ### FE8 Notes
 
