@@ -696,7 +696,7 @@ StartOver:
                             currentCharacter.increaseWeaponRanksWithPercentChance(weaponLevelIncreaseChance, type, rng)
 
                             ' Make sure their class has valid stats.
-                            currentCharacter.validateStats(newClass, minimumCON)
+                            currentCharacter.validate(newClass, minimumCON, type)
 
                             ' Cache the result of this character's class.
                             targetClasses.Add(characterIDObject, newClass.classId)
@@ -1022,7 +1022,7 @@ StartOver:
             Else
                 Dim character As FECharacter = characterList.Item(index)
                 ' One last validation before writing.
-                character.validateStats(classLookup.Item(character.classId), minimumCON)
+                character.validate(classLookup.Item(character.classId), minimumCON, type)
                 character.writeStatsToCharacterStartingAtOffset(fileWriter, fileWriter.Position, characterEntrySize)
             End If
         Next

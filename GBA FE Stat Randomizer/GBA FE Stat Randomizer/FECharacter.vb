@@ -983,7 +983,7 @@
         End If
     End Sub
 
-    Public Sub validateStats(ByVal characterClass As FEClass, ByVal minCON As Integer)
+    Public Sub validate(ByVal characterClass As FEClass, ByVal minCON As Integer, ByVal gameType As Utilities.GameType)
         baseHP = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(characterClass.baseHP), 8, Convert.ToInt16(characterClass.hpCap), baseHP))
         baseStr = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(characterClass.baseStr), 2, Convert.ToInt16(characterClass.strCap), baseStr))
         baseSkl = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(characterClass.baseSkl), 5, Convert.ToInt16(characterClass.sklCap), baseSkl))
@@ -994,6 +994,34 @@
         baseRes = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(characterClass.baseRes), 0, Convert.ToInt16(characterClass.resCap), baseRes))
 
         baseCon = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(characterClass.baseCon), minCON, Convert.ToInt16(characterClass.conCap), baseCon))
+
+        Dim noRank As Byte = 0
+        Dim eRank As Byte
+        Dim dRank As Byte
+        Dim cRank As Byte
+        Dim bRank As Byte
+        Dim aRank As Byte
+        Dim sRank As Byte
+
+        If gameType = Utilities.GameType.GameTypeFE6 Then
+            noRank = FE6GameData.WeaponRank.WeaponRankNone
+            eRank = FE6GameData.WeaponRank.WeaponRankE
+            dRank = FE6GameData.WeaponRank.WeaponRankD
+            cRank = FE6GameData.WeaponRank.WeaponRankC
+            bRank = FE6GameData.WeaponRank.WeaponRankB
+            aRank = FE6GameData.WeaponRank.WeaponRankA
+            sRank = FE6GameData.WeaponRank.WeaponRankS
+        End If
+
+        If characterClass.swordLevel = noRank Then swordLevel = noRank
+        If characterClass.spearLevel = noRank Then spearLevel = noRank
+        If characterClass.axeLevel = noRank Then axeLevel = noRank
+        If characterClass.staffLevel = noRank Then staffLevel = noRank
+        If characterClass.bowLevel = noRank Then bowLevel = noRank
+        If characterClass.animaLevel = noRank Then animaLevel = noRank
+        If characterClass.darkLevel = noRank Then darkLevel = noRank
+        If characterClass.lightLevel = noRank Then lightLevel = noRank
+
     End Sub
 
     Private Function clampBaseStatWithClassBaseAndCap(ByVal classBase As Short, ByVal minimumValue As Short, ByVal classCap As Short, ByVal proposedBase As Short) As Short
