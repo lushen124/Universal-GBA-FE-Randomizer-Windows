@@ -124,6 +124,7 @@ Partial Class Form1
         Me.Label18 = New System.Windows.Forms.Label()
         Me.CONVarianceControl = New System.Windows.Forms.NumericUpDown()
         Me.CONVarianceTooltip = New System.Windows.Forms.ToolTip(Me.components)
+        Me.GameSpecificCheckbox = New System.Windows.Forms.CheckBox()
         CType(Me.GrowthVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.BaseVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.MightVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -903,15 +904,29 @@ Partial Class Form1
         '
         Me.CONVarianceControl.Location = New System.Drawing.Point(116, 250)
         Me.CONVarianceControl.Maximum = New Decimal(New Integer() {10, 0, 0, 0})
+        Me.CONVarianceControl.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.CONVarianceControl.Name = "CONVarianceControl"
         Me.CONVarianceControl.Size = New System.Drawing.Size(57, 20)
         Me.CONVarianceControl.TabIndex = 63
+        Me.CONVarianceControl.Value = New Decimal(New Integer() {1, 0, 0, 0})
+        '
+        'GameSpecificCheckbox
+        '
+        Me.GameSpecificCheckbox.AutoSize = True
+        Me.GameSpecificCheckbox.Location = New System.Drawing.Point(228, 47)
+        Me.GameSpecificCheckbox.Name = "GameSpecificCheckbox"
+        Me.GameSpecificCheckbox.Size = New System.Drawing.Size(154, 17)
+        Me.GameSpecificCheckbox.TabIndex = 64
+        Me.GameSpecificCheckbox.Text = "Apply Blazer's Tutorial Killer"
+        Me.GameSpecificCheckbox.UseVisualStyleBackColor = True
+        Me.GameSpecificCheckbox.Visible = False
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(586, 480)
+        Me.Controls.Add(Me.GameSpecificCheckbox)
         Me.Controls.Add(Me.CONVarianceControl)
         Me.Controls.Add(Me.Label18)
         Me.Controls.Add(Me.MinimumDurabilityControl)
@@ -1099,5 +1114,6 @@ Partial Class Form1
     Friend WithEvents Label18 As System.Windows.Forms.Label
     Friend WithEvents CONVarianceControl As System.Windows.Forms.NumericUpDown
     Friend WithEvents CONVarianceTooltip As System.Windows.Forms.ToolTip
+    Friend WithEvents GameSpecificCheckbox As System.Windows.Forms.CheckBox
 
 End Class

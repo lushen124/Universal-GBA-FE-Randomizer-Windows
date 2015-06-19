@@ -26,7 +26,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>7</ApplicationRevision>
+    <ApplicationRevision>8</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -110,6 +110,7 @@
     <Compile Include="FE8GameData.vb" />
     <Compile Include="FEChapterUnit.vb" />
     <Compile Include="FEClass.vb" />
+    <Compile Include="Patcher.vb" />
     <Compile Include="QuoteManager.vb" />
     <Compile Include="SupportManager.vb" />
     <Compile Include="Utilities.vb" />
@@ -161,6 +162,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="Tutorial Killer Patch.ups">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="WindowsApplication1_TemporaryKey.pfx" />
   </ItemGroup>

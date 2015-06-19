@@ -26,3 +26,4 @@ C:\Users\lushe_000\Documents\GitHub\Universal-GBA-FE-Randomizer-Windows\GBA FE S
 C:\Users\lushe_000\Documents\GitHub\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\GBA FE Randomizer.exe
 C:\Users\lushe_000\Documents\GitHub\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\GBA FE Randomizer.xml
 C:\Users\lushe_000\Documents\GitHub\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\GBA FE Randomizer.pdb
+C:\Users\lushe_000\Documents\GitHub\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\bin\Debug\Tutorial Killer Patch.ups

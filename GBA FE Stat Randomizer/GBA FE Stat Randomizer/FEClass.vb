@@ -17,6 +17,7 @@
     Property spdCap As Byte             'offset 22, 1 byte
     Property defCap As Byte             'offset 23, 1 byte
     Property resCap As Byte             'offset 24, 1 byte
+    Property conCap As Byte             'offset 25, 1 byte
 
     Property hpGrowth As Byte           'offset 27, 1 byte
     Property strGrowth As Byte          'offset 28, 1 byte
@@ -126,6 +127,7 @@
         spdCap = filePtr.ReadByte()
         defCap = filePtr.ReadByte()
         resCap = filePtr.ReadByte()
+        conCap = filePtr.ReadByte()
 
         filePtr.Seek(offset + 27, IO.SeekOrigin.Begin)
         hpGrowth = filePtr.ReadByte()

@@ -983,6 +983,19 @@
         End If
     End Sub
 
+    Public Sub validateStats(ByVal characterClass As FEClass, ByVal minCON As Integer)
+        baseHP = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(characterClass.baseHP), 8, Convert.ToInt16(characterClass.hpCap), baseHP))
+        baseStr = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(characterClass.baseStr), 2, Convert.ToInt16(characterClass.strCap), baseStr))
+        baseSkl = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(characterClass.baseSkl), 5, Convert.ToInt16(characterClass.sklCap), baseSkl))
+        baseSpd = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(characterClass.baseSpd), 0, Convert.ToInt16(characterClass.spdCap), baseSpd))
+        ' Lck has no class base and a universal cap of 30.
+        baseLck = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(0, 0, 30, baseLck))
+        baseDef = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(characterClass.baseDef), 0, Convert.ToInt16(characterClass.defCap), baseDef))
+        baseRes = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(characterClass.baseRes), 0, Convert.ToInt16(characterClass.resCap), baseRes))
+
+        baseCon = Convert.ToSByte(clampBaseStatWithClassBaseAndCap(Convert.ToInt16(characterClass.baseCon), minCON, Convert.ToInt16(characterClass.conCap), baseCon))
+    End Sub
+
     Private Function clampBaseStatWithClassBaseAndCap(ByVal classBase As Short, ByVal minimumValue As Short, ByVal classCap As Short, ByVal proposedBase As Short) As Short
         If classBase + proposedBase < minimumValue Then
             Return minimumValue - classBase

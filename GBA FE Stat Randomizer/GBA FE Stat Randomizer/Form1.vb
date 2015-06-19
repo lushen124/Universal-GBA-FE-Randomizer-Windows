@@ -61,6 +61,8 @@
 
     Private recruitment As RecruitmentType
 
+    Private applyTutorialKiller As Boolean ' FE7 only.
+
 
     Private Sub OpenFileDialog1_FileOk(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog1.FileOk
         FilenameTextBox.Text = OpenFileDialog1.FileName
@@ -85,15 +87,30 @@
         If type = Utilities.GameType.GameTypeFE6 Then
             GameDetectionLabel.Text = "Game Detected: Fire Emblem 6"
             RandomizeButton.Enabled = True
+            GameSpecificCheckbox.Hide()
+            applyTutorialKiller = False
         ElseIf type = Utilities.GameType.GameTypeFE7 Then
             GameDetectionLabel.Text = "Game Detected: Fire Emblem 7"
             RandomizeButton.Enabled = True
+
+            ' Check if the Tutorial Killer Patch is already in effect. (Just use any byte)
+            inputFile.Seek(&HC9A214, IO.SeekOrigin.Begin)
+            Dim alreadyPatched As Boolean = inputFile.ReadByte() = &H5
+            GameSpecificCheckbox.Text = "Apply Blazer's Tutorial Killer"
+            GameSpecificCheckbox.Show()
+            GameSpecificCheckbox.Enabled = False
+            GameSpecificCheckbox.Checked = Not alreadyPatched
+            applyTutorialKiller = Not alreadyPatched
         ElseIf type = Utilities.GameType.GameTypeFE8 Then
             GameDetectionLabel.Text = "Game Detected: Fire Emblem 8"
             RandomizeButton.Enabled = True
+            GameSpecificCheckbox.Hide()
+            applyTutorialKiller = False
         Else
             GameDetectionLabel.Text = "Unknown Game (Code: " + Convert.ToChar(gameCode.Item(0)) + Convert.ToChar(gameCode.Item(1)) + Convert.ToChar(gameCode.Item(2)) + Convert.ToChar(gameCode.Item(3)) + ")"
             RandomizeButton.Enabled = False
+            applyTutorialKiller = False
+            GameSpecificCheckbox.Hide()
         End If
 
         inputFile.Close()
@@ -678,6 +695,8 @@ StartOver:
                             ' on how late they join.
                             currentCharacter.increaseWeaponRanksWithPercentChance(weaponLevelIncreaseChance, type, rng)
 
+                            ' Make sure their class has valid stats.
+                            currentCharacter.validateStats(newClass, minimumCON)
 
                             ' Cache the result of this character's class.
                             targetClasses.Add(characterIDObject, newClass.classId)
@@ -984,6 +1003,13 @@ StartOver:
         End If
 
         ' Write it all back to disk.
+
+        ' Apply any patches if necessary.
+        If type = Utilities.GameType.GameTypeFE7 And applyTutorialKiller Then
+            Dim result As Boolean = Patcher.applyUPSPatch(OpenFileDialog1.FileName, "Tutorial Killer Patch.ups")
+            If result = False Then MsgBox("Tutorial Killer Patch Failed. Continuing without applying patch...", MsgBoxStyle.OkOnly, "Notice")
+        End If
+
         Dim fileWriter = IO.File.OpenWrite(OpenFileDialog1.FileName)
 
         fileWriter.Seek(characterTableOffset, IO.SeekOrigin.Begin)
@@ -1438,6 +1464,8 @@ StartOver:
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         disableAllControls()
         BrowseButton.Enabled = True
+
+        applyTutorialKiller = False
 
         ' The default min CON is 1
         minimumCON = 1
