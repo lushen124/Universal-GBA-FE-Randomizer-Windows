@@ -966,7 +966,7 @@
         If originalCharacter = CharacterList.Yodel Then Return CharacterList.Marcus
         If originalCharacter = CharacterList.Karel Then Return CharacterList.Roy
         ' Shouldn't happen, but we need to return something.
-        Return CharacterList.None
+        Return originalCharacter
     End Function
 
     Public Shared Function reversedRecruitmentClassMappingForCharacter(ByVal originalCharacter As CharacterList) As ClassList

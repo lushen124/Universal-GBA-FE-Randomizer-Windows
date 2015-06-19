@@ -1050,9 +1050,24 @@
             Return ItemList.SolKatti
         ElseIf classIdObject = ClassList.GreatLord Then
             Return ItemList.Armads
+        ElseIf classIdObject = ClassList.Archsage Then
+            Return ItemList.Forblaze
         End If
 
         Return Nothing
+    End Function
+
+    Public Shared Function shouldSpawnWithLegendaryWeapon(ByVal characterId As Byte) As Boolean
+        Dim characterIDObject As CharacterList = System.Enum.ToObject(GetType(CharacterList), characterId)
+
+        If characterIDObject = CharacterList.Morph_Brendan Or characterIDObject = CharacterList.Morph_Darin Or
+            characterIDObject = CharacterList.Morph_Jerme Or characterIDObject = CharacterList.Morph_Kenneth Or
+            characterIDObject = CharacterList.Morph_Linus Or characterIDObject = CharacterList.Morph_Lloyd Or
+            characterIDObject = CharacterList.Morph_Uhai Or characterIDObject = CharacterList.Morph_Ursula Then
+            Return True
+        End If
+
+        Return False
     End Function
 
     ' Reverse Recruitment Mapping.
@@ -1101,6 +1116,105 @@
     'Karla          Oswin           General
     'Renault        Matthew         Assassin
     'Athos          Hector          Great Lord
+
+    Public Shared Function reversedRecruitmentMappingForCharacter(ByVal originalCharacter As CharacterList) As CharacterList
+        If originalCharacter = CharacterList.Hector Then Return CharacterList.Athos
+        If originalCharacter = CharacterList.Matthew Then Return CharacterList.Renault
+        If originalCharacter = CharacterList.Oswin Then Return CharacterList.Karla
+        If originalCharacter = CharacterList.Serra Then Return CharacterList.Nils
+
+        If originalCharacter = CharacterList.Eliwood Then Return CharacterList.Jaffar
+        If originalCharacter = CharacterList.Marcus Then Return CharacterList.Vaida
+        If originalCharacter = CharacterList.Lowen Then Return CharacterList.Nino
+        If originalCharacter = CharacterList.Rebecca Then Return CharacterList.Harken
+        If originalCharacter = CharacterList.Dorcas Then Return CharacterList.Karel
+        If originalCharacter = CharacterList.Bartre Then Return CharacterList.Louise
+
+        If originalCharacter = CharacterList.Guy Then Return CharacterList.Pent
+        If originalCharacter = CharacterList.Erk Then Return CharacterList.Farina
+        If originalCharacter = CharacterList.Priscilla Then Return CharacterList.Wallace
+
+        If originalCharacter = CharacterList.Lyn Then Return CharacterList.Geitz
+        If originalCharacter = CharacterList.Sain Then Return CharacterList.Hawkeye
+        If originalCharacter = CharacterList.Kent Then Return CharacterList.Heath
+        If originalCharacter = CharacterList.Florina Then Return CharacterList.Rath
+        If originalCharacter = CharacterList.Wil Then Return CharacterList.Isadora
+
+        If originalCharacter = CharacterList.Raven Then Return CharacterList.Ninian
+        If originalCharacter = CharacterList.Lucius Then Return CharacterList.Legault
+        If originalCharacter = CharacterList.Canas Then Return CharacterList.Fiora
+        If originalCharacter = CharacterList.Dart Then Return CharacterList.Dart
+        If originalCharacter = CharacterList.Fiora Then Return CharacterList.Canas
+        If originalCharacter = CharacterList.Ninian Then Return CharacterList.Raven
+        If originalCharacter = CharacterList.Isadora Then Return CharacterList.Wil
+        If originalCharacter = CharacterList.Rath Then Return CharacterList.Florina
+        If originalCharacter = CharacterList.Heath Then Return CharacterList.Kent
+        If originalCharacter = CharacterList.Hawkeye Then Return CharacterList.Sain
+        If originalCharacter = CharacterList.Geitz Then Return CharacterList.Lyn
+        If originalCharacter = CharacterList.Wallace Then Return CharacterList.Priscilla
+        If originalCharacter = CharacterList.Farina Then Return CharacterList.Erk
+        If originalCharacter = CharacterList.Pent Then Return CharacterList.Guy
+        If originalCharacter = CharacterList.Louise Then Return CharacterList.Bartre
+        If originalCharacter = CharacterList.Karel Then Return CharacterList.Dorcas
+        If originalCharacter = CharacterList.Harken Then Return CharacterList.Rebecca
+        If originalCharacter = CharacterList.Nino Then Return CharacterList.Lowen
+        If originalCharacter = CharacterList.Jaffar Then Return CharacterList.Eliwood
+        If originalCharacter = CharacterList.Vaida Then Return CharacterList.Marcus
+        If originalCharacter = CharacterList.Nils Then Return CharacterList.Serra
+        If originalCharacter = CharacterList.Karla Then Return CharacterList.Oswin
+        If originalCharacter = CharacterList.Renault Then Return CharacterList.Matthew
+        If originalCharacter = CharacterList.Athos Then Return CharacterList.Hector
+
+        Return originalCharacter
+    End Function
+
+    Public Shared Function reversedRecruitmentClassMappingForCharacter(ByVal originalCharacter As CharacterList) As ClassList
+        If originalCharacter = CharacterList.Hector Then Return ClassList.GreatLord
+        If originalCharacter = CharacterList.Matthew Then Return ClassList.Assassin
+        If originalCharacter = CharacterList.Oswin Then Return ClassList.General
+        If originalCharacter = CharacterList.Serra Then Return ClassList.Cleric
+        If originalCharacter = CharacterList.Marcus Then Return ClassList.Paladin
+        If originalCharacter = CharacterList.Eliwood Then Return ClassList.LordKnight
+        If originalCharacter = CharacterList.Lowen Then Return ClassList.Cavalier
+        If originalCharacter = CharacterList.Rebecca Then Return ClassList.Sniper_F
+        If originalCharacter = CharacterList.Dorcas Then Return ClassList.Warrior
+        If originalCharacter = CharacterList.Bartre Then Return ClassList.Warrior
+        If originalCharacter = CharacterList.Guy Then Return ClassList.Swordmaster
+        If originalCharacter = CharacterList.Erk Then Return ClassList.Mage
+        If originalCharacter = CharacterList.Priscilla Then Return ClassList.Valkyrie
+        If originalCharacter = CharacterList.Lyn Then Return ClassList.BladeLord
+        If originalCharacter = CharacterList.Sain Then Return ClassList.Paladin
+        If originalCharacter = CharacterList.Kent Then Return ClassList.Cavalier
+        If originalCharacter = CharacterList.Florina Then Return ClassList.PegasusKnight
+        If originalCharacter = CharacterList.Wil Then Return ClassList.Sniper
+        If originalCharacter = CharacterList.Raven Then Return ClassList.Mercenary
+        If originalCharacter = CharacterList.Lucius Then Return ClassList.Monk
+        If originalCharacter = CharacterList.Canas Then Return ClassList.Shaman
+        If originalCharacter = CharacterList.Dart Then Return ClassList.Pirate
+        If originalCharacter = CharacterList.Fiora Then Return ClassList.PegasusKnight
+        If originalCharacter = CharacterList.Legault Then Return ClassList.Thief
+        If originalCharacter = CharacterList.Ninian Then Return ClassList.Dancer
+        If originalCharacter = CharacterList.Isadora Then Return ClassList.Cavalier ' Should we make a special one?
+        If originalCharacter = CharacterList.Rath Then Return ClassList.Nomad
+        If originalCharacter = CharacterList.Heath Then Return ClassList.WyvernKnight
+        If originalCharacter = CharacterList.Hawkeye Then Return ClassList.Pirate
+        If originalCharacter = CharacterList.Geitz Then Return ClassList.Fighter
+        If originalCharacter = CharacterList.Wallace Then Return ClassList.Knight
+        If originalCharacter = CharacterList.Farina Then Return ClassList.PegasusKnight
+        If originalCharacter = CharacterList.Pent Then Return ClassList.Mage
+        If originalCharacter = CharacterList.Louise Then Return ClassList.Archer_F
+        If originalCharacter = CharacterList.Karel Then Return ClassList.Myrmidon
+        If originalCharacter = CharacterList.Harken Then Return ClassList.Mercenary
+        If originalCharacter = CharacterList.Nino Then Return ClassList.Mage_F
+        If originalCharacter = CharacterList.Vaida Then Return ClassList.WyvernLord_F
+        If originalCharacter = CharacterList.Jaffar Then Return ClassList.Thief
+        If originalCharacter = CharacterList.Serra Then Return ClassList.Bard
+        If originalCharacter = CharacterList.Karla Then Return ClassList.Myrmidon_F ' ok?
+        If originalCharacter = CharacterList.Renault Then Return ClassList.Monk
+        If originalCharacter = CharacterList.Athos Then Return ClassList.Mage ' eh...
+
+        Return ClassList.None
+    End Function
 
     Public Shared Function UnitsInEachChapter() As ArrayList
         Dim arrayList As ArrayList = New ArrayList()
