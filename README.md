@@ -3,6 +3,10 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**June 18, 2015**
+
+Added the ability to apply patches. Currently for use with FE7 to remove the tutorial, using a patch from Blazer. Still need to find a solution for Reverse Recruitment and Athos being demoted. Will probably create a new class, but I'm not sure what. Or he could just be mage -> sage. Athos also has no growths by default, so he'll need to be assigned some.
+
 **June 16, 2015**
 
 Who'd have thought that FE7 reverse recruitment to be the most difficult one to create? Many classes don't exist (especially female versions) and we have two versions of the game to use as a basis. I ended up using Hector Mode as the base (since it has all characters).
