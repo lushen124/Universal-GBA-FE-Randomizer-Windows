@@ -1021,6 +1021,8 @@ StartOver:
                 fileWriter.Seek(characterEntrySize, IO.SeekOrigin.Current)
             Else
                 Dim character As FECharacter = characterList.Item(index)
+                ' One last validation before writing.
+                character.validateStats(classLookup.Item(character.classId), minimumCON)
                 character.writeStatsToCharacterStartingAtOffset(fileWriter, fileWriter.Position, characterEntrySize)
             End If
         Next
