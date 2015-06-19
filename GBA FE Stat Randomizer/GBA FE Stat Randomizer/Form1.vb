@@ -267,6 +267,29 @@
             MsgBox("You seem to be randomizing FE7. Note that depending on the randomizing results, the tutorial (Lyn Normal Mode) may no longer be completable." + vbCrLf + vbCrLf _
                    & "It is recommended that you only play this on the Eliwood and Hector Modes to ensure functionality.", MsgBoxStyle.Information, "Notice")
 
+            Dim chapterPointers As Array = System.Enum.GetValues(GetType(FE7GameData.ChapterUnitReference))
+            Dim chapterUnitCounts As ArrayList = FE7GameData.UnitsInEachChapter
+
+            For i As Integer = 0 To chapterPointers.Length - 1
+                Dim pointer = chapterPointers(i)
+                Dim unitCount = chapterUnitCounts.Item(i)
+                Dim unitList As ArrayList = New ArrayList()
+                fileReader.Seek(pointer, IO.SeekOrigin.Begin)
+                For j As Integer = 1 To unitCount
+                    Dim unit As FEChapterUnit = New FEChapterUnit
+                    unit.initializeWithBytesFromOffset(fileReader, fileReader.Position, FE7GameData.ChapterUnitEntrySize, type)
+                    unitList.Add(unit)
+                Next
+                chapterUnitData.Add(unitList)
+            Next
+
+            lordCharacters = FE7GameData.lordCharacterIDs()
+            thiefCharacters = FE7GameData.thiefCharacterIDs()
+            bossCharacters = FE7GameData.bossCharacterIDs()
+            exemptCharacters = FE7GameData.exemptCharacterIDs()
+
+            quoteManager = New QuoteManager(Utilities.GameType.GameTypeFE7, fileReader)
+            supportManager = New SupportManager(Utilities.GameType.GameTypeFE7, fileReader)
         ElseIf type = Utilities.GameType.GameTypeFE8 Then
 
             fileReader.Seek(FE8GameData.PointerToCharacterTableOffset, IO.SeekOrigin.Begin)
@@ -350,6 +373,7 @@
 
             ' Be on the lookout for any blacklisted items.
             If type = Utilities.GameType.GameTypeFE6 And FE6GameData.isBlacklisted(itemEntry.weaponID) Then Continue For
+            If type = Utilities.GameType.GameTypeFE7 And FE7GameData.isBlacklisted(itemEntry.weaponID) Then Continue For
 
             Dim weaponType As FEItem.WeaponType = itemEntry.type
             Dim weaponList As ArrayList = itemByType.Item(weaponType)
