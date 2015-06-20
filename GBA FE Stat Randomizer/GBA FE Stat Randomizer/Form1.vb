@@ -170,6 +170,8 @@
         Dim quoteManager As QuoteManager = Nothing
         Dim supportManager As SupportManager = Nothing
 
+        Dim spellAssociationManager As SpellAssociationManager = Nothing
+
         Dim fileReader = IO.File.OpenRead(OpenFileDialog1.FileName)
 
         If type = Utilities.GameType.GameTypeFE6 Then
@@ -290,6 +292,8 @@
 
             quoteManager = New QuoteManager(Utilities.GameType.GameTypeFE7, fileReader)
             supportManager = New SupportManager(Utilities.GameType.GameTypeFE7, fileReader)
+
+            spellAssociationManager = New SpellAssociationManager(Utilities.GameType.GameTypeFE7, fileReader)
         ElseIf type = Utilities.GameType.GameTypeFE8 Then
 
             fileReader.Seek(FE8GameData.PointerToCharacterTableOffset, IO.SeekOrigin.Begin)
@@ -400,14 +404,17 @@ StartOver:
 
             ' Since events reference characters by ID, the easiest way to do this
             ' is to modify what character is mapped to which ID.
-            Dim playableCharactersList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.playableCharacterIDs, New ArrayList())
-            Dim exemptCharacterList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.exemptCharacterIDs, New ArrayList())
+            Dim playableCharactersList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.playableCharacterIDs,
+                                                          IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.playableCharacterIDs(False), New ArrayList()))
+            Dim exemptCharacterList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.exemptCharacterIDs,
+                                                       IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.exemptCharacterIDs, New ArrayList()))
             ' We can't copy it, so we're going to just rebuild the list.
             Dim newCharacterList As ArrayList = New ArrayList()
             For i As Integer = 0 To characterList.Count - 1
                 ' Grab the original character in this spot.
                 Dim character As FECharacter = characterList.Item(i)
-                Dim characterIDObject = IIf(type = Utilities.GameType.GameTypeFE6, System.Enum.ToObject(GetType(FE6GameData.CharacterList), character.characterId), Nothing)
+                Dim characterIDObject = IIf(type = Utilities.GameType.GameTypeFE6, System.Enum.ToObject(GetType(FE6GameData.CharacterList), character.characterId),
+                                            IIf(type = Utilities.GameType.GameTypeFE7, System.Enum.ToObject(GetType(FE7GameData.CharacterList), character.characterId), Nothing))
                 ' Make sure he's somebody we want to move.
                 If playableCharactersList.Contains(characterIDObject) And Not exemptCharacterList.Contains(characterIDObject) Then
                     Dim characterClass As FEClass = classLookup.Item(character.classId)
@@ -415,12 +422,16 @@ StartOver:
                     ' Determine his replacement.
                     Dim replacement As Byte
                     If recruitment = RecruitmentType.RecruitmentTypeReverse Then
-                        replacement = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.reversedRecruitmentMappingForCharacter(characterIDObject)), Nothing)
+                        replacement = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.reversedRecruitmentMappingForCharacter(characterIDObject)),
+                                          IIf(type = Utilities.GameType.GameTypeFE7, Convert.ToByte(FE7GameData.reversedRecruitmentMappingForCharacter(characterIDObject)), Nothing))
                     Else
-                        Dim shouldNotDemoteList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.shouldNotDemoteCharacterIDs(), New ArrayList())
-                        Dim canNotPromoteList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.canNotPromoteCharacterIDs(), New ArrayList())
+                        Dim shouldNotDemoteList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.shouldNotDemoteCharacterIDs(),
+                                                                   IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.shouldNotDemoteCharacterIDs(), New ArrayList()))
+                        Dim canNotPromoteList As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.canNotPromoteCharacterIDs(),
+                                                                 IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.canNotPromoteCharacterIDs(), New ArrayList()))
                         Dim targetClassIsPromoted As Boolean = characterClass.ability2 And FEClass.ClassAbility2.Promoted
-                        Dim characterListType As Type = IIf(type = Utilities.GameType.GameTypeFE6, GetType(FE6GameData.CharacterList), Nothing)
+                        Dim characterListType As Type = IIf(type = Utilities.GameType.GameTypeFE6, GetType(FE6GameData.CharacterList),
+                                                            IIf(type = Utilities.GameType.GameTypeFE7, GetType(FE7GameData.CharacterList), Nothing))
                         Dim counter = 0
                         Do
                             ' We're probably in case where we can't fulfill all of the conditions.
@@ -450,6 +461,7 @@ StartOver:
                             ' Update the replacement's character ID to the original character's ID.
                             If Not IsNothing(quoteManager) Then
                                 quoteManager.updateCharacterIDs(replacementCharacter.characterId, character.characterId)
+                                quoteManager.transferTriggerIDs(character.characterId, replacementCharacter.characterId)
                             End If
                             ' Also update supports
                             If Not IsNothing(supportManager) Then
@@ -465,19 +477,22 @@ StartOver:
                             Dim originalClass As FEClass = classLookup.Item(replacementCharacter.classId)
                             Dim newClassID As Byte
                             If recruitment = RecruitmentType.RecruitmentTypeReverse Then
-                                newClassID = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.reversedRecruitmentClassMappingForCharacter(replacement)), Nothing)
+                                newClassID = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.reversedRecruitmentClassMappingForCharacter(replacement)),
+                                                 IIf(type = Utilities.GameType.GameTypeFE7, Convert.ToByte(FE7GameData.reversedRecruitmentClassMappingForCharacter(replacement)), Nothing))
                             Else
                                 ' Assume no change first.
                                 newClassID = replacementCharacter.classId
                                 Dim shouldBePromoted As Boolean = characterClass.ability2 And FEClass.ClassAbility2.Promoted
                                 Dim isPromoted As Boolean = originalClass.ability2 And FEClass.ClassAbility2.Promoted
                                 If shouldBePromoted And Not isPromoted Then
-                                    newClassID = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.promotedClassForUnpromotedClass(System.Enum.ToObject(GetType(FE6GameData.ClassList), replacementCharacter.classId))), Nothing)
+                                    newClassID = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.promotedClassForUnpromotedClass(System.Enum.ToObject(GetType(FE6GameData.ClassList), replacementCharacter.classId))),
+                                                     IIf(type = Utilities.GameType.GameTypeFE7, Convert.ToByte(FE7GameData.promotedClassForUnpromotedClass(System.Enum.ToObject(GetType(FE7GameData.ClassList), replacementCharacter.classId))), Nothing))
                                 ElseIf Not shouldBePromoted And isPromoted Then
-                                    newClassID = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.unpromotedClassForPromotedClass(System.Enum.ToObject(GetType(FE6GameData.ClassList), replacementCharacter.classId))), Nothing)
+                                    newClassID = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.unpromotedClassForPromotedClass(System.Enum.ToObject(GetType(FE6GameData.ClassList), replacementCharacter.classId))),
+                                                     IIf(type = Utilities.GameType.GameTypeFE7, Convert.ToByte(FE7GameData.unpromotedClassForPromotedClass(System.Enum.ToObject(GetType(FE7GameData.ClassList), replacementCharacter.classId))), Nothing))
                                 End If
-
-                                If newClassID = FE6GameData.ClassList.None Then newClassID = replacementCharacter.classId
+                                If newClassID = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.ClassList.None,
+                                                    IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.ClassList.None, Nothing)) Then newClassID = replacementCharacter.classId
 
                             End If
 
@@ -550,6 +565,21 @@ StartOver:
                             character.buffResWithAdditionalLevelsAtRate(character.level, characterClass.resGrowthDelta, characterClass.resCap, rng)
                         End If
                     Next
+                ElseIf type = Utilities.GameType.GameTypeFE7 Then
+                    Dim bossList As ArrayList = New ArrayList(FE7GameData.bossCharacterIDs)
+                    For Each character As FECharacter In characterList
+                        Dim characterIDObject As FE7GameData.CharacterList = System.Enum.ToObject(GetType(FE7GameData.CharacterList), character.characterId)
+                        If bossList.Contains(characterIDObject) Then
+                            Dim characterClass As FEClass = classList.Item(character.classId)
+                            character.buffHPWithAdditionalLevelsAtRate(character.level, characterClass.hpGrowthDelta, characterClass.hpCap, rng)
+                            character.buffStrWithAdditionalLevelsAtRate(character.level, characterClass.strGrowthDelta, characterClass.strCap, rng)
+                            character.buffSklWithAdditionalLevelsAtRate(character.level, characterClass.sklGrowthDelta, characterClass.sklCap, rng)
+                            character.buffSpdWithAdditionalLevelsAtRate(character.level, characterClass.spdGrowthDelta, characterClass.spdCap, rng)
+                            character.buffLckWithAdditionalLevelsAtRate(character.level, characterClass.lckGrowthDelta, 30, rng)
+                            character.buffDefWithAdditionalLevelsAtRate(character.level, characterClass.defGrowthDelta, characterClass.defCap, rng)
+                            character.buffResWithAdditionalLevelsAtRate(character.level, characterClass.resGrowthDelta, characterClass.resCap, rng)
+                        End If
+                    Next
                 End If
             End If
         End If
@@ -588,6 +618,7 @@ StartOver:
                     item.randomizeItemCritical(criticalVariance, minimumCritical, rng)
                     If randomTraits Then
                         item.assignRandomEffect(rng, type)
+                        If item.weaponAbility1 And FEItem.Ability1.Ability1MagicDamage Then spellAssociationManager.assignRandomSpellAnimationToWeaponWithID(item.weaponID, rng)
                     End If
                 End If
             Next
@@ -596,9 +627,14 @@ StartOver:
         If shouldRandomizeClasses Or recruitment <> RecruitmentType.RecruitmentTypeNormal Then
             ' Cache results as they happen so that we maintain consistency.
             Dim targetClasses As Hashtable = New Hashtable()
-            Dim targetInventory As Hashtable = New Hashtable()
+            Dim originalClasses As Hashtable = New Hashtable()
 
-            Dim importantCharacterIDs = New ArrayList(System.Enum.GetValues(GetType(FE6GameData.CharacterList)))
+            Dim classType As Type = IIf(type = Utilities.GameType.GameTypeFE6, GetType(FE6GameData.ClassList),
+                                        IIf(type = Utilities.GameType.GameTypeFE7, GetType(FE7GameData.ClassList), Nothing))
+            Dim characterType As Type = IIf(type = Utilities.GameType.GameTypeFE6, GetType(FE6GameData.CharacterList),
+                                            IIf(type = Utilities.GameType.GameTypeFE7, GetType(FE7GameData.CharacterList), Nothing))
+
+            Dim importantCharacterIDs = New ArrayList(System.Enum.GetValues(characterType))
 
             Dim weaponLevelIncreaseChance As Integer = 0
 
@@ -618,133 +654,171 @@ StartOver:
                         If Not FE6GameData.isValidClass(unit.classId) Then
                             Continue For
                         End If
+                    ElseIf type = Utilities.GameType.GameTypeFE7 Then
+                        If Not FE7GameData.isValidClass(unit.classId) Then
+                            Continue For
+                        End If
                     End If
 
                     ' If it's a real character (i.e. not a random mook) then see if we already had something for
                     ' him or her.
-                    Dim characterIDObject As Object = System.Enum.ToObject(GetType(FE6GameData.CharacterList), unit.characterId)
+                    Dim characterIDObject As Object = System.Enum.ToObject(characterType, unit.characterId)
                     If importantCharacterIDs.Contains(characterIDObject) Then
-                        ' If we do, go ahead and use what we've stored if we have it.
-                        If targetClasses.ContainsKey(characterIDObject) Then
-                            Dim targetClassId = targetClasses.Item(characterIDObject)
-
-                            ' Be wary of some other classes. FE6 likes to use characters
-                            ' for NPCs temporarily, so don't mess with those.
-                            If type = Utilities.GameType.GameTypeFE6 Then
-                                If Not FE6GameData.isValidClass(unit.classId) Then
-                                    Console.WriteLine("Skipping invalid classID: " + unit.classId)
-                                    Continue For
-                                Else
-                                    unit.classId = targetClassId
-                                End If
-                            Else
-                                unit.classId = targetClassId
+                        ' If he's one of the units we shouldn't touch, then skip it.
+                        ' Don't skip if we're not randomizing though, because we still want to
+                        ' take advantage of the random starting items.
+                        If shouldRandomizeClasses Then
+                            If Not randomLords And lordCharacters.Contains(characterIDObject) Then
+                                Continue For
+                            ElseIf Not randomThieves And thiefCharacters.Contains(characterIDObject) Then
+                                Continue For
+                            ElseIf Not randomBosses And bossCharacters.Contains(characterIDObject) Then
+                                Continue For
+                            ElseIf exemptCharacters.Contains(characterIDObject) Then
+                                Continue For
                             End If
-
-                            Dim targetInventoryList As ArrayList = targetInventory.Item(characterIDObject)
-                            unit.item1Id = targetInventoryList.Item(0)
-                            unit.item2Id = targetInventoryList.Item(1)
-                            unit.item3Id = targetInventoryList.Item(2)
-                            unit.item4Id = targetInventoryList.Item(3)
                         Else
-                            ' First time this character shows up. Figure out what he should be.
-                            ' If he's one of the units we shouldn't touch, then skip it.
-                            ' Don't skip if we're not randomizing though, because we still want to
-                            ' take advantage of the random starting items.
+                            ' Never touch bosses if we're not randomizing classes (or blacklisted for that matter)
+                            If bossCharacters.Contains(characterIDObject) Then
+                                Continue For
+                            ElseIf exemptCharacters.Contains(characterIDObject) Then
+                                Continue For
+                            End If
+                        End If
+
+                        ' If we got this far, he/she's getting randomized
+                        ' Grab a random class from the allowed classes. Each game
+                        ' will know what valid classes are possible.
+                        Dim newClassId As Byte
+                        ' Keep track of whether this character was a Lord character, because whatever
+                        ' his or her new class is also needs to have lord abilities (like Seize)
+                        Dim wasLord As Boolean = False
+                        ' Keep track of thieves too. If they're randomized, we need to give them
+                        ' some keys.
+                        Dim wasThief As Boolean = False
+                        Dim currentCharacter As FECharacter = characterLookup.Item(unit.characterId)
+
+                        ' FE6 stores this in the character object.
+                        Dim oldClass As FEClass = classLookup.Item(currentCharacter.classId)
+                        If originalClasses.ContainsKey(unit.characterId) Then oldClass = classLookup.Item(originalClasses.Item(unit.characterId))
+                        wasLord = oldClass.isLord
+                        wasThief = oldClass.isThief
+                        ' If he already had one assigned, use that.
+                        If targetClasses.ContainsKey(characterIDObject) Then
+                            newClassId = targetClasses.Item(characterIDObject)
+                        Else
+                            Utilities.setObjectForKey(originalClasses, oldClass.classId, unit.characterId)
                             If shouldRandomizeClasses Then
-                                If Not randomLords And lordCharacters.Contains(characterIDObject) Then
-                                    Continue For
-                                ElseIf Not randomThieves And thiefCharacters.Contains(characterIDObject) Then
-                                    Continue For
-                                ElseIf Not randomBosses And bossCharacters.Contains(characterIDObject) Then
-                                    Continue For
-                                ElseIf exemptCharacters.Contains(characterIDObject) Then
-                                    Continue For
-                                End If
+                                newClassId = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.randomClassFromOriginalClass(oldClass.classId, randomLords, randomThieves, uniqueClasses, rng),
+                                                 IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.randomClassFromOriginalClass(oldClass.classId, randomLords, randomThieves, uniqueClasses, rng), oldClass.classId))
                             Else
-                                ' Never touch bosses if we're not randomizing classes (or blacklisted for that matter)
-                                If bossCharacters.Contains(characterIDObject) Then
-                                    Continue For
-                                ElseIf exemptCharacters.Contains(characterIDObject) Then
-                                    Continue For
-                                End If
+                                newClassId = currentCharacter.classId
                             End If
+                        End If
 
-                            ' If we got this far, he/she's getting randomized
-                            ' Grab a random class from the allowed classes. Each game
-                            ' will know what valid classes are possible.
-                            Dim newClassId As Byte
-                            ' Keep track of whether this character was a Lord character, because whatever
-                            ' his or her new class is also needs to have lord abilities (like Seize)
-                            Dim wasLord As Boolean = False
-                            ' Keep track of thieves too. If they're randomized, we need to give them
-                            ' some keys.
-                            Dim wasThief As Boolean = False
-                            Dim currentCharacter As FECharacter = characterLookup.Item(unit.characterId)
-                            If type = Utilities.GameType.GameTypeFE6 Then
-                                ' FE6 stores this in the character object.
-                                Dim oldClassIDObject As FE6GameData.ClassList = System.Enum.ToObject(GetType(FE6GameData.ClassList), currentCharacter.classId)
-                                Dim oldClass As FEClass = classLookup.Item(currentCharacter.classId)
-                                wasLord = oldClass.isLord
-                                wasThief = oldClass.isThief
-                                If shouldRandomizeClasses Then
-                                    newClassId = FE6GameData.randomClassFromOriginalClass(oldClassIDObject, randomLords, randomThieves, uniqueClasses, rng)
-                                Else
-                                    newClassId = currentCharacter.classId
+                        ' For FE7, some characters have linked classes, so changing it in one place should change it in the other place.
+                        ' This may not work properly for modified recruitment.
+                        If type = Utilities.GameType.GameTypeFE7 Then
+                            Dim linkedIDs As ArrayList = FE7GameData.linkedCharacterIDsToCharacterID(currentCharacter.characterId)
+                            For Each linkedId As FE7GameData.CharacterList In linkedIDs
+                                If targetClasses.ContainsKey(linkedId) Then
+                                    newClassId = targetClasses.Item(linkedId)
+                                    Exit For
                                 End If
-                            End If
+                            Next
+                        End If
 
-                            Dim newClass As FEClass = classLookup.Item(newClassId)
+                        Dim newClass As FEClass = classLookup.Item(newClassId)
 
-                            ' If the old class was a lord, then apply the lord status on the 
-                            ' character (not the class!)
-                            If wasLord Then
-                                currentCharacter.ability2 = currentCharacter.ability2 Or FECharacter.ClassAbility2.Lord
-                            End If
+                        ' If the old class was a lord, then apply the lord status on the 
+                        ' character (not the class!)
+                        If wasLord Then
+                            currentCharacter.ability2 = currentCharacter.ability2 Or FECharacter.ClassAbility2.Lord
+                        End If
 
-                            ' Update the character's class in the object.
-                            currentCharacter.classId = newClass.classId
+                        ' Update the character's class in the object.
+                        currentCharacter.classId = newClass.classId
 
-                            ' Make sure their weapon levels are consistent with their new class.
-                            currentCharacter.swordLevel = newClass.swordLevel
-                            currentCharacter.spearLevel = newClass.spearLevel
-                            currentCharacter.axeLevel = newClass.axeLevel
-                            currentCharacter.bowLevel = newClass.bowLevel
-                            currentCharacter.staffLevel = newClass.staffLevel
-                            currentCharacter.animaLevel = newClass.animaLevel
-                            currentCharacter.darkLevel = newClass.darkLevel
-                            currentCharacter.lightLevel = newClass.lightLevel
+                        ' Make sure their weapon levels are consistent with their new class.
+                        currentCharacter.swordLevel = newClass.swordLevel
+                        currentCharacter.spearLevel = newClass.spearLevel
+                        currentCharacter.axeLevel = newClass.axeLevel
+                        currentCharacter.bowLevel = newClass.bowLevel
+                        currentCharacter.staffLevel = newClass.staffLevel
+                        currentCharacter.animaLevel = newClass.animaLevel
+                        currentCharacter.darkLevel = newClass.darkLevel
+                        currentCharacter.lightLevel = newClass.lightLevel
 
-                            ' Add a chance to increase their weapon ranks depending
-                            ' on how late they join.
-                            currentCharacter.increaseWeaponRanksWithPercentChance(weaponLevelIncreaseChance, type, rng)
+                        ' Add a chance to increase their weapon ranks depending
+                        ' on how late they join.
+                        currentCharacter.increaseWeaponRanksWithPercentChance(weaponLevelIncreaseChance, type, rng)
 
-                            ' Make sure their class has valid stats.
-                            currentCharacter.validate(newClass, minimumCON, type)
+                        ' Make sure their class has valid stats.
+                        currentCharacter.validate(newClass, minimumCON, type)
 
-                            ' Cache the result of this character's class.
-                            targetClasses.Add(characterIDObject, newClass.classId)
+                        ' Cache the result of this character's class.
+                        Utilities.setObjectForKey(targetClasses, newClass.classId, characterIDObject)
 
-                            ' Remember to update their class in the chapter data.
-                            ' Be wary of some other classes. FE6 likes to use characters
-                            ' for NPCs temporarily, so don't mess with those.
-                            ' Be wary of some other classes. FE6 likes to use characters
-                            ' for NPCs temporarily, so don't mess with those.
-                            If type = Utilities.GameType.GameTypeFE6 Then
-                                If Not FE6GameData.isValidClass(unit.classId) Then
-                                    Console.WriteLine("Skipping invalid classID: " + unit.classId)
-                                Else
-                                    unit.classId = newClass.classId
-                                End If
+                        ' Remember to update their class in the chapter data.
+                        ' Be wary of some other classes. FE6 likes to use characters
+                        ' for NPCs temporarily, so don't mess with those.
+                        If type = Utilities.GameType.GameTypeFE6 Then
+                            If Not FE6GameData.isValidClass(unit.classId) Then
+                                Console.WriteLine("Skipping invalid classID: " + unit.classId)
                             Else
                                 unit.classId = newClass.classId
                             End If
+                        ElseIf type = Utilities.GameType.GameTypeFE7 Then
+                            If Not FE7GameData.isValidClass(unit.classId) Then
+                                Console.WriteLine("Skipping invalid classID: " + unit.classId)
+                            Else
+                                unit.classId = newClass.classId
+                            End If
+                        Else
+                            unit.classId = newClass.classId
+                        End If
 
-                            ' Validate their inventory too.
-                            ' Check each item and make sure weapons they start with are usable.
-                            ' Replace ones that aren't with ones that are.
-                            Dim validatedInventory As ArrayList = New ArrayList()
+                        ' Validate their inventory too.
+                        ' Check each item and make sure weapons they start with are usable.
+                        ' Replace ones that aren't with ones that are.
+                        Dim validatedInventory As ArrayList = New ArrayList()
 
+                        Dim hasLegendaryWeapon As Boolean = False
+
+                        ' For FE7 check for legendary-ness
+                        If type = Utilities.GameType.GameTypeFE7 Then
+                            ' Note: this only works for bosses. Normal characters may have swapped IDs, so may not work with them.
+                            Dim isLegendary As Boolean = FE7GameData.shouldSpawnWithLegendaryWeapon(unit.characterId)
+                            If isLegendary Then
+                                Dim legendaryWeapon As FEItem = itemLookup(Convert.ToByte(FE7GameData.legendaryWeaponForClass(newClass.classId)))
+                                If Not IsNothing(legendaryWeapon) Then
+                                    hasLegendaryWeapon = True
+                                    validatedInventory.Add(FE7GameData.ItemList.Elixir)
+                                    validatedInventory.Add(legendaryWeapon.weaponID)
+                                    validatedInventory.Add(0)
+                                    validatedInventory.Add(0)
+                                    If legendaryWeapon.type = FEItem.WeaponType.WeaponTypeAnima Then
+                                        currentCharacter.animaLevel = FE7GameData.WeaponRank.WeaponRankS
+                                    ElseIf legendaryWeapon.type = FEItem.WeaponType.WeaponTypeAxe Then
+                                        currentCharacter.axeLevel = FE7GameData.WeaponRank.WeaponRankS
+                                    ElseIf legendaryWeapon.type = FEItem.WeaponType.WeaponTypeBow Then
+                                        currentCharacter.bowLevel = FE7GameData.WeaponRank.WeaponRankS
+                                    ElseIf legendaryWeapon.type = FEItem.WeaponType.WeaponTypeDark Then
+                                        currentCharacter.darkLevel = FE7GameData.WeaponRank.WeaponRankS
+                                    ElseIf legendaryWeapon.type = FEItem.WeaponType.WeaponTypeLight Then
+                                        currentCharacter.lightLevel = FE7GameData.WeaponRank.WeaponRankS
+                                    ElseIf legendaryWeapon.type = FEItem.WeaponType.WeaponTypeSpear Then
+                                        currentCharacter.spearLevel = FE7GameData.WeaponRank.WeaponRankS
+                                    ElseIf legendaryWeapon.type = FEItem.WeaponType.WeaponTypeStaff Then
+                                        currentCharacter.staffLevel = FE7GameData.WeaponRank.WeaponRankS
+                                    ElseIf legendaryWeapon.type = FEItem.WeaponType.WeaponTypeSword Then
+                                        currentCharacter.swordLevel = FE7GameData.WeaponRank.WeaponRankS
+                                    End If
+                                End If
+                            End If
+                        End If
+
+                        If hasLegendaryWeapon = False Then
                             Dim validWeapons As ArrayList = New ArrayList()
                             If currentCharacter.swordLevel > 0 Then
                                 Dim validSwords As ArrayList = itemByType.Item(FEItem.WeaponType.WeaponTypeSword)
@@ -794,7 +868,7 @@ StartOver:
                             If currentCharacter.lightLevel > 0 Then
                                 Dim validLight As ArrayList = itemByType.Item(FEItem.WeaponType.WeaponTypeLight)
                                 For Each key In itemByRank.Keys
-                                    If key < currentCharacter.lightLevel Then
+                                    If key <= currentCharacter.lightLevel Then
                                         Dim weaponsByRank As ArrayList = itemByRank(key)
                                         validWeapons = Utilities.arrayUnion(validWeapons, Utilities.arrayIntersect(validLight, weaponsByRank))
                                     End If
@@ -819,6 +893,8 @@ StartOver:
                                 Next
                             End If
 
+                            Dim hasUniqueItemAlready As Boolean = False
+
                             If unit.item1Id <> 0 Then
                                 Dim item1 As FEItem = itemLookup.Item(unit.item1Id)
                                 If IsNothing(item1) Then
@@ -839,12 +915,27 @@ StartOver:
                                                 newWeapon = itemLookup.Item(validWeapons.Item(rng.Next(validWeapons.Count)))
                                             Loop
                                             validatedInventory.Add(newWeapon.weaponID)
-                                        ElseIf newClass.classId = FE6GameData.ClassList.Manakete Then
-                                            validatedInventory.Add(FE6GameData.ItemList.FireDragonStone)
-                                        ElseIf newClass.classId = FE6GameData.ClassList.Manakete_F Then
-                                            validatedInventory.Add(FE6GameData.ItemList.DivineDragonStone)
                                         Else
-                                            validatedInventory.Add(item1.weaponID)
+                                            If type = Utilities.GameType.GameTypeFE6 Then
+                                                If newClass.classId = FE6GameData.ClassList.Manakete Then
+                                                    validatedInventory.Add(FE6GameData.ItemList.FireDragonStone)
+                                                    hasUniqueItemAlready = True
+                                                ElseIf newClass.classId = FE6GameData.ClassList.Manakete_F Then
+                                                    validatedInventory.Add(FE6GameData.ItemList.DivineDragonStone)
+                                                    hasUniqueItemAlready = True
+                                                Else
+                                                    validatedInventory.Add(item1.weaponID)
+                                                End If
+                                            ElseIf type = Utilities.GameType.GameTypeFE7 Then
+                                                If newClass.classId = FE7GameData.ClassList.Dancer Or newClass.classId = FE7GameData.ClassList.Bard Then
+                                                    validatedInventory.Add(FE7GameData.ItemList.NinisGrace)
+                                                    hasUniqueItemAlready = True
+                                                Else
+                                                    validatedInventory.Add(item1.weaponID)
+                                                End If
+                                            Else
+                                                validatedInventory.Add(item1.weaponID)
+                                            End If
                                         End If
                                     End If
                                 Else
@@ -875,12 +966,35 @@ StartOver:
                                                 newWeapon = itemLookup.Item(validWeapons.Item(rng.Next(validWeapons.Count)))
                                             Loop
                                             validatedInventory.Add(newWeapon.weaponID)
-                                        ElseIf newClass.classId = FE6GameData.ClassList.Manakete Then
-                                            validatedInventory.Add(FE6GameData.ItemList.FireDragonStone)
-                                        ElseIf newClass.classId = FE6GameData.ClassList.Manakete_F Then
-                                            validatedInventory.Add(FE6GameData.ItemList.DivineDragonStone)
                                         Else
-                                            validatedInventory.Add(item2.weaponID)
+                                            If type = Utilities.GameType.GameTypeFE6 Then
+                                                If hasUniqueItemAlready Then
+                                                    validatedInventory.Add(FE6GameData.ItemList.Elixir)
+                                                Else
+                                                    If newClass.classId = FE6GameData.ClassList.Manakete Then
+                                                        validatedInventory.Add(FE6GameData.ItemList.FireDragonStone)
+                                                        hasUniqueItemAlready = True
+                                                    ElseIf newClass.classId = FE6GameData.ClassList.Manakete_F Then
+                                                        validatedInventory.Add(FE6GameData.ItemList.DivineDragonStone)
+                                                        hasUniqueItemAlready = True
+                                                    Else
+                                                        validatedInventory.Add(item2.weaponID)
+                                                    End If
+                                                End If
+                                            ElseIf type = Utilities.GameType.GameTypeFE7 Then
+                                                If hasUniqueItemAlready Then
+                                                    validatedInventory.Add(FE7GameData.ItemList.Elixir)
+                                                Else
+                                                    If newClass.classId = FE7GameData.ClassList.Dancer Or newClass.classId = FE7GameData.ClassList.Bard Then
+                                                        validatedInventory.Add(FE7GameData.ItemList.NinisGrace)
+                                                        hasUniqueItemAlready = True
+                                                    Else
+                                                        validatedInventory.Add(item2.weaponID)
+                                                    End If
+                                                End If
+                                            Else
+                                                validatedInventory.Add(item2.weaponID)
+                                            End If
                                         End If
                                     End If
                                 Else
@@ -911,12 +1025,35 @@ StartOver:
                                                 newWeapon = itemLookup.Item(validWeapons.Item(rng.Next(validWeapons.Count)))
                                             Loop
                                             validatedInventory.Add(newWeapon.weaponID)
-                                        ElseIf newClass.classId = FE6GameData.ClassList.Manakete Then
-                                            validatedInventory.Add(FE6GameData.ItemList.FireDragonStone)
-                                        ElseIf newClass.classId = FE6GameData.ClassList.Manakete_F Then
-                                            validatedInventory.Add(FE6GameData.ItemList.DivineDragonStone)
                                         Else
-                                            validatedInventory.Add(item3.weaponID)
+                                            If type = Utilities.GameType.GameTypeFE6 Then
+                                                If hasUniqueItemAlready Then
+                                                    validatedInventory.Add(FE6GameData.ItemList.Elixir)
+                                                Else
+                                                    If newClass.classId = FE6GameData.ClassList.Manakete Then
+                                                        validatedInventory.Add(FE6GameData.ItemList.FireDragonStone)
+                                                        hasUniqueItemAlready = True
+                                                    ElseIf newClass.classId = FE6GameData.ClassList.Manakete_F Then
+                                                        validatedInventory.Add(FE6GameData.ItemList.DivineDragonStone)
+                                                        hasUniqueItemAlready = True
+                                                    Else
+                                                        validatedInventory.Add(item3.weaponID)
+                                                    End If
+                                                End If
+                                            ElseIf type = Utilities.GameType.GameTypeFE7 Then
+                                                If hasUniqueItemAlready Then
+                                                    validatedInventory.Add(FE7GameData.ItemList.Elixir)
+                                                Else
+                                                    If newClass.classId = FE7GameData.ClassList.Dancer Or newClass.classId = FE7GameData.ClassList.Bard Then
+                                                        validatedInventory.Add(FE7GameData.ItemList.NinisGrace)
+                                                        hasUniqueItemAlready = True
+                                                    Else
+                                                        validatedInventory.Add(item3.weaponID)
+                                                    End If
+                                                End If
+                                            Else
+                                                validatedInventory.Add(item3.weaponID)
+                                            End If
                                         End If
                                     End If
                                 Else
@@ -947,12 +1084,35 @@ StartOver:
                                                 newWeapon = itemLookup.Item(validWeapons.Item(rng.Next(validWeapons.Count)))
                                             Loop
                                             validatedInventory.Add(newWeapon.weaponID)
-                                        ElseIf newClass.classId = FE6GameData.ClassList.Manakete Then
-                                            validatedInventory.Add(FE6GameData.ItemList.FireDragonStone)
-                                        ElseIf newClass.classId = FE6GameData.ClassList.Manakete_F Then
-                                            validatedInventory.Add(FE6GameData.ItemList.DivineDragonStone)
                                         Else
-                                            validatedInventory.Add(item4.weaponID)
+                                            If type = Utilities.GameType.GameTypeFE6 Then
+                                                If hasUniqueItemAlready Then
+                                                    validatedInventory.Add(FE6GameData.ItemList.Elixir)
+                                                Else
+                                                    If newClass.classId = FE6GameData.ClassList.Manakete Then
+                                                        validatedInventory.Add(FE6GameData.ItemList.FireDragonStone)
+                                                        hasUniqueItemAlready = True
+                                                    ElseIf newClass.classId = FE6GameData.ClassList.Manakete_F Then
+                                                        validatedInventory.Add(FE6GameData.ItemList.DivineDragonStone)
+                                                        hasUniqueItemAlready = True
+                                                    Else
+                                                        validatedInventory.Add(item4.weaponID)
+                                                    End If
+                                                End If
+                                            ElseIf type = Utilities.GameType.GameTypeFE7 Then
+                                                If hasUniqueItemAlready Then
+                                                    validatedInventory.Add(FE7GameData.ItemList.Elixir)
+                                                Else
+                                                    If newClass.classId = FE7GameData.ClassList.Dancer Or newClass.classId = FE7GameData.ClassList.Bard Then
+                                                        validatedInventory.Add(FE7GameData.ItemList.NinisGrace)
+                                                        hasUniqueItemAlready = True
+                                                    Else
+                                                        validatedInventory.Add(item4.weaponID)
+                                                    End If
+                                                End If
+                                            Else
+                                                validatedInventory.Add(item4.weaponID)
+                                            End If
                                         End If
                                     End If
                                 Else
@@ -963,22 +1123,32 @@ StartOver:
                             Else
                                 validatedInventory.Add(0)
                             End If
+                        End If
 
-                            ' For thieves (either characters originally thieves or
-                            ' characters that are turned into thieves), they have special
-                            ' requirements to make sure the game is still completable.
-                            ' Old thieves need to have keys to make sure they can perform basic
-                            ' thief actions. New thieves get a free set of lockpicks.
 
-                            If randomThieves Then
-                                If wasThief And Not newClass.isThief Then
-                                    Dim lockpickIndex As Integer = validatedInventory.IndexOf(Convert.ToByte(FE6GameData.ItemList.Lockpick))
+                        ' For thieves (either characters originally thieves or
+                        ' characters that are turned into thieves), they have special
+                        ' requirements to make sure the game is still completable.
+                        ' Old thieves need to have keys to make sure they can perform basic
+                        ' thief actions. New thieves get a free set of lockpicks.
+
+                        Dim lockpickItem As Byte = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.ItemList.Lockpick,
+                                                               IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.ItemList.Lockpick, Nothing))
+
+                        If randomThieves Then
+                            If wasThief And Not newClass.isThief Then
+                                
+                                If Not IsNothing(lockpickItem) Then
+                                    Dim lockpickIndex As Integer = validatedInventory.IndexOf(lockpickItem)
                                     If lockpickIndex <> -1 Then
                                         validatedInventory.RemoveAt(lockpickIndex)
                                         validatedInventory.Add(0)
                                     End If
+                                End If
 
-                                    Dim equipment As ArrayList = FE6GameData.randomizedFromThiefEquipment
+                                Dim equipment As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.randomizedFromThiefEquipment,
+                                                                 IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.randomizedFromThiefEquipment, Nothing))
+                                If Not IsNothing(equipment) Then
                                     For Each item As Byte In equipment
                                         Dim firstEmptySlot As Integer = validatedInventory.IndexOf(0)
                                         If firstEmptySlot = -1 Then
@@ -986,8 +1156,12 @@ StartOver:
                                         End If
                                         validatedInventory.Insert(firstEmptySlot, item)
                                     Next
-                                ElseIf Not wasThief And newClass.isThief Then
-                                    Dim equipment As ArrayList = FE6GameData.randomizedToThiefEquipment
+                                End If
+
+                            ElseIf Not wasThief And newClass.isThief Then
+                                Dim equipment As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.randomizedToThiefEquipment,
+                                                                 IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.randomizedToThiefEquipment, Nothing))
+                                If Not IsNothing(equipment) Then
                                     For Each item As Byte In equipment
                                         Dim firstEmptySlot As Integer = validatedInventory.IndexOf(0)
                                         If firstEmptySlot = -1 Then
@@ -997,30 +1171,59 @@ StartOver:
                                     Next
                                 End If
                             End If
+                        End If
 
-                            If recruitment <> RecruitmentType.RecruitmentTypeNormal Then
-                                If newClass.isThief Then
-                                    Dim lockpickIndex As Integer = validatedInventory.IndexOf(Convert.ToByte(FE6GameData.ItemList.Lockpick))
-                                    If lockpickIndex = -1 Then
+                        If recruitment <> RecruitmentType.RecruitmentTypeNormal Then
+                            Dim thiefArray As ArrayList = New ArrayList()
+                            If type = Utilities.GameType.GameTypeFE6 Then
+                                thiefArray = FE6GameData.thiefCharacterIDs()
+                            ElseIf type = Utilities.GameType.GameTypeFE7 Then
+                                thiefArray = FE7GameData.thiefCharacterIDs()
+                            End If
+                            wasThief = thiefArray.Contains(System.Enum.ToObject(characterType, characterIDObject))
+                            If newClass.isThief Then
+                                Dim equipment As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.randomizedToThiefEquipment,
+                                                                 IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.randomizedToThiefEquipment, Nothing))
+                                If Not IsNothing(equipment) Then
+                                    For Each item As Byte In equipment
                                         Dim firstEmptySlot As Integer = validatedInventory.IndexOf(0)
-                                        If firstEmptySlot <> -1 Then
-                                            validatedInventory.Insert(firstEmptySlot, Convert.ToByte(FE6GameData.ItemList.Lockpick))
+                                        If firstEmptySlot = -1 Then
+                                            Exit For
                                         End If
+                                        validatedInventory.Insert(firstEmptySlot, item)
+                                    Next
+                                End If
+                            ElseIf wasThief Then
+                                If Not IsNothing(lockpickItem) Then
+                                    Dim lockpickIndex As Integer = validatedInventory.IndexOf(lockpickItem)
+                                    If lockpickIndex <> -1 Then
+                                        validatedInventory.RemoveAt(lockpickIndex)
+                                        validatedInventory.Add(0)
                                     End If
                                 End If
+
+                                Dim equipment As ArrayList = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.randomizedFromThiefEquipment,
+                                                                 IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.randomizedFromThiefEquipment, Nothing))
+                                If Not IsNothing(equipment) Then
+                                    For Each item As Byte In equipment
+                                        Dim firstEmptySlot As Integer = validatedInventory.IndexOf(0)
+                                        If firstEmptySlot = -1 Then
+                                            Exit For
+                                        End If
+                                        validatedInventory.Insert(firstEmptySlot, item)
+                                    Next
+                                End If
                             End If
-
-                            While validatedInventory.Count > 4
-                                validatedInventory.RemoveAt(validatedInventory.Count - 1)
-                            End While
-
-                            unit.item1Id = validatedInventory.Item(0)
-                            unit.item2Id = validatedInventory.Item(1)
-                            unit.item3Id = validatedInventory.Item(2)
-                            unit.item4Id = validatedInventory.Item(3)
-
-                            targetInventory.Add(characterIDObject, validatedInventory)
                         End If
+
+                        While validatedInventory.Count > 4
+                            validatedInventory.RemoveAt(validatedInventory.Count - 1)
+                        End While
+
+                        unit.item1Id = validatedInventory.Item(0)
+                        unit.item2Id = validatedInventory.Item(1)
+                        unit.item3Id = validatedInventory.Item(2)
+                        unit.item4Id = validatedInventory.Item(3)
                     End If
                 Next
             Next
@@ -1074,7 +1277,6 @@ StartOver:
         Next
 
         If type = Utilities.GameType.GameTypeFE6 Then
-
             Dim chapterPointers As Array = System.Enum.GetValues(GetType(FE6GameData.ChapterUnitReference))
             Dim chapterUnitCounts As ArrayList = FE6GameData.UnitsInEachChapter()
 
@@ -1088,6 +1290,20 @@ StartOver:
                     unit.writeChapterUnitToOffset(fileWriter, fileWriter.Position, FE6GameData.ChapterUnitEntrySize, Utilities.GameType.GameTypeFE6)
                 Next
             Next
+        ElseIf type = Utilities.GameType.GameTypeFE7 Then
+            Dim chapterPointers As Array = System.Enum.GetValues(GetType(FE7GameData.ChapterUnitReference))
+            Dim chapterUnitCounts As ArrayList = FE7GameData.UnitsInEachChapter()
+
+            For i As Integer = 0 To chapterPointers.Length - 1
+                Dim pointer = chapterPointers(i)
+                Dim unitCount = chapterUnitCounts.Item(i)
+                fileWriter.Seek(pointer, IO.SeekOrigin.Begin)
+                Dim unitList As ArrayList = chapterUnitData.Item(i)
+                For j As Integer = 0 To unitList.Count - 1
+                    Dim unit As FEChapterUnit = unitList.Item(j)
+                    unit.writeChapterUnitToOffset(fileWriter, fileWriter.Position, FE7GameData.ChapterUnitEntrySize, Utilities.GameType.GameTypeFE7)
+                Next
+            Next
         End If
 
         If Not IsNothing(quoteManager) Then
@@ -1095,6 +1311,9 @@ StartOver:
         End If
         If Not IsNothing(supportManager) Then
             supportManager.commitChanges(fileWriter)
+        End If
+        If Not IsNothing(spellAssociationManager) Then
+            spellAssociationManager.commitChanges(fileWriter)
         End If
 
         fileWriter.Close()
@@ -1179,7 +1398,7 @@ StartOver:
 
         RandomizeAffinityToggle.Enabled = True
 
-        If type = Utilities.GameType.GameTypeFE6 Then
+        If type <> Utilities.GameType.GameTypeFE8 Then
             RandomizeClassesToggle.Enabled = True
             IncludeLordsToggle.Enabled = RandomizeClassesToggle.Checked
             IncludeThievesToggle.Enabled = RandomizeClassesToggle.Checked
@@ -1208,7 +1427,7 @@ StartOver:
         SetConstantEnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
         BuffBossesToggle.Enabled = IncreaseEnemyGrowthsToggle.Checked
 
-        If type = Utilities.GameType.GameTypeFE6 Then
+        If type <> Utilities.GameType.GameTypeFE8 Then
             NormalRecruitmentOption.Enabled = True
             ReverseRecruitmentOption.Enabled = True
             RandomRecruitmentOption.Enabled = True

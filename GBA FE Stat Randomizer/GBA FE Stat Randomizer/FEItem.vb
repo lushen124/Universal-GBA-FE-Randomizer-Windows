@@ -130,13 +130,13 @@
         filePtr.Seek(offset + entrySize, IO.SeekOrigin.Begin)
     End Sub
 
-    Public Sub writeItemToOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal type As Utilities.GameType)
+    Public Sub writeItemToOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gameType As Utilities.GameType)
         ' Don't touch ID or type!
         filePtr.Seek(offset + 8, IO.SeekOrigin.Begin)
         filePtr.WriteByte(weaponAbility1)
         filePtr.WriteByte(weaponAbility2)
 
-        If type <> Utilities.GameType.GameTypeFE6 Then
+        If gameType <> Utilities.GameType.GameTypeFE6 Then
             filePtr.WriteByte(weaponAbility3)
         End If
 
@@ -157,7 +157,7 @@
         filePtr.Seek(offset + 31, IO.SeekOrigin.Begin)
         filePtr.WriteByte(effect)
 
-        If type <> Utilities.GameType.GameTypeFE6 Then
+        If gameType <> Utilities.GameType.GameTypeFE6 Then
             filePtr.WriteByte(experience)
         End If
 
@@ -236,8 +236,8 @@
         End If
     End Sub
 
-    Public Sub assignRandomEffect(ByRef rng As Random, ByVal type As Utilities.GameType)
-        Dim randomTrait = rng.Next(0, PotentialTrait.PotentialTraitCount - IIf(type <> Utilities.GameType.GameTypeFE6, 1, 2))
+    Public Sub assignRandomEffect(ByRef rng As Random, ByVal gameType As Utilities.GameType)
+        Dim randomTrait = rng.Next(0, PotentialTrait.PotentialTraitCount - IIf(gameType <> Utilities.GameType.GameTypeFE6, 1, 2))
 
         If randomTrait = PotentialTrait.PotentialTraitPoison Or
             randomTrait = PotentialTrait.PotentialTraitHalveHP Or
@@ -245,7 +245,7 @@
             ' Check to see if one of these is already set. If it is, we don't want to overwrite it
             ' because these cannot be stacked. Choose another if that's the case.
             If effect <> WeaponEffect.WeaponEffectNone Then
-                assignRandomEffect(rng, type)
+                assignRandomEffect(rng, gameType)
             Else
                 If randomTrait = PotentialTrait.PotentialTraitPoison Then effect = WeaponEffect.WeaponEffectPoison
                 If randomTrait = PotentialTrait.PotentialTraitHalveHP Then effect = WeaponEffect.WeaponEffectHalvesHP
@@ -259,27 +259,27 @@
             ' if the bit is already set, and if it is, redo the random.
             If randomTrait = PotentialTrait.PotentialTraitUnbreakable Then
                 If weaponAbility1 And Ability1.Ability1Unbreakable Then
-                    assignRandomEffect(rng, type)
+                    assignRandomEffect(rng, gameType)
                 Else
                     weaponAbility1 = weaponAbility1 Or Ability1.Ability1Unbreakable
                 End If
             ElseIf randomTrait = PotentialTrait.PotentialTraitBrave Then
                 If weaponAbility1 And Ability1.Ability1Brave Then
-                    assignRandomEffect(rng, type)
+                    assignRandomEffect(rng, gameType)
                 Else
                     weaponAbility1 = weaponAbility1 Or Ability1.Ability1Brave
                 End If
             ElseIf randomTrait = PotentialTrait.PotentialTraitMagicDamage Then
-                If weaponAbility1 And Ability1.Ability1MagicDamage Then
-                    assignRandomEffect(rng, type)
+                If weaponAbility1 And Ability1.Ability1MagicDamage Or type = WeaponType.WeaponTypeLight Or type = WeaponType.WeaponTypeDark Or type = WeaponType.WeaponTypeAnima Then
+                    assignRandomEffect(rng, gameType)
                 Else
                     weaponAbility1 = weaponAbility1 Or Ability1.Ability1MagicDamage
                 End If
             Else
                 ' FE6 does not handle uncounterable very well (forcing it to be animated from 3+ spaces away and locking up weapons that can't do that)
                 ' FE7 kind of works, but enemies will force a soft lock when using it.
-                If (weaponAbility1 And Ability1.Ability1Uncounterable) Or type <> Utilities.GameType.GameTypeFE8 Then
-                    assignRandomEffect(rng, type)
+                If (weaponAbility1 And Ability1.Ability1Uncounterable) Or gameType <> Utilities.GameType.GameTypeFE8 Then
+                    assignRandomEffect(rng, gameType)
                 Else
                     weaponAbility1 = weaponAbility1 Or Ability1.Ability1Uncounterable
                 End If
@@ -288,7 +288,7 @@
             ' These apply to weapon ability 2. Also bit masked.
             ' Redo if already set.
             If weaponAbility2 And Ability2.Ability2ReverseTriangle Then
-                assignRandomEffect(rng, type)
+                assignRandomEffect(rng, gameType)
             Else
                 weaponAbility2 = weaponAbility2 Or Ability2.Ability2ReverseTriangle
             End If
@@ -297,7 +297,7 @@
             ' This doesn't exist on FE6, so if we somehow got here in FE6, redo.
             ' Again, if it's set, redo as well.
             If type = Utilities.GameType.GameTypeFE6 Or weaponAbility3 And Ability3.Ability3NegateDefenses Then
-                assignRandomEffect(rng, type)
+                assignRandomEffect(rng, gameType)
             Else
                 weaponAbility3 = weaponAbility3 Or Ability3.Ability3NegateDefenses
             End If
@@ -305,21 +305,21 @@
             ' This writes a pointer to the effectiveness slot.
             ' If this pointer isn't 0, then redo
             If effectiveness <> 0 Then
-                assignRandomEffect(rng, type)
+                assignRandomEffect(rng, gameType)
             Else
-                If type = Utilities.GameType.GameTypeFE6 Then effectiveness = FE6GameData.randomEffectiveness(rng)
-                If type = Utilities.GameType.GameTypeFE7 Then effectiveness = FE7GameData.randomEffectiveness(rng)
-                If type = Utilities.GameType.GameTypeFE8 Then effectiveness = FE8GameData.randomEffectiveness(rng)
+                If gameType = Utilities.GameType.GameTypeFE6 Then effectiveness = FE6GameData.randomEffectiveness(rng)
+                If gameType = Utilities.GameType.GameTypeFE7 Then effectiveness = FE7GameData.randomEffectiveness(rng)
+                If gameType = Utilities.GameType.GameTypeFE8 Then effectiveness = FE8GameData.randomEffectiveness(rng)
             End If
         ElseIf randomTrait = PotentialTrait.PotentialTraitStatIncrease Then
             ' This writes a pointer to the stat increase slot.
             ' If this pointer isn't 0, then redo
             If statBonus <> 0 Then
-                assignRandomEffect(rng, type)
+                assignRandomEffect(rng, gameType)
             Else
-                If type = Utilities.GameType.GameTypeFE6 Then statBonus = FE6GameData.randomStatBonus(rng)
-                If type = Utilities.GameType.GameTypeFE7 Then statBonus = FE7GameData.randomStatBonus(rng)
-                If type = Utilities.GameType.GameTypeFE8 Then statBonus = FE8GameData.randomStatBonus(rng)
+                If gameType = Utilities.GameType.GameTypeFE6 Then statBonus = FE6GameData.randomStatBonus(rng)
+                If gameType = Utilities.GameType.GameTypeFE7 Then statBonus = FE7GameData.randomStatBonus(rng)
+                If gameType = Utilities.GameType.GameTypeFE8 Then statBonus = FE8GameData.randomStatBonus(rng)
             End If
         End If
     End Sub
