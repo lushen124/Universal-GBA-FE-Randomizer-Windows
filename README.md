@@ -94,9 +94,9 @@ The intent for this project was to create an easy-to-use and customizable random
 
 The remaining feature list (which you can get a sneak peek at with the app) is as follows:
 
-* Random Classes for FE7 and FE8
+* Random Classes for FE8
 * Option to Randomize regular enemies
-* Random Recruitment Order
+* Random Recruitment Order for FE8
 * Attempt to un-messify color palettes for randomized classes.
 * Maybe try to get faces consistent in cutscenes when modifying recruitment.
 
