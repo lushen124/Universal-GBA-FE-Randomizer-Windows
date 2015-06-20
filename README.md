@@ -3,6 +3,10 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**June 19, 2015**
+
+*Beta Release* - Worked out a ton of issues with FE7 and hopefully should be in a testable state now. I tested the first two chapters of Eliwood and Hector mode a little bit and they seem to work, although I am soliciting ideas for how to handle Athos for reverse recruitment, as his stats would be broken as an Archsage, but he has no growths (save for 25% RES, I think) to support an unpromoted class like a Mage.
+
 **June 18, 2015**
 
 Added the ability to apply patches. Currently for use with FE7 to remove the tutorial, using a patch from Blazer. 
@@ -79,9 +83,9 @@ The intent for this project was to create an easy-to-use and customizable random
 
 ### FE7 Notes
 
-* It's likely I'll ask for you to avoid Lyn Normal mode for the time being due to the tutorial likely to be screwed by any modifications. Lyn Hard mode should be ok though (as long as the tutorial is off). The other option is that the randomizer automatically applies a tutorial killer patch or something.
+* It's likely I'll ask for you to avoid Lyn Normal mode for the time being due to the tutorial likely to be screwed by any modifications. Lyn Hard mode should be ok though (as long as the tutorial is off). The other option is that the randomizer automatically applies a tutorial killer patch or something. **EDIT: The randomizer now does this for you. FE7 will be auto-patched with Blazer's tutorial killer. Won't stop all issues with Lyn mode, but it might give you a chance of playing through it. Don't ask me how stats will transfer, I have no idea.**
 * By default, all classes that don't naturally show up in the game are removed from the pool when randomizing classes. That is, a large chunk of female classes (thief, mercenary, myrmidon, cavalier, nomad, wyvern knight, shaman, and armor knight, I think) will not show up. I'd rather things work well, then deal with glitches.
-* Figuring out mappings for reverse recruitment is a bit difficult due to a high chance of Isadora and Vaida getting demoted into classes that may be buggy. We'll roll with it for now and see how badly it breaks.
+* Figuring out mappings for reverse recruitment is a bit difficult due to a high chance of Isadora and Vaida getting demoted into classes that may be buggy. We'll roll with it for now and see how badly it breaks. **EDIT: I've settled for using Hector mode as the basis for reverse recruitment (with slight modifications for less issues).**
 * Need a solution for Athos in Reverse Recruitment, as he starts with no stats, and in a unique class that can't promote. Will probably have to create a special class for him.
 
 ### FE8 Notes
