@@ -112,6 +112,7 @@
     <Compile Include="FEClass.vb" />
     <Compile Include="Patcher.vb" />
     <Compile Include="QuoteManager.vb" />
+    <Compile Include="SpellAssociationManager.vb" />
     <Compile Include="SupportManager.vb" />
     <Compile Include="Utilities.vb" />
     <Compile Include="FEItem.vb" />

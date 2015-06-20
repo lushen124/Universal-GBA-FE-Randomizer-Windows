@@ -26,3 +26,4 @@ C:\Users\lushe_000\Documents\GitHub\Universal-GBA-FE-Randomizer-Windows\GBA FE S
 C:\Users\lushe_000\Documents\GitHub\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Release\GBA FE Randomizer.vbproj.GenerateResource.Cache
 C:\Users\lushe_000\Documents\GitHub\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Release\GBA FE Randomizer.exe.manifest
 C:\Users\lushe_000\Documents\GitHub\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Release\GBA FE Randomizer.application
+C:\Users\lushe_000\Documents\GitHub\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\bin\Release\Tutorial Killer Patch.ups
