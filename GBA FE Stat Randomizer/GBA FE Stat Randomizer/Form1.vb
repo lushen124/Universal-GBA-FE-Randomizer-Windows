@@ -338,7 +338,7 @@
         For index As Integer = 1 To numberOfCharacters
             Dim currentCharacter As FECharacter = New FECharacter
 
-            currentCharacter.initializeWithBytesFromOffset(fileReader, fileReader.Position, characterEntrySize)
+            currentCharacter.initializeWithBytesFromOffset(fileReader, fileReader.Position, characterEntrySize, type)
 
             characterList.Add(currentCharacter)
             Utilities.setObjectForKey(characterLookup, currentCharacter, currentCharacter.characterId)
@@ -755,6 +755,18 @@ StartOver:
 
                         ' Make sure their class has valid stats.
                         currentCharacter.validate(newClass, minimumCON, type)
+
+                        If type = Utilities.GameType.GameTypeFE7 Then
+                            ' For FE7, some characters have custom sprites that override their existing sprites.
+                            ' If they promote, then we don't really care, and if their class doesn't change
+                            ' that's also ok.
+                            ' But if they change to a completely different class, then we need to unset the 
+                            ' custom sprite (since it will no longer reflect their class).
+                            If oldClass.classId <> newClass.classId And
+                                Convert.ToByte(FE7GameData.promotedClassForUnpromotedClass(System.Enum.ToObject(classType, oldClass.classId))) <> newClass.classId Then
+                                currentCharacter.shouldResetCustomSpriteToDefault = True
+                            End If
+                        End If
 
                         ' Cache the result of this character's class.
                         Utilities.setObjectForKey(targetClasses, newClass.classId, characterIDObject)
@@ -1250,7 +1262,7 @@ StartOver:
                 Dim character As FECharacter = characterList.Item(index)
                 ' One last validation before writing.
                 character.validate(classLookup.Item(character.classId), minimumCON, type)
-                character.writeStatsToCharacterStartingAtOffset(fileWriter, fileWriter.Position, characterEntrySize)
+                character.writeStatsToCharacterStartingAtOffset(fileWriter, fileWriter.Position, characterEntrySize, type)
             End If
         Next
 

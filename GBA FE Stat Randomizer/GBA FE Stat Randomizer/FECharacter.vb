@@ -39,12 +39,17 @@
     Property paletteIndex As Byte 'offset 35, 1 byte (unavailable in FE8)
     Property promotedPaletteIndex As Byte 'offset 36, 1 byte (unavailable in FE8)
 
+    Property customUnpromotedSprite As Byte 'offset 37, 1 byte (Only in FE7)
+    Property customPromotedSprite As Byte ' offset 38, 1 byte (Only in FE7)
+
     Property ability1 As Byte 'offset 40, 1 byte
     Property ability2 As Byte 'offset 41, 1 byte
     Property ability3 As Byte 'offset 42, 1 byte
     Property ability4 As Byte 'offset 43, 1 byte
 
     Property supportDataPointer As Integer 'offset 44, 4 bytes (address)
+
+    Property shouldResetCustomSpriteToDefault As Boolean
 
     Enum ClassAbility1 'Bitmaskable
         None = &H0
@@ -123,12 +128,17 @@
         copiedCharacter.paletteIndex = paletteIndex
         copiedCharacter.promotedPaletteIndex = promotedPaletteIndex
 
+        copiedCharacter.customUnpromotedSprite = customUnpromotedSprite
+        copiedCharacter.customPromotedSprite = customPromotedSprite
+
         copiedCharacter.ability1 = ability1
         copiedCharacter.ability2 = ability2
         copiedCharacter.ability3 = ability3
         copiedCharacter.ability4 = ability4
 
         copiedCharacter.supportDataPointer = supportDataPointer
+
+        copiedCharacter.shouldResetCustomSpriteToDefault = shouldResetCustomSpriteToDefault
 
         Return copiedCharacter
     End Function
@@ -144,7 +154,7 @@
         AffinityAnima = &H7
     End Enum
 
-    Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer)
+    Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gameType As Utilities.GameType)
         filePtr.Seek(offset, IO.SeekOrigin.Begin)
         nameIndex = Utilities.ReadHalfWord(filePtr)
         bioIndex = Utilities.ReadHalfWord(filePtr)
@@ -185,11 +195,18 @@
         resGrowth = filePtr.ReadByte()
         lckGrowth = filePtr.ReadByte()
 
-        paletteIndex = filePtr.ReadByte()
-        promotedPaletteIndex = filePtr.ReadByte()
+        If gameType <> Utilities.GameType.GameTypeFE8 Then
+            paletteIndex = filePtr.ReadByte()
+            promotedPaletteIndex = filePtr.ReadByte()
 
-        ' Use the promoted one if the unpromoted one is nil
-        If paletteIndex = 0 Then paletteIndex = promotedPaletteIndex
+            ' Use the promoted one if the unpromoted one is nil
+            If paletteIndex = 0 Then paletteIndex = promotedPaletteIndex
+        End If
+
+        If gameType = Utilities.GameType.GameTypeFE7 Then
+            customUnpromotedSprite = filePtr.ReadByte()
+            customPromotedSprite = filePtr.ReadByte()
+        End If
 
         filePtr.Seek(offset + 40, IO.SeekOrigin.Begin)
 
@@ -201,9 +218,11 @@
         supportDataPointer = Utilities.ReadWord(filePtr, False)
 
         filePtr.Seek(offset + entrySize, IO.SeekOrigin.Begin)
+
+        shouldResetCustomSpriteToDefault = False
     End Sub
 
-    Public Sub writeStatsToCharacterStartingAtOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer)
+    Public Sub writeStatsToCharacterStartingAtOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gameType As Utilities.GameType)
         filePtr.Seek(offset, IO.SeekOrigin.Begin)
         Utilities.WriteHalfWord(filePtr, nameIndex)
         Utilities.WriteHalfWord(filePtr, bioIndex)
@@ -244,8 +263,20 @@
         filePtr.WriteByte(resGrowth)
         filePtr.WriteByte(lckGrowth)
 
-        filePtr.WriteByte(paletteIndex)
-        filePtr.WriteByte(promotedPaletteIndex)
+        If gameType <> Utilities.GameType.GameTypeFE8 Then
+            filePtr.WriteByte(paletteIndex)
+            filePtr.WriteByte(promotedPaletteIndex)
+        End If
+
+        If gameType = Utilities.GameType.GameTypeFE7 Then
+            If Not shouldResetCustomSpriteToDefault Then
+                filePtr.WriteByte(customUnpromotedSprite)
+                filePtr.WriteByte(customPromotedSprite)
+            Else
+                filePtr.WriteByte(0)
+                filePtr.WriteByte(0)
+            End If
+        End If
 
         filePtr.Seek(offset + 40, IO.SeekOrigin.Begin)
         filePtr.WriteByte(ability1)
