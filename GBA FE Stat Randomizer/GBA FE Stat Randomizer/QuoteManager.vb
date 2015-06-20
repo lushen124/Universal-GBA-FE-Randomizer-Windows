@@ -8,6 +8,8 @@ Public Class QuoteManager
     Dim FE6DeathQuoteEntrySize As Integer = 16
     Dim FE6DeathQuoteEntryCount As Integer = 108
 
+    Dim FE6DeathQuoteAllChaptersValue As Byte = &H2D
+
     ' FE7 has two types (wtf)
     Dim FE7DeathQuote1AddressPointer As Integer = &H7955C
     Dim FE7DeathQuote1DefaultAddress As Integer = &HC9F16C
@@ -18,6 +20,8 @@ Public Class QuoteManager
     Dim FE7DeathQuote2DefaultAddress As Integer = &HC9F2EC
     Dim FE7DeathQuote2EntrySize As Integer = 16
     Dim FE7DeathQuote2EntryCount As Integer = 109
+
+    Dim FE7DeathQuoteAllChaptersValue As Byte = &H43
 
     Private Class FE6DeathQuoteEntry
         Property characterID As Byte        ' offset 0, 1 byte
@@ -32,6 +36,8 @@ Public Class QuoteManager
         Property chapter As Byte                    ' offset 1, 1 byte
         Property deathEventAddress As UInteger      ' offset 4, 4 bytes
         Property triggerID As Byte                  ' offset 8, 1 byte
+
+        Property proposedTriggerID As Byte
     End Class
 
     Private Class FE7DeathQuote2Entry
@@ -40,6 +46,8 @@ Public Class QuoteManager
         Property textAddress As UShort              ' offset 4, 2 bytes
         Property deathEventAddress As UInteger      ' offset 8, 4 bytes
         Property triggerID As Byte                  ' offset 12, 1 byte
+
+        Property proposedTriggerID As Byte
     End Class
 
     Property gameType As Utilities.GameType
@@ -119,6 +127,7 @@ Public Class QuoteManager
 
                 filePtr.Seek(entryStartPosition + 8, IO.SeekOrigin.Begin)
                 entry.triggerID = filePtr.ReadByte()
+                entry.proposedTriggerID = entry.triggerID
 
                 entries.Add(entry)
                 originalIdList.Add(entry.characterID)
@@ -155,6 +164,7 @@ Public Class QuoteManager
 
                 filePtr.Seek(entryStartPosition + 12, IO.SeekOrigin.Begin)
                 entry.triggerID = filePtr.ReadByte()
+                entry.proposedTriggerID = entry.triggerID
 
                 type2Entries.Add(entry)
                 type2OriginalIdList.Add(entry.characterID)
@@ -175,6 +185,7 @@ Public Class QuoteManager
                     End If
                 Next
             ElseIf gameType = Utilities.GameType.GameTypeFE7 Then
+                
                 For i As Integer = 0 To entries.Count - 1
                     If originalIdList.Item(i) = originalCharacterID Then
                         Dim entry As FE7DeathQuote1Entry = entries.Item(i)
@@ -187,6 +198,63 @@ Public Class QuoteManager
                         entry.characterID = newCharacterID
                     End If
                 Next
+            End If
+        End If
+    End Sub
+
+    Public Sub transferTriggerIDs(ByVal fromCharacter As Byte, ByVal toCharacter As Byte)
+        If fromCharacter <> 0 And toCharacter <> 0 Then
+            ' FE7 does things a bit differently. In addition to the characterID,
+            ' some characters have event IDs that trigger when they die.
+            ' We need to preserve these and transfer these to the new characters
+            ' if we swap IDs.
+            ' The most relevant example is lords, which trigger event 0x65 (the game over event)
+            ' which has to be triggered by whoever the new lord is. At the same time,
+            ' a lord that no longer is a lord, shouldn't be triggering 0x65.
+            If gameType = Utilities.GameType.GameTypeFE7 Then
+                Dim fromTrigger As Byte = 0
+                For i As Integer = 0 To entries.Count - 1
+                    If originalIdList.Item(i) = fromCharacter Then
+                        Dim entry As FE7DeathQuote1Entry = entries.Item(i)
+                        If entry.chapter = FE7DeathQuoteAllChaptersValue Then
+                            fromTrigger = entry.triggerID
+                            Exit For
+                        End If
+                    End If
+                Next
+
+                If fromTrigger = 0 Then
+                    For i As Integer = 0 To type2Entries.Count - 1
+                        If type2OriginalIdList.Item(i) = fromCharacter Then
+                            Dim entry As FE7DeathQuote2Entry = type2Entries.Item(i)
+                            If entry.chapter = FE7DeathQuoteAllChaptersValue Then
+                                fromTrigger = entry.triggerID
+                                Exit For
+                            End If
+                        End If
+                    Next
+                End If
+
+                For i As Integer = 0 To entries.Count - 1
+                    If originalIdList.Item(i) = toCharacter Then
+                        Dim entry As FE7DeathQuote1Entry = entries.Item(i)
+                        If entry.chapter = FE7DeathQuoteAllChaptersValue Then
+                            entry.proposedTriggerID = fromTrigger
+                            Exit For
+                        End If
+                    End If
+                Next
+
+                For i As Integer = 0 To type2Entries.Count - 1
+                    If type2OriginalIdList.Item(i) = toCharacter Then
+                        Dim entry As FE7DeathQuote2Entry = type2Entries.Item(i)
+                        If entry.chapter = FE7DeathQuoteAllChaptersValue Then
+                            entry.proposedTriggerID = fromTrigger
+                            Exit For
+                        End If
+                    End If
+                Next
+
             End If
         End If
     End Sub
@@ -216,6 +284,11 @@ Public Class QuoteManager
                         Dim entryStartPosition As Integer = filePtr.Position
                         filePtr.WriteByte(entry.characterID)
 
+                        ' FE7 could modify triggers. We need to write them.
+                        filePtr.Seek(entryStartPosition + 8, IO.SeekOrigin.Begin)
+                        filePtr.WriteByte(entry.proposedTriggerID)
+                        entry.triggerID = entry.proposedTriggerID
+
                         filePtr.Seek(entryStartPosition + FE7DeathQuote1EntrySize, IO.SeekOrigin.Begin)
 
                         originalIdList.Add(entry.characterID)
@@ -228,6 +301,11 @@ Public Class QuoteManager
                         Dim entry As FE7DeathQuote2Entry = type2Entries.Item(i)
                         Dim entryStartPosition As Integer = filePtr.Position
                         filePtr.WriteByte(entry.characterID)
+
+                        ' FE7 could modify triggers. We need to write them.
+                        filePtr.Seek(entryStartPosition + 12, IO.SeekOrigin.Begin)
+                        filePtr.WriteByte(entry.proposedTriggerID)
+                        entry.triggerID = entry.proposedTriggerID
 
                         filePtr.Seek(entryStartPosition + FE7DeathQuote2EntrySize, IO.SeekOrigin.Begin)
 
