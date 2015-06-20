@@ -605,7 +605,8 @@
         Return list
     End Function
 
-    Public Shared Function randomClassFromOriginalClass(ByVal original As ClassList, ByVal allowLord As Boolean, ByVal allowThief As Boolean, ByVal allowUnique As Boolean, ByRef rng As Random) As ClassList
+    Public Shared Function randomClassFromOriginalClass(ByVal originalClass As Byte, ByVal allowLord As Boolean, ByVal allowThief As Boolean, ByVal allowUnique As Boolean, ByRef rng As Random) As ClassList
+        Dim original As ClassList = System.Enum.ToObject(GetType(ClassList), originalClass)
         Dim classListUnpromoted As ArrayList = New ArrayList
 
         classListUnpromoted = unpromotedClassList(True)

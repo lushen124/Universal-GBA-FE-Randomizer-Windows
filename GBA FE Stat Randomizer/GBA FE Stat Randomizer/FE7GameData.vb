@@ -668,7 +668,9 @@
         Return list
     End Function
 
-    Public Shared Function randomClassFromOriginalClass(ByVal original As ClassList, ByVal allowLord As Boolean, ByVal allowThief As Boolean, ByVal allowUnique As Boolean, ByRef rng As Random) As ClassList
+    Public Shared Function randomClassFromOriginalClass(ByVal originalClass As Byte, ByVal allowLord As Boolean, ByVal allowThief As Boolean, ByVal allowUnique As Boolean, ByRef rng As Random) As ClassList
+        Dim original As ClassList = System.Enum.ToObject(GetType(ClassList), originalClass)
+
         Dim classListUnpromoted As ArrayList = unpromotedClassList(True)
         If Not allowLord Then
             classListUnpromoted.Remove(ClassList.LynLord)
@@ -730,9 +732,10 @@
                 classListPromoted.Remove(ClassList.LordKnight)
                 classListPromoted.Remove(ClassList.GreatLord)
             End If
-            If Not allowUnique Then
-                classListPromoted.Remove(ClassList.Archsage)
-            End If
+            ' Archsage is OP.
+            'If Not allowUnique Then
+            classListPromoted.Remove(ClassList.Archsage)
+            'End If
 
             If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
                 Dim newClass As ClassList
@@ -748,7 +751,7 @@
         Return original
     End Function
 
-    Public Shared Function playableCharacterIDs() As ArrayList
+    Public Shared Function playableCharacterIDs(ByVal includeTutorial As Boolean) As ArrayList
         Dim list As ArrayList = New ArrayList()
 
         list.Add(CharacterList.Eliwood)
@@ -795,12 +798,14 @@
         list.Add(CharacterList.Karla)
         list.Add(CharacterList.Harken)
 
-        list.Add(CharacterList.Tutorial_Lyn)
-        list.Add(CharacterList.Tutorial_Sain)
-        list.Add(CharacterList.Tutorial_Kent)
-        list.Add(CharacterList.Tutorial_Wil)
-        list.Add(CharacterList.Tutorial_Rath)
-        list.Add(CharacterList.Tutorial_Florina)
+        If includeTutorial Then
+            list.Add(CharacterList.Tutorial_Lyn)
+            list.Add(CharacterList.Tutorial_Sain)
+            list.Add(CharacterList.Tutorial_Kent)
+            list.Add(CharacterList.Tutorial_Wil)
+            list.Add(CharacterList.Tutorial_Rath)
+            list.Add(CharacterList.Tutorial_Florina)
+        End If
 
         Return list
     End Function
@@ -909,9 +914,11 @@
 
     Shared Function isBlacklisted(ByVal itemID As Byte) As Boolean
         Dim itemIDObject As ItemList = System.Enum.ToObject(GetType(ItemList), itemID)
+        ' Ereshkigal has no rank. Don't let it show up in any randomized inventory.
         If itemIDObject = ItemList.Unused_3000G Or
             itemIDObject = ItemList.Unused_5000G Or
             itemIDObject = ItemList.Unused_Gold Or
+            itemIDObject = ItemList.Ereshkigal Or
             itemIDObject = ItemList.Unused_SuperVulnerary Then
             Return True
         End If
@@ -1208,7 +1215,7 @@
         If originalCharacter = CharacterList.Nino Then Return ClassList.Mage_F
         If originalCharacter = CharacterList.Vaida Then Return ClassList.WyvernLord_F
         If originalCharacter = CharacterList.Jaffar Then Return ClassList.Thief
-        If originalCharacter = CharacterList.Serra Then Return ClassList.Bard
+        If originalCharacter = CharacterList.Nils Then Return ClassList.Bard
         If originalCharacter = CharacterList.Karla Then Return ClassList.Myrmidon_F ' ok?
         If originalCharacter = CharacterList.Renault Then Return ClassList.Monk
         If originalCharacter = CharacterList.Athos Then Return ClassList.Mage ' eh...
