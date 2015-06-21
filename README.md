@@ -87,6 +87,7 @@ The intent for this project was to create an easy-to-use and customizable random
 * By default, all classes that don't naturally show up in the game are removed from the pool when randomizing classes. That is, a large chunk of female classes (thief, mercenary, myrmidon, cavalier, nomad, wyvern knight, shaman, and armor knight, I think) will not show up. I'd rather things work well, then deal with glitches.
 * Figuring out mappings for reverse recruitment is a bit difficult due to a high chance of Isadora and Vaida getting demoted into classes that may be buggy. We'll roll with it for now and see how badly it breaks. **EDIT: I've settled for using Hector mode as the basis for reverse recruitment (with slight modifications for less issues).**
 * Need a solution for Athos in Reverse Recruitment, as he starts with no stats, and in a unique class that can't promote. Will probably have to create a special class for him.
+* There seems to be a problem with Lyn mode in Chapter 7 where the victory condition seems to be to seize when it normally is to defeat Heintz. Defeating Heintz does nothing, but the spot above where the shaman near your starting position is can be seized, ending the chapter. This seems to be an issue with the Tutorial Killer Patch I'm using. Will look into fixing this one.
 
 ### FE8 Notes
 
