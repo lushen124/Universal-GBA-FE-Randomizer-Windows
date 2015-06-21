@@ -18,6 +18,8 @@
 
     Private type As Utilities.GameType
 
+    Private hasAlreadyRandomized As Boolean
+
     Private shouldRandomizeGrowths As Boolean
     Private growthsVariance As Integer
     Private shouldForceMinimumGrowth As Boolean
@@ -113,6 +115,15 @@
             GameSpecificCheckbox.Hide()
         End If
 
+        inputFile.Seek(-4, IO.SeekOrigin.End)
+
+        Dim suffix As Byte() = {0, 0, 0, 0}
+        inputFile.Read(suffix, 0, 4)
+
+        Dim signature As Byte() = System.Text.Encoding.ASCII.GetBytes("GFR1")
+
+        hasAlreadyRandomized = suffix(0) = signature(0) And suffix(1) = signature(1) And suffix(2) = signature(2) And suffix(3) = signature(3)
+
         inputFile.Close()
 
         If type <> Utilities.GameType.GameTypeUnknown Then
@@ -130,11 +141,21 @@
                 My.Settings.HasSeenBetaNotice = True
                 My.Settings.Save()
             End If
+
         End If
 
     End Sub
 
     Private Sub RandomizeButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeButton.Click
+
+        If hasAlreadyRandomized Then
+            Dim result As MsgBoxResult = MsgBox("This game seems to have been randomized before. It is recommended that a fresh version of the game be used for randomization." + vbCrLf + vbCrLf _
+                   & "If you wish to continue, know that any further changes will be applied on top of an already randomized game. This means the initial randomized parameters will be used as the base for the new randomized version." + vbCrLf + vbCrLf _
+                   & "If you see items gain more and more effects or item stats becoming more and more extreme, you now know why." + vbCrLf + vbCrLf _
+                   & "Are you sure you want to continue?", MsgBoxStyle.YesNo, "Warning")
+
+            If result = MsgBoxResult.No Then Return
+        End If
 
         disableAllControls()
 
@@ -265,9 +286,6 @@
             End If
             numberOfItems = FE7GameData.ItemCount
             itemEntrySize = FE7GameData.ItemEntrySize
-
-            MsgBox("You seem to be randomizing FE7. Note that depending on the randomizing results, the tutorial (Lyn Normal Mode) may no longer be completable." + vbCrLf + vbCrLf _
-                   & "It is recommended that you only play this on the Eliwood and Hector Modes to ensure functionality.", MsgBoxStyle.Information, "Notice")
 
             Dim chapterPointers As Array = System.Enum.GetValues(GetType(FE7GameData.ChapterUnitReference))
             Dim chapterUnitCounts As ArrayList = FE7GameData.UnitsInEachChapter
@@ -1152,7 +1170,7 @@ StartOver:
 
                         If randomThieves Then
                             If wasThief And Not newClass.isThief Then
-                                
+
                                 If Not IsNothing(lockpickItem) Then
                                     Dim lockpickIndex As Integer = validatedInventory.IndexOf(lockpickItem)
                                     If lockpickIndex <> -1 Then
@@ -1331,9 +1349,17 @@ StartOver:
             spellAssociationManager.commitChanges(fileWriter)
         End If
 
+        If Not hasAlreadyRandomized Then
+            ' Leave a signature so that we don't re-randomize the same files.
+            fileWriter.Seek(0, IO.SeekOrigin.End)
+            fileWriter.Write(System.Text.Encoding.ASCII.GetBytes("GFR1"), 0, 4)
+
+            hasAlreadyRandomized = True
+        End If
+
         fileWriter.Close()
 
-        MsgBox("Randomized!", MsgBoxStyle.OkOnly, "Stats Shuffler")
+        MsgBox("Randomized!", MsgBoxStyle.OkOnly, "Notice")
 
         reenableAllControls()
 
