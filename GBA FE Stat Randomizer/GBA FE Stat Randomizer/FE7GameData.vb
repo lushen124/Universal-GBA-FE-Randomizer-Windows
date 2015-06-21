@@ -498,7 +498,7 @@
     End Enum
 
     Public Shared Function randomEffectiveness(ByRef rng As Random)
-        Dim result = rng.Next(2, 7)
+        Dim result = rng.Next(2, 8)
         If result = 2 Then Return EffectivenessPointers.EffectivenessPointerKnightsAndCavalry
         If result = 3 Then Return EffectivenessPointers.EffectivenessPointerKnights
         If result = 4 Then Return EffectivenessPointers.EffectivenessPointerDragons
@@ -511,7 +511,7 @@
 
     Public Shared Function randomStatBonus(ByRef rng As Random)
         ' Probably not dragonstone... or uberspear
-        Dim result = rng.Next(2, 8)
+        Dim result = rng.Next(2, 9)
         If result = 2 Then Return randomStatBonus(rng) 'StatBonusPointers.StatBonusPointerUberSpear
         If result = 3 Then Return StatBonusPointers.StatBonusPointerDurandal
         If result = 4 Then Return StatBonusPointers.StatBonusPointerArmads
@@ -668,7 +668,7 @@
         Return list
     End Function
 
-    Public Shared Function randomClassFromOriginalClass(ByVal originalClass As Byte, ByVal allowLord As Boolean, ByVal allowThief As Boolean, ByVal allowUnique As Boolean, ByRef rng As Random) As ClassList
+    Public Shared Function randomClassFromOriginalClass(ByVal originalClass As Byte, ByVal allowLord As Boolean, ByVal allowThief As Boolean, ByVal allowUnique As Boolean, ByVal requiresAttack As Boolean, ByRef rng As Random) As ClassList
         Dim original As ClassList = System.Enum.ToObject(GetType(ClassList), originalClass)
 
         Dim classListUnpromoted As ArrayList = unpromotedClassList(True)
@@ -676,6 +676,12 @@
             classListUnpromoted.Remove(ClassList.LynLord)
         End If
         If Not allowUnique Then
+            classListUnpromoted.Remove(ClassList.Dancer)
+        End If
+
+        If requiresAttack Then
+            classListUnpromoted.Remove(ClassList.Troubadour)
+            classListUnpromoted.Remove(ClassList.Cleric)
             classListUnpromoted.Remove(ClassList.Dancer)
         End If
 
@@ -715,6 +721,10 @@
         If Not allowUnique Then
             classListUnpromoted.Remove(ClassList.Brigand)
             classListUnpromoted.Remove(ClassList.Soldier)
+            classListUnpromoted.Remove(ClassList.Bard)
+        End If
+
+        If requiresAttack Then
             classListUnpromoted.Remove(ClassList.Bard)
         End If
 

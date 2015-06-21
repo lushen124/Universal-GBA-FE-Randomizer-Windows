@@ -96,7 +96,7 @@
             ' Check if the Tutorial Killer Patch is already in effect. (Just use any byte)
             inputFile.Seek(&HC9A214, IO.SeekOrigin.Begin)
             Dim alreadyPatched As Boolean = inputFile.ReadByte() = &H5
-            GameSpecificCheckbox.Text = "Apply Blazer's Tutorial Killer"
+            GameSpecificCheckbox.Text = "Apply Arch's Tutorial Slayer"
             GameSpecificCheckbox.Show()
             GameSpecificCheckbox.Enabled = False
             GameSpecificCheckbox.Checked = Not alreadyPatched
@@ -698,6 +698,9 @@ StartOver:
                         Dim wasThief As Boolean = False
                         Dim currentCharacter As FECharacter = characterLookup.Item(unit.characterId)
 
+                        ' Check for boss characters.
+                        Dim isBoss As Boolean = bossCharacters.Contains(characterIDObject)
+
                         ' FE6 stores this in the character object.
                         Dim oldClass As FEClass = classLookup.Item(currentCharacter.classId)
                         If originalClasses.ContainsKey(unit.characterId) Then oldClass = classLookup.Item(originalClasses.Item(unit.characterId))
@@ -710,7 +713,7 @@ StartOver:
                             Utilities.setObjectForKey(originalClasses, oldClass.classId, unit.characterId)
                             If shouldRandomizeClasses Then
                                 newClassId = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.randomClassFromOriginalClass(oldClass.classId, randomLords, randomThieves, uniqueClasses, rng),
-                                                 IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.randomClassFromOriginalClass(oldClass.classId, randomLords, randomThieves, uniqueClasses, rng), oldClass.classId))
+                                                 IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.randomClassFromOriginalClass(oldClass.classId, randomLords, randomThieves, uniqueClasses, wasLord Or isBoss, rng), oldClass.classId))
                             Else
                                 newClassId = currentCharacter.classId
                             End If
@@ -1245,7 +1248,7 @@ StartOver:
 
         ' Apply any patches if necessary.
         If type = Utilities.GameType.GameTypeFE7 And applyTutorialKiller Then
-            Dim result As Boolean = Patcher.applyUPSPatch(OpenFileDialog1.FileName, "Tutorial Killer Patch.ups")
+            Dim result As Boolean = Patcher.applyUPSPatch(OpenFileDialog1.FileName, "Arch's Tutorial Slayer.ups")
             If result = False Then MsgBox("Tutorial Killer Patch Failed. Continuing without applying patch...", MsgBoxStyle.OkOnly, "Notice")
         End If
 

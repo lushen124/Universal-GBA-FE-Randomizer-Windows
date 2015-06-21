@@ -917,7 +917,7 @@ Partial Class Form1
         Me.GameSpecificCheckbox.Name = "GameSpecificCheckbox"
         Me.GameSpecificCheckbox.Size = New System.Drawing.Size(154, 17)
         Me.GameSpecificCheckbox.TabIndex = 64
-        Me.GameSpecificCheckbox.Text = "Apply Blazer's Tutorial Killer"
+        Me.GameSpecificCheckbox.Text = "Apply Arch's Tutorial Slayer"
         Me.GameSpecificCheckbox.UseVisualStyleBackColor = True
         Me.GameSpecificCheckbox.Visible = False
         '
@@ -989,7 +989,7 @@ Partial Class Form1
         Me.Controls.Add(Me.FilenameTextBox)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "Form1"
-        Me.Text = "GBA FE Randomizer"
+        Me.Text = "GBA FE Randomizer v0.66 by OtakuReborn"
         CType(Me.GrowthVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.BaseVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.MightVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()
