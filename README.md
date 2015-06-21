@@ -3,6 +3,16 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**June 20, 2015**
+
+Fixed an issue with characters with custom battle animations still attached after being assigned a new class.
+
+Updated to use Arch's Tutorial Slayer patch for FE7 instead of Blazer's Tutorial Killer patch due to a glitch found in Chapter 7 of Lyn Mode.
+
+Added logic to ensure that lords and bosses, when being assigned a random class, are guaranteed to get a class that can attack.
+
+Added guards against re-randomization of games. Will now throw up a warning if it detects a randomized game is being submitted for randomization again. Will still give the option of doing so, if desired.
+
 **June 19, 2015**
 
 *Beta Release* - Worked out a ton of issues with FE7 and hopefully should be in a testable state now. I tested the first two chapters of Eliwood and Hector mode a little bit and they seem to work, although I am soliciting ideas for how to handle Athos for reverse recruitment, as his stats would be broken as an Archsage, but he has no growths (save for 25% RES, I think) to support an unpromoted class like a Mage.
