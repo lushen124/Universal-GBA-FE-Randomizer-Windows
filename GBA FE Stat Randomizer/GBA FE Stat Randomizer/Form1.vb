@@ -1267,7 +1267,12 @@ StartOver:
         ' Apply any patches if necessary.
         If type = Utilities.GameType.GameTypeFE7 And applyTutorialKiller Then
             Dim result As Boolean = Patcher.applyUPSPatch(OpenFileDialog1.FileName, "Arch's Tutorial Slayer.ups")
-            If result = False Then MsgBox("Tutorial Killer Patch Failed. Continuing without applying patch...", MsgBoxStyle.OkOnly, "Notice")
+            If result = False Then
+                MsgBox("Tutorial Killer Patch Failed. Continuing without applying patch...", MsgBoxStyle.OkOnly, "Notice")
+            Else
+                applyTutorialKiller = False
+                GameSpecificCheckbox.Checked = False
+            End If
         End If
 
         Dim fileWriter = IO.File.OpenWrite(OpenFileDialog1.FileName)
