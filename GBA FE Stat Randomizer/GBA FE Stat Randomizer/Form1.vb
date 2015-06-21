@@ -1527,6 +1527,10 @@ StartOver:
         CONVariance = CONVarianceControl.Value
     End Sub
 
+    Private Sub MinimumCONControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MinimumCONControl.ValueChanged
+        minimumCON = MinimumCONControl.Value
+    End Sub
+
     Private Sub RandomizeMOVToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeMOVToggle.CheckedChanged
         shouldRandomizeMOV = RandomizeMOVToggle.Checked
         MinimumMOVControl.Enabled = shouldRandomizeMOV
