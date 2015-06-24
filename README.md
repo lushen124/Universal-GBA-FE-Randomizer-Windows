@@ -3,6 +3,10 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**June 23, 2015**
+
+Added logic to modify the movement types to use 30 instead of 255 to mark impassable terrain. This should fix problems with characters getting assigned different classes and not being able to spawn in their normal location because their new class doesn't support the same movement type as their old class (namely fliers spawning on mountains and water). This seems to also fix the issue with Miledy in FE6.
+
 **June 20, 2015**
 
 Fixed an issue with characters with custom battle animations still attached after being assigned a new class.
@@ -82,7 +86,6 @@ The intent for this project was to create an easy-to-use and customizable random
 
 ### FE6 Notes
 
-* Random classes are available for most playable characters and bosses. Problems arise with playable characters and bosses that are scripted to move in events and can fly (Miledy, Gale, Narcian) and fly across otherwise impassable terrain (bodies of water and mountains). One option is to randomize them only with other flying classes, but that drastically cuts down on the possibilties (basically Wyvern Knight or Pegasus Knight). At the moment, they just won't be randomized. **EDIT: This may have been another issue. Will test this further to see if it is possible to move them on mountains without breaking things.**
 * My testing has been using the redux translation patch. I don't know how well it works with other patches (or even unpatched), so I recommend you use the same patch. All issues with v1.0 of the redux translation patch have been ironed out at this point, I think. You can find the Redux translation patch (both 1.0 and older versions) here: http://serenesforest.net/forums/index.php?showtopic=41095
 * The "Uncounterable" trait, which is usually reserved for siege tomes, has been removed from the pool of possible weapon traits that can be randomized, due to the game assuming that it is indeed a siege tome, and animating from 3+ spaces away, causing melee weapons to lock up.
 * Something that's interesting: Bosses randomized as thieves will move off of the throne to steal stuff. Not going to try to fix that one (short of not giving bosses the thief class).
@@ -93,11 +96,10 @@ The intent for this project was to create an easy-to-use and customizable random
 
 ### FE7 Notes
 
-* It's likely I'll ask for you to avoid Lyn Normal mode for the time being due to the tutorial likely to be screwed by any modifications. Lyn Hard mode should be ok though (as long as the tutorial is off). The other option is that the randomizer automatically applies a tutorial killer patch or something. **EDIT: The randomizer now does this for you. FE7 will be auto-patched with Blazer's tutorial killer. Won't stop all issues with Lyn mode, but it might give you a chance of playing through it. Don't ask me how stats will transfer, I have no idea.**
+* It's likely I'll ask for you to avoid Lyn Normal mode for the time being due to the tutorial likely to be screwed by any modifications. Lyn Hard mode should be ok though (as long as the tutorial is off). The other option is that the randomizer automatically applies a tutorial killer patch or something. **EDIT: The randomizer now does this for you. FE7 will be auto-patched with ~~Blazer's tutorial killer~~ Arch's Tutorial Slayer. Won't stop all issues with Lyn mode, but it might give you a chance of playing through it. Don't ask me how stats will transfer, I have no idea.**
 * By default, all classes that don't naturally show up in the game are removed from the pool when randomizing classes. That is, a large chunk of female classes (thief, mercenary, myrmidon, cavalier, nomad, wyvern knight, shaman, and armor knight, I think) will not show up. I'd rather things work well, then deal with glitches.
 * Figuring out mappings for reverse recruitment is a bit difficult due to a high chance of Isadora and Vaida getting demoted into classes that may be buggy. We'll roll with it for now and see how badly it breaks. **EDIT: I've settled for using Hector mode as the basis for reverse recruitment (with slight modifications for less issues).**
 * Need a solution for Athos in Reverse Recruitment, as he starts with no stats, and in a unique class that can't promote. Will probably have to create a special class for him.
-* There seems to be a problem with Lyn mode in Chapter 7 where the victory condition seems to be to seize when it normally is to defeat Heintz. Defeating Heintz does nothing, but the spot above where the shaman near your starting position is can be seized, ending the chapter. This seems to be an issue with the Tutorial Killer Patch I'm using. Will look into fixing this one.
 
 ### FE8 Notes
 
