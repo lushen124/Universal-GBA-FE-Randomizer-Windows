@@ -751,6 +751,14 @@ StartOver:
 
                         Dim newClass As FEClass = classLookup.Item(newClassId)
 
+                        ' If we're randomly assigning classes (or just re-assigning classes in general)
+                        ' make sure the scripts don't blow up if they're told to move somewhere.
+                        ' Tell the class to normalize its movement costs so that units can pass through all tiles
+                        ' while moving as part of a script.
+                        If Not IsNothing(newClass) Then
+                            newClass.normalizeImpassableTiles(type)
+                        End If
+
                         ' If the old class was a lord, then apply the lord status on the 
                         ' character (not the class!)
                         If wasLord Then

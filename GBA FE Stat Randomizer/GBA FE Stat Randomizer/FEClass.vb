@@ -49,6 +49,12 @@
     Property defGrowthDelta As Byte
     Property resGrowthDelta As Byte
 
+    Property movementTypePointer As UInteger        ' offset 56, 4 bytes (offset 52 in FE6)
+    Property movementTypePointerRain As UInteger    ' offset 60, 4 bytes (unavailable in FE6)
+    Property movementTypePointerSnow As UInteger    ' offset 64, 4 bytes (unavailable in FE6)
+
+    Property normalizedMovementTypes As Boolean
+
     Enum WeaponRank
         WeaponRankNone = &H0
         WeaponRankE = &H1
@@ -58,6 +64,13 @@
         WeaponRankA = &HC9
         WeaponRankS = &HFB
     End Enum
+
+    Const FE6MovementTypeEntrySize As Integer = &H33
+    Const FE7FE8MovementTypeEntrySize As Integer = &H41
+
+    Property movementCostData As Byte()
+    Property movementCostDataRain As Byte()
+    Property movementCostDataSnow As Byte()
 
     Enum ClassAbility1 'Bitmaskable
         None = &H0
@@ -158,6 +171,43 @@
         lightLevel = filePtr.ReadByte()
         darkLevel = filePtr.ReadByte()
 
+        ' Read the data for the movement type. If the classes are getting
+        ' randomized, there's a high chance that units will spawn in 
+        ' places where their class cannot physically be. The game will freeze or restart
+        ' if this occurs, so we will allow them to be in those tiles, but we
+        ' make the tile cost infeasibly high (but not 0xFF) to prevent abuse.
+
+        ' Only modify this if necessary, since it may have other side effects.
+        If type = Utilities.GameType.GameTypeFE6 Then
+            filePtr.Seek(offset + 52, IO.SeekOrigin.Begin)
+            movementTypePointer = Utilities.ReadWord(filePtr, True)
+
+            movementCostData = New Byte(FE6MovementTypeEntrySize) {}
+
+            filePtr.Seek(movementTypePointer, IO.SeekOrigin.Begin)
+            filePtr.Read(movementCostData, 0, FE6MovementTypeEntrySize)
+        Else
+            filePtr.Seek(offset + 56, IO.SeekOrigin.Begin)
+            movementTypePointer = Utilities.ReadWord(filePtr, True)
+            movementTypePointerRain = Utilities.ReadWord(filePtr, True)
+            movementTypePointerSnow = Utilities.ReadWord(filePtr, True)
+
+            movementCostData = New Byte(FE7FE8MovementTypeEntrySize) {}
+            movementCostDataRain = New Byte(FE7FE8MovementTypeEntrySize) {}
+            movementCostDataSnow = New Byte(FE7FE8MovementTypeEntrySize) {}
+
+            filePtr.Seek(movementTypePointer, IO.SeekOrigin.Begin)
+            filePtr.Read(movementCostData, 0, FE7FE8MovementTypeEntrySize)
+
+            filePtr.Seek(movementTypePointerRain, IO.SeekOrigin.Begin)
+            filePtr.Read(movementCostDataRain, 0, FE7FE8MovementTypeEntrySize)
+
+            filePtr.Seek(movementTypePointerSnow, IO.SeekOrigin.Begin)
+            filePtr.Read(movementCostDataSnow, 0, FE7FE8MovementTypeEntrySize)
+        End If
+
+        normalizedMovementTypes = False
+
         filePtr.Seek(offset + entrySize, IO.SeekOrigin.Begin)
     End Sub
 
@@ -186,11 +236,58 @@
         filePtr.WriteByte(ability3)
         filePtr.WriteByte(ability4)
 
+        If normalizedMovementTypes Then
+            If type = Utilities.GameType.GameTypeFE6 Then
+                filePtr.Seek(movementTypePointer, IO.SeekOrigin.Begin)
+                filePtr.Write(movementCostData, 0, FE6MovementTypeEntrySize)
+            Else
+                filePtr.Seek(movementTypePointer, IO.SeekOrigin.Begin)
+                filePtr.Write(movementCostData, 0, FE7FE8MovementTypeEntrySize)
+
+                filePtr.Seek(movementTypePointerRain, IO.SeekOrigin.Begin)
+                filePtr.Write(movementCostDataRain, 0, FE7FE8MovementTypeEntrySize)
+
+                filePtr.Seek(movementTypePointerSnow, IO.SeekOrigin.Begin)
+                filePtr.Write(movementCostDataSnow, 0, FE7FE8MovementTypeEntrySize)
+            End If
+        End If
+
         filePtr.Seek(offset + entrySize, IO.SeekOrigin.Begin)
     End Sub
 
     Public Sub randomizeMOV(ByVal minimumMOV As Integer, ByVal maximumMOV As Integer, ByRef rng As Random)
         baseMov = rng.Next(minimumMOV, maximumMOV)
+    End Sub
+
+    Public Sub normalizeImpassableTiles(ByVal type As Utilities.GameType)
+        ' Read the data for the movement type. If the classes are getting
+        ' randomized, there's a high chance that units will spawn in 
+        ' places where their class cannot physically be. The game will freeze or restart
+        ' if this occurs, so we will allow them to be in those tiles, but we
+        ' make the tile cost infeasibly high (but not 0xFF) to prevent abuse.
+        If Not normalizedMovementTypes Then
+            If type = Utilities.GameType.GameTypeFE6 Then
+                For index As Integer = 0 To FE6MovementTypeEntrySize - 1
+                    If movementCostData(index) = &HFF Then
+                        movementCostData(index) = &H1E
+                    End If
+                Next
+            Else
+                For index As Integer = 0 To FE7FE8MovementTypeEntrySize - 1
+                    If movementCostData(index) = &HFF Then
+                        movementCostData(index) = &H1E
+                    End If
+                    If movementCostDataRain(index) = &HFF Then
+                        movementCostDataRain(index) = &H1E
+                    End If
+                    If movementCostDataSnow(index) = &HFF Then
+                        movementCostDataSnow(index) = &H1E
+                    End If
+                Next
+            End If
+
+            normalizedMovementTypes = True
+        End If
     End Sub
 
     Public Function isLord() As Boolean

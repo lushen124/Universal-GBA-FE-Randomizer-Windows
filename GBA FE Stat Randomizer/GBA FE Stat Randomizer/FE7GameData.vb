@@ -549,6 +549,7 @@
             list.Add(ClassList.WyvernKnight)
             list.Add(ClassList.Soldier)
             list.Add(ClassList.Pirate)
+            list.Add(ClassList.Brigand)
             list.Add(ClassList.Thief)
             list.Add(ClassList.Bard)
         End If
@@ -759,6 +760,72 @@
 
         ' We shouldn't get this far, but if we do, just return the original (i.e. no change)
         Return original
+    End Function
+
+    Public Shared Function charactersThatNeedToCrossMountains() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+
+        Return list
+    End Function
+
+    Public Shared Function mountainCrossingMovementCostPointers() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+
+        list.Add(&H8BE39CD)
+        list.Add(&H8BE3E1E)
+        list.Add(&H8BE422E)
+
+        Return list
+    End Function
+
+    Public Shared Function classesThatCanCrossMountains() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+
+        list.Add(ClassList.PegasusKnight)
+        list.Add(ClassList.FalconKnight)
+        list.Add(ClassList.WyvernKnight)
+        list.Add(ClassList.WyvernKnight_F)
+        list.Add(ClassList.WyvernLord)
+        list.Add(ClassList.WyvernLord_F)
+
+        list.Add(ClassList.Brigand)
+        list.Add(ClassList.Berserker)
+
+        Return list
+    End Function
+
+    Public Shared Function charactersThatNeedToCrossWater() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+
+        list.Add(CharacterList.Fiora)
+
+        Return list
+    End Function
+
+    Public Shared Function waterCrossingMovementCostPointers() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+
+        list.Add(&H8BE3A0E)
+        list.Add(&H8BE3E5F)
+        list.Add(&H8BE426F)
+
+        Return list
+    End Function
+
+    Public Shared Function classesThatCanCrossWater() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+
+        list.Add(ClassList.PegasusKnight)
+        list.Add(ClassList.FalconKnight)
+        list.Add(ClassList.WyvernKnight)
+        list.Add(ClassList.WyvernKnight_F)
+        list.Add(ClassList.WyvernLord)
+        list.Add(ClassList.WyvernLord_F)
+
+        list.Add(ClassList.Pirate)
+        list.Add(ClassList.Berserker)
+
+        Return list
     End Function
 
     Public Shared Function playableCharacterIDs(ByVal includeTutorial As Boolean) As ArrayList
