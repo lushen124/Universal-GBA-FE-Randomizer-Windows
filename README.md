@@ -3,6 +3,12 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**June 25, 2015**
+
+Added logic to make sure lords randomize as classes that can promote and bosses randomize as classes that can attack (FE7 already had this, but I applied it to FE6 as well).
+
+Fixed an issue where Chapter 1 units for FE6 were not getting randomized inventories after randomizing classes.
+
 **June 24, 2015**
 
 Fixed a serious issue with chapter events being corrupted for reinforcements. I had forgotten to exclude 0x00 as a valid class when looking at chapter units so in some cases, it could end up overwriting critical code controlling reinforcements, forcing a trap reset of the game when those reinforcements attempted to spawn.
