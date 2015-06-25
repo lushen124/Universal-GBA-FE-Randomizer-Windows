@@ -212,6 +212,9 @@
     End Sub
 
     Public Sub writeClassStartingAtOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal type As Utilities.GameType)
+
+        DebugLogger.logMessage("[FEClass(" & Hex(classId) & ")] - Wrote Address 0x" & Hex(offset) & " to 0x" & Hex(offset + entrySize))
+
         ' The only thing that's really modifiable here is the growths and MOV.
         filePtr.Seek(offset + 18, IO.SeekOrigin.Begin)
         filePtr.WriteByte(baseMov)
@@ -238,9 +241,13 @@
 
         If normalizedMovementTypes Then
             If type = Utilities.GameType.GameTypeFE6 Then
+                DebugLogger.logMessage("[FEClassMOVType] - Wrote Address 0x" & Hex(movementTypePointer) & " to 0x" & Hex(movementTypePointer + FE6MovementTypeEntrySize))
                 filePtr.Seek(movementTypePointer, IO.SeekOrigin.Begin)
                 filePtr.Write(movementCostData, 0, FE6MovementTypeEntrySize)
             Else
+                DebugLogger.logMessage("[FEClassMOVType] - Wrote Address 0x" & Hex(movementTypePointer) & " to 0x" & Hex(movementTypePointer + FE7FE8MovementTypeEntrySize))
+                DebugLogger.logMessage("[FEClassMOVType] - Wrote Address 0x" & Hex(movementTypePointerRain) & " to 0x" & Hex(movementTypePointerRain + FE7FE8MovementTypeEntrySize))
+                DebugLogger.logMessage("[FEClassMOVType] - Wrote Address 0x" & Hex(movementTypePointerSnow) & " to 0x" & Hex(movementTypePointerSnow + FE7FE8MovementTypeEntrySize))
                 filePtr.Seek(movementTypePointer, IO.SeekOrigin.Begin)
                 filePtr.Write(movementCostData, 0, FE7FE8MovementTypeEntrySize)
 

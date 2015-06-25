@@ -223,6 +223,9 @@
     End Sub
 
     Public Sub writeStatsToCharacterStartingAtOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gameType As Utilities.GameType)
+
+        DebugLogger.logMessage("[FECharacter (" & Hex(characterId) & ")] - Wrote Address 0x" & Hex(offset) & " to 0x" & Hex(offset + entrySize))
+
         filePtr.Seek(offset, IO.SeekOrigin.Begin)
         Utilities.WriteHalfWord(filePtr, nameIndex)
         Utilities.WriteHalfWord(filePtr, bioIndex)

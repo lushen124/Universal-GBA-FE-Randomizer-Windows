@@ -643,9 +643,9 @@
     End Function
 
     Public Shared Function isValidClass(ByVal characterClass As Byte) As Boolean
-        Return characterClass <= Convert.ToByte(ClassList.HectorLord) Or
+        Return Not characterClass = Convert.ToByte(ClassList.None) And (characterClass <= Convert.ToByte(ClassList.HectorLord) Or
             (characterClass >= Convert.ToByte(ClassList.LordKnight) And characterClass <= Convert.ToByte(ClassList.Assassin)) Or
-            (characterClass >= Convert.ToByte(ClassList.Dancer) And characterClass <= Convert.ToByte(ClassList.Archsage))
+            (characterClass >= Convert.ToByte(ClassList.Dancer) And characterClass <= Convert.ToByte(ClassList.Archsage)))
 
     End Function
 

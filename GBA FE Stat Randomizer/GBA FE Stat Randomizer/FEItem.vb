@@ -131,6 +131,9 @@
     End Sub
 
     Public Sub writeItemToOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gameType As Utilities.GameType)
+
+        DebugLogger.logMessage("[FEItem (" & Hex(weaponID) & ")] - Wrote Address 0x" & Hex(filePtr.Position) & " to 0x" & Hex(filePtr.Position + entrySize))
+
         ' Don't touch ID or type!
         filePtr.Seek(offset + 8, IO.SeekOrigin.Begin)
         filePtr.WriteByte(weaponAbility1)

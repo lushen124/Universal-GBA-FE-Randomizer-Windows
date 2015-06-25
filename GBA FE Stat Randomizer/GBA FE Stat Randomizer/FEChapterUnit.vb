@@ -18,6 +18,10 @@
     ' The remaining bits after that determine level (from 0 to a max of 31)
     Property levelAlliance As Byte      'offset 3, 1 byte
 
+    ' In order to minimize change (and reduce on potential issues), only write these if necessary,
+    ' since there are a lot that we don't need to change.
+    Property hasChanged As Boolean
+
     Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal type As Utilities.GameType)
         filePtr.Seek(offset, IO.SeekOrigin.Begin)
         characterId = filePtr.ReadByte()
@@ -41,54 +45,59 @@
     End Sub
 
     Public Sub writeChapterUnitToOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal type As Utilities.GameType)
-        filePtr.Seek(offset, IO.SeekOrigin.Begin)
-        filePtr.WriteByte(characterId)
-        filePtr.WriteByte(classId)
 
-        ' Don't mess with level alliance. 
+        If hasChanged Then
+            DebugLogger.logMessage("[ChapterUnit] - Wrote Address 0x" & Hex(offset) & " to 0x" & Hex(offset + entrySize))
 
-        If type = Utilities.GameType.GameTypeFE8 Then
-            filePtr.Seek(offset + 12, IO.SeekOrigin.Begin)
-        Else
-            filePtr.Seek(offset + 8, IO.SeekOrigin.Begin)
-        End If
+            filePtr.Seek(offset, IO.SeekOrigin.Begin)
+            filePtr.WriteByte(characterId)
+            filePtr.WriteByte(classId)
 
-        ' We always need to write 4 items, but collapse them if we have gaps because
-        ' the game stops after the first 0.
-        If item1Id = &H0 Then
-            If item4Id <> &H0 Then
-                item1Id = item4Id
-                item4Id = &H0
-            ElseIf item3Id <> &H0 Then
-                item1Id = item3Id
-                item3Id = &H0
-            ElseIf item2Id <> &H0 Then
-                item1Id = item2Id
-                item2Id = &H0
+            ' Don't mess with level alliance. 
+
+            If type = Utilities.GameType.GameTypeFE8 Then
+                filePtr.Seek(offset + 12, IO.SeekOrigin.Begin)
+            Else
+                filePtr.Seek(offset + 8, IO.SeekOrigin.Begin)
             End If
-        End If
 
-        If item2Id = &H0 Then
-            If item4Id <> &H0 Then
-                item2Id = item4Id
-                item4Id = &H0
-            ElseIf item3Id <> &H0 Then
-                item2Id = item3Id
-                item3Id = &H0
+            ' We always need to write 4 items, but collapse them if we have gaps because
+            ' the game stops after the first 0.
+            If item1Id = &H0 Then
+                If item4Id <> &H0 Then
+                    item1Id = item4Id
+                    item4Id = &H0
+                ElseIf item3Id <> &H0 Then
+                    item1Id = item3Id
+                    item3Id = &H0
+                ElseIf item2Id <> &H0 Then
+                    item1Id = item2Id
+                    item2Id = &H0
+                End If
             End If
-        End If
 
-        If item3Id = &H0 Then
-            If item4Id <> &H0 Then
-                item3Id = item4Id
-                item4Id = &H0
+            If item2Id = &H0 Then
+                If item4Id <> &H0 Then
+                    item2Id = item4Id
+                    item4Id = &H0
+                ElseIf item3Id <> &H0 Then
+                    item2Id = item3Id
+                    item3Id = &H0
+                End If
             End If
-        End If
 
-        filePtr.WriteByte(item1Id)
-        filePtr.WriteByte(item2Id)
-        filePtr.WriteByte(item3Id)
-        filePtr.WriteByte(item4Id)
+            If item3Id = &H0 Then
+                If item4Id <> &H0 Then
+                    item3Id = item4Id
+                    item4Id = &H0
+                End If
+            End If
+
+            filePtr.WriteByte(item1Id)
+            filePtr.WriteByte(item2Id)
+            filePtr.WriteByte(item3Id)
+            filePtr.WriteByte(item4Id)
+        End If
 
         filePtr.Seek(offset + entrySize, IO.SeekOrigin.Begin)
     End Sub

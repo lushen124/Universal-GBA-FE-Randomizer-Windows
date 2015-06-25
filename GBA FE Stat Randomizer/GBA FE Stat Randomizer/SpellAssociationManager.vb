@@ -87,6 +87,9 @@
             If gameType = Utilities.GameType.GameTypeFE7 And realAddress <> 0 Then
                 filePtr.Seek(realAddress, IO.SeekOrigin.Begin)
                 For i As Integer = 0 To entries.Count - 1
+
+                    DebugLogger.logMessage("[SpellAssociationManager] - Wrote Address 0x" & Hex(filePtr.Position) & " to 0x" & Hex(filePtr.Position + FE7SpellAssociationEntrySize))
+
                     Dim entry As FE7SpellAssociationEntry = entries.Item(i)
                     Dim entryStartPosition As Integer = filePtr.Position
 

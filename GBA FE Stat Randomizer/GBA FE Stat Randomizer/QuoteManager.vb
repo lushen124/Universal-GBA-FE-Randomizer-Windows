@@ -265,6 +265,9 @@ Public Class QuoteManager
             If gameType = Utilities.GameType.GameTypeFE6 And realAddress <> 0 Then
                 filePtr.Seek(realAddress, IO.SeekOrigin.Begin)
                 For i As Integer = 0 To entries.Count - 1
+
+                    DebugLogger.logMessage("[QuoteManager] - Wrote Address 0x" & Hex(filePtr.Position) & " to 0x" & Hex(filePtr.Position + FE6DeathQuoteEntrySize))
+
                     Dim entry As FE6DeathQuoteEntry = entries.Item(i)
                     Dim entryStartPosition As Integer = filePtr.Position
                     filePtr.WriteByte(entry.characterID)
@@ -280,6 +283,9 @@ Public Class QuoteManager
                     originalIdList.Clear()
                     filePtr.Seek(realAddress, IO.SeekOrigin.Begin)
                     For i As Integer = 0 To entries.Count - 1
+
+                        DebugLogger.logMessage("[QuoteManager] - Wrote Address 0x" & Hex(filePtr.Position) & " to 0x" & Hex(filePtr.Position + FE7DeathQuote1EntrySize))
+
                         Dim entry As FE7DeathQuote1Entry = entries.Item(i)
                         Dim entryStartPosition As Integer = filePtr.Position
                         filePtr.WriteByte(entry.characterID)
@@ -298,6 +304,9 @@ Public Class QuoteManager
                     type2OriginalIdList.Clear()
                     filePtr.Seek(type2RealAddress, IO.SeekOrigin.Begin)
                     For i As Integer = 0 To type2Entries.Count - 1
+
+                        DebugLogger.logMessage("[QuoteManager] - Wrote Address 0x" & Hex(filePtr.Position) & " to 0x" & Hex(filePtr.Position + FE7DeathQuote2EntrySize))
+
                         Dim entry As FE7DeathQuote2Entry = type2Entries.Item(i)
                         Dim entryStartPosition As Integer = filePtr.Position
                         filePtr.WriteByte(entry.characterID)

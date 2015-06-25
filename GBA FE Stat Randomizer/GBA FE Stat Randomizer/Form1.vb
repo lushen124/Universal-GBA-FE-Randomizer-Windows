@@ -707,6 +707,11 @@ StartOver:
                         ' If we got this far, he/she's getting randomized
                         ' Grab a random class from the allowed classes. Each game
                         ' will know what valid classes are possible.
+
+                        ' First, let the unit knows that he has changed so that
+                        ' he will write. Otherwise, to avoid issues, we don't write the ones that haven't changed.
+                        unit.hasChanged = True
+
                         Dim newClassId As Byte
                         ' Keep track of whether this character was a Lord character, because whatever
                         ' his or her new class is also needs to have lord abilities (like Seize)

@@ -297,6 +297,9 @@
             If gameType = Utilities.GameType.GameTypeFE6 And realAddress <> 0 Then
                 filePtr.Seek(realAddress, IO.SeekOrigin.Begin)
                 For i As Integer = 0 To entries.Count - 1
+
+                    DebugLogger.logMessage("[SupportManager] - Wrote Address 0x" & Hex(filePtr.Position) & " to 0x" & Hex(filePtr.Position + FE6SupportCompatibilityEntrySize))
+
                     Dim entry As FE6SupportCompatibilityEntry = entries.Item(i)
                     Dim entryStartPosition As Integer = filePtr.Position
                     For j As Integer = 0 To entry.proposedSupporterIDs.Count - 1
@@ -311,6 +314,9 @@
 
                 filePtr.Seek(realConversationAddress, IO.SeekOrigin.Begin)
                 For i As Integer = 0 To conversationEntries.Count - 1
+
+                    DebugLogger.logMessage("[SupportManager] - Wrote Address 0x" & Hex(filePtr.Position) & " to 0x" & Hex(filePtr.Position + FE6SupportConversationEntrySize))
+
                     Dim entry As FE6SupportConversationEntry = conversationEntries.Item(i)
                     Dim entryStartPosition As Integer = filePtr.Position
                     filePtr.WriteByte(entry.proposedCharacter1)
@@ -325,6 +331,9 @@
             ElseIf gameType = Utilities.GameType.GameTypeFE7 And realAddress <> 0 Then
                 filePtr.Seek(realAddress, IO.SeekOrigin.Begin)
                 For i As Integer = 0 To entries.Count - 1
+
+                    DebugLogger.logMessage("[SupportManager] - Wrote Address 0x" & Hex(filePtr.Position) & " to 0x" & Hex(filePtr.Position + FE7SupportCompatibilityEntrySize))
+
                     Dim entry As FE7SupportCompatibilityEntry = entries.Item(i)
                     Dim entryStartPosition As Integer = filePtr.Position
                     For j As Integer = 0 To entry.proposedSupporterIDs.Count - 1
@@ -339,6 +348,9 @@
 
                 filePtr.Seek(realConversationAddress, IO.SeekOrigin.Begin)
                 For i As Integer = 0 To conversationEntries.Count - 1
+
+                    DebugLogger.logMessage("[SupportManager] - Wrote Address 0x" & Hex(filePtr.Position) & " to 0x" & Hex(filePtr.Position + FE7SupportConversationEntrySize))
+
                     Dim entry As FE7SupportConversationEntry = conversationEntries.Item(i)
                     Dim entryStartPosition As Integer = filePtr.Position
                     filePtr.WriteByte(entry.proposedCharacter1)
