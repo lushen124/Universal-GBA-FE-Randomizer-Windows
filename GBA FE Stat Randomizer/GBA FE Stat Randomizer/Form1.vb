@@ -636,7 +636,7 @@ StartOver:
                     item.randomizeItemCritical(criticalVariance, minimumCritical, rng)
                     If randomTraits Then
                         item.assignRandomEffect(rng, type)
-                        If item.weaponAbility1 And FEItem.Ability1.Ability1MagicDamage Then spellAssociationManager.assignRandomSpellAnimationToWeaponWithID(item.weaponID, rng)
+                        If item.weaponAbility1 And FEItem.Ability1.Ability1MagicDamage And Not IsNothing(spellAssociationManager) Then spellAssociationManager.assignRandomSpellAnimationToWeaponWithID(item.weaponID, rng)
                     End If
                 End If
             Next
@@ -669,11 +669,11 @@ StartOver:
                     End If
                     ' Make sure their classID is valid, otherwise don't touch it.
                     If type = Utilities.GameType.GameTypeFE6 Then
-                        If Not FE6GameData.isValidClass(unit.classId) Then
+                        If Not FE6GameData.isValidClass(unit.classId) And unit.levelAlliance = &H0 Then
                             Continue For
                         End If
                     ElseIf type = Utilities.GameType.GameTypeFE7 Then
-                        If Not FE7GameData.isValidClass(unit.classId) Then
+                        If Not FE7GameData.isValidClass(unit.classId) And unit.levelAlliance = &H0 Then
                             Continue For
                         End If
                     End If
@@ -735,8 +735,8 @@ StartOver:
                         Else
                             Utilities.setObjectForKey(originalClasses, oldClass.classId, unit.characterId)
                             If shouldRandomizeClasses Then
-                                newClassId = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.randomClassFromOriginalClass(oldClass.classId, randomLords, randomThieves, uniqueClasses, rng),
-                                                 IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.randomClassFromOriginalClass(oldClass.classId, randomLords, randomThieves, uniqueClasses, wasLord Or isBoss, rng), oldClass.classId))
+                                newClassId = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.randomClassFromOriginalClass(oldClass.classId, randomLords, randomThieves, uniqueClasses, lordCharacters.Contains(characterIDObject), wasLord Or isBoss, rng),
+                                                 IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.randomClassFromOriginalClass(oldClass.classId, randomLords, randomThieves, uniqueClasses, lordCharacters.Contains(characterIDObject), wasLord Or isBoss, rng), oldClass.classId))
                             Else
                                 newClassId = currentCharacter.classId
                             End If
@@ -809,13 +809,13 @@ StartOver:
                         ' Be wary of some other classes. FE6 likes to use characters
                         ' for NPCs temporarily, so don't mess with those.
                         If type = Utilities.GameType.GameTypeFE6 Then
-                            If Not FE6GameData.isValidClass(unit.classId) Then
+                            If Not FE6GameData.isValidClass(unit.classId) And unit.levelAlliance = &H0 Then
                                 Console.WriteLine("Skipping invalid classID: " + unit.classId)
                             Else
                                 unit.classId = newClass.classId
                             End If
                         ElseIf type = Utilities.GameType.GameTypeFE7 Then
-                            If Not FE7GameData.isValidClass(unit.classId) Then
+                            If Not FE7GameData.isValidClass(unit.classId) And unit.levelAlliance = &H0 Then
                                 Console.WriteLine("Skipping invalid classID: " + unit.classId)
                             Else
                                 unit.classId = newClass.classId

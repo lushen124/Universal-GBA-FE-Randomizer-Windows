@@ -605,7 +605,7 @@
         Return list
     End Function
 
-    Public Shared Function randomClassFromOriginalClass(ByVal originalClass As Byte, ByVal allowLord As Boolean, ByVal allowThief As Boolean, ByVal allowUnique As Boolean, ByRef rng As Random) As ClassList
+    Public Shared Function randomClassFromOriginalClass(ByVal originalClass As Byte, ByVal allowLord As Boolean, ByVal allowThief As Boolean, ByVal allowUnique As Boolean, ByVal requirePromotion As Boolean, ByVal requireAttack As Boolean, ByRef rng As Random) As ClassList
         Dim original As ClassList = System.Enum.ToObject(GetType(ClassList), originalClass)
         Dim classListUnpromoted As ArrayList = New ArrayList
 
@@ -617,6 +617,18 @@
         If Not allowUnique Then
             classListUnpromoted.Remove(ClassList.Dancer)
             classListUnpromoted.Remove(ClassList.Manakete_F)
+        End If
+
+        If requireAttack Then
+            classListUnpromoted.Remove(ClassList.Dancer)
+            classListUnpromoted.Remove(ClassList.Sister)
+            classListUnpromoted.Remove(ClassList.Troubadour)
+        End If
+
+        If requirePromotion Then
+            classListUnpromoted.Remove(ClassList.Manakete_F)
+            classListUnpromoted.Remove(ClassList.Thief_F)
+            classListUnpromoted.Remove(ClassList.Dancer)
         End If
 
         If classListUnpromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
@@ -652,6 +664,17 @@
             classListUnpromoted.Remove(ClassList.Soldier)
             classListUnpromoted.Remove(ClassList.Bard)
             classListUnpromoted.Remove(ClassList.Manakete)
+        End If
+
+        If requireAttack Then
+            classListUnpromoted.Remove(ClassList.Bard)
+            classListUnpromoted.Remove(ClassList.Priest)
+        End If
+
+        If requirePromotion Then
+            classListUnpromoted.Remove(ClassList.Soldier)
+            classListUnpromoted.Remove(ClassList.Bard)
+            classListUnpromoted.Remove(ClassList.Thief)
         End If
 
         If classListUnpromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
