@@ -3,6 +3,10 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**June 24, 2015**
+
+Fixed a serious issue with chapter events being corrupted for reinforcements. I had forgotten to exclude 0x00 as a valid class when looking at chapter units so in some cases, it could end up overwriting critical code controlling reinforcements, forcing a trap reset of the game when those reinforcements attempted to spawn.
+
 **June 23, 2015**
 
 Added logic to modify the movement types to use 30 instead of 255 to mark impassable terrain. This should fix problems with characters getting assigned different classes and not being able to spawn in their normal location because their new class doesn't support the same movement type as their old class (namely fliers spawning on mountains and water). This seems to also fix the issue with Miledy in FE6.
