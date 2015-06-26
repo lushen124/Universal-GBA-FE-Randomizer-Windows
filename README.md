@@ -113,6 +113,12 @@ The intent for this project was to create an easy-to-use and customizable random
 
 ### FE8 Notes
 
+* Preliminary research seems to indicate that trainees promoting at level 10 are hardcoded to the character. This means that if anybody but Ross, Amelia, or Ewan gets stuck with a trainee class, they're stuck. At the same time (and more notably), regardless of the class Ross, Amelia, and Ewan get, they will get a forced level 10 promotion. As far as I know, no patch exists to fix this. I did some digging in the ASM with no luck, so this may have to stay like this. :(
+* While Trainee classes are kind of unfortunate, Trainee (2) classes should be ok, since they act like regular unpromoted classes (i.e. max level 20). So basically, if Ross, Ewan, or Amelia get trainee classes, they will start with the Trainee (1) class, while everybody else will get the Trainee (2) variant. Promoted units, if they get trainee classes, will get the Super Trainee version.
+* Special feature for FE8, would random promotion branches be something desired? Maybe I can add a game-specific modifications section. The only problem I see is that it will almost certainly cause issues when transferring weapon levels in most cases. I'll leave it out for now just because of potential issues.
+* Monster Classes would fit under the "Allow unique classes" option for randomizing classes, but I'll have to do some more research on how to actually promote them. I may just make a patch to do so, and auto-apply the patch for a custom item that does promotion for monsters (and maybe throw it in the Ch.5 item store or something).
+* The other problem with allowing monster classes is free monster weapons, which technically anybody can use (free unbreakable weapons!) As little sense as them becoming breakable and buyable at shops makes, maybe we should? Also, monster weapons with random effects? :)
+
 ## Future Plans
 
 The remaining feature list (which you can get a sneak peek at with the app) is as follows:
