@@ -3,6 +3,10 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**June 28, 2015**
+
+First pass at randomizing FE8 classes.
+
 **June 25, 2015**
 
 Added logic to make sure lords randomize as classes that can promote and bosses randomize as classes that can attack (FE7 already had this, but I applied it to FE6 as well).
