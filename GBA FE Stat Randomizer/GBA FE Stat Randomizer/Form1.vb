@@ -695,7 +695,7 @@ StartOver:
                                             GetType(FE8GameData.ClassList)))
             Dim characterType As Type = IIf(type = Utilities.GameType.GameTypeFE6, GetType(FE6GameData.CharacterList),
                                             IIf(type = Utilities.GameType.GameTypeFE7, GetType(FE7GameData.CharacterList),
-                                                GetType(FE8GameData.ClassList)))
+                                                GetType(FE8GameData.CharacterList)))
 
             Dim importantCharacterIDs = New ArrayList(System.Enum.GetValues(characterType))
 
