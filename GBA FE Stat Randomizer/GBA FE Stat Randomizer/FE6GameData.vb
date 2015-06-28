@@ -427,7 +427,7 @@
     End Enum
 
     Public Shared Function randomEffectiveness(ByRef rng As Random)
-        Dim result = rng.Next(2, 5)
+        Dim result = rng.Next(2, 6)
         If result = 2 Then Return EffectivenessPointers.EffectivenessPointerKnights
         If result = 3 Then Return EffectivenessPointers.EffectivenessPointerDragons
         If result = 4 Then Return EffectivenessPointers.EffectivenessPointerCavalry
@@ -469,7 +469,6 @@
             list.Add(ClassList.DragonKnight_F)
             list.Add(ClassList.Thief_F)
             list.Add(ClassList.Dancer)
-            list.Add(ClassList.Manakete_F)
         Else
             list.Add(ClassList.Lord)
             list.Add(ClassList.Mercenary)
@@ -488,7 +487,6 @@
             list.Add(ClassList.Thief)
             list.Add(ClassList.Soldier)
             list.Add(ClassList.Bard)
-            list.Add(ClassList.Manakete)
         End If
 
         Return list
@@ -507,6 +505,7 @@
             list.Add(ClassList.NomadTrooper_F)
             list.Add(ClassList.FalconKnight)
             list.Add(ClassList.DragonMaster_F)
+            list.Add(ClassList.Manakete_F)
         Else
             list.Add(ClassList.Hero)
             list.Add(ClassList.Swordmaster)
@@ -520,6 +519,7 @@
             list.Add(ClassList.DragonMaster)
             list.Add(ClassList.Paladin)
             list.Add(ClassList.MasterLord)
+            list.Add(ClassList.Manakete)
         End If
 
         Return list
@@ -595,7 +595,6 @@
     Public Shared Function canNotPromoteCharacterIDs() As ArrayList
         Dim list As ArrayList = New ArrayList()
 
-        list.Add(CharacterList.Fa)
         list.Add(CharacterList.Chad)
         list.Add(CharacterList.Astore)
         list.Add(CharacterList.Cath)
@@ -616,7 +615,6 @@
         End If
         If Not allowUnique Then
             classListUnpromoted.Remove(ClassList.Dancer)
-            classListUnpromoted.Remove(ClassList.Manakete_F)
         End If
 
         If requireAttack Then
@@ -626,7 +624,6 @@
         End If
 
         If requirePromotion Then
-            classListUnpromoted.Remove(ClassList.Manakete_F)
             classListUnpromoted.Remove(ClassList.Thief_F)
             classListUnpromoted.Remove(ClassList.Dancer)
         End If
@@ -641,6 +638,10 @@
         Else
             ' Old class was probably promoted, so look for promoted classes.
             Dim classListPromoted As ArrayList = promotedClassList(True)
+
+            If Not allowUnique Then
+                classListPromoted.Remove(ClassList.Manakete_F)
+            End If
 
             If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
                 Dim newClass As ClassList
@@ -663,7 +664,6 @@
         If Not allowUnique Then
             classListUnpromoted.Remove(ClassList.Soldier)
             classListUnpromoted.Remove(ClassList.Bard)
-            classListUnpromoted.Remove(ClassList.Manakete)
         End If
 
         If requireAttack Then
@@ -690,6 +690,10 @@
 
             If Not allowLord Then
                 classListPromoted.Remove(ClassList.MasterLord)
+            End If
+
+            If Not allowUnique Then
+                classListPromoted.Remove(ClassList.Manakete)
             End If
 
             If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
@@ -860,6 +864,12 @@
             Return True
         End If
 
+        Return False
+    End Function
+
+    Public Shared Function isHealingStaff(ByVal itemID As Byte) As Boolean
+        Dim itemIDObject As ItemList = System.Enum.ToObject(GetType(ItemList), itemID)
+        If itemIDObject = ItemList.Heal Or ItemList.Mend Or ItemList.Recover Or ItemList.Physic Or ItemList.TinasStaff Then Return True
         Return False
     End Function
 

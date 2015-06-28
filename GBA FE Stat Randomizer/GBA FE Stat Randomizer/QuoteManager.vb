@@ -23,6 +23,13 @@ Public Class QuoteManager
 
     Dim FE7DeathQuoteAllChaptersValue As Byte = &H43
 
+    Dim FE8DeathQuoteAddressPointer As Integer = &H8472C
+    Dim FE8DeathQuoteDefaultAddress As Integer = &H9ECD4C
+    Dim FE8DeathQuoteEntrySize As Integer = 12
+    Dim FE8DeathQuoteEntryCount As Integer = 79
+
+    Dim FE8DeathQuoteAllChaptersValue As Byte = &HFF
+
     Private Class FE6DeathQuoteEntry
         Property characterID As Byte        ' offset 0, 1 byte
         Property chapter As Byte            ' offset 1, 1 byte
@@ -48,6 +55,13 @@ Public Class QuoteManager
         Property triggerID As Byte                  ' offset 12, 1 byte
 
         Property proposedTriggerID As Byte
+    End Class
+
+    Private Class FE8DeathQuoteEntry
+        Property characterID As Byte            ' offset 0, 1 byte
+        Property chapter As Byte                ' offset 3, 1 byte
+        Property eventID As Byte                ' offset 4, 1 byte
+        Property textID As UShort               ' offset 6, 2 bytes
     End Class
 
     Property gameType As Utilities.GameType
@@ -171,6 +185,41 @@ Public Class QuoteManager
 
                 filePtr.Seek(entryStartPosition + FE7DeathQuote2EntrySize, IO.SeekOrigin.Begin)
             Next
+        Else
+            filePtr.Seek(FE8DeathQuoteAddressPointer, IO.SeekOrigin.Begin)
+            Dim tableOffset As Integer = Utilities.ReadWord(filePtr, True)
+            Dim repointedTable As Boolean = False
+
+            If tableOffset <> FE8DeathQuoteDefaultAddress Then
+                MsgBox("Death Quotes Table has been updated. Death Quotes Table may have been repointed." + vbCrLf _
+                       & "If this is a hacked game, not all death quotes may be updated consistently.", MsgBoxStyle.OkOnly, "Notice")
+                repointedTable = True
+            End If
+
+            realAddress = tableOffset
+            filePtr.Seek(tableOffset, IO.SeekOrigin.Begin)
+
+            entries = New ArrayList()
+            originalIdList = New ArrayList()
+
+            For i As Integer = 1 To FE8DeathQuoteEntryCount
+                Dim entry As FE8DeathQuoteEntry = New FE8DeathQuoteEntry()
+                Dim entryStartPosition As Integer = filePtr.Position
+                entry.characterID = filePtr.ReadByte()
+
+                filePtr.Seek(entryStartPosition + 3, IO.SeekOrigin.Begin)
+                entry.chapter = filePtr.ReadByte()
+
+                entry.eventID = filePtr.ReadByte()
+
+                filePtr.Seek(entryStartPosition + 6, IO.SeekOrigin.Begin)
+                entry.textID = Utilities.ReadHalfWord(filePtr)
+
+                entries.Add(entry)
+                originalIdList.Add(entry.textID)
+
+                filePtr.Seek(entryStartPosition + FE8DeathQuoteEntrySize, IO.SeekOrigin.Begin)
+            Next
         End If
     End Sub
 
@@ -185,7 +234,6 @@ Public Class QuoteManager
                     End If
                 Next
             ElseIf gameType = Utilities.GameType.GameTypeFE7 Then
-                
                 For i As Integer = 0 To entries.Count - 1
                     If originalIdList.Item(i) = originalCharacterID Then
                         Dim entry As FE7DeathQuote1Entry = entries.Item(i)
@@ -198,7 +246,30 @@ Public Class QuoteManager
                         entry.characterID = newCharacterID
                     End If
                 Next
+            Else
+                ' It's far easier to just swap text IDs for FE8.
+                Dim targetTextID As UShort = 0
+                ' Find the new character's original text ID.
+                For i As Integer = 0 To entries.Count - 1
+                    Dim entry As FE8DeathQuoteEntry = entries.Item(i)
+                    If entry.characterID = newCharacterID And entry.chapter = FE8DeathQuoteAllChaptersValue Then
+                        targetTextID = originalIdList.Item(i)
+                        Exit For
+                    End If
+                Next
+
+                If targetTextID <> 0 Then
+                    ' Paste it over the old character's text ID.
+                    For i As Integer = 0 To entries.Count - 1
+                        Dim entry As FE8DeathQuoteEntry = entries.Item(i)
+                        If entry.characterID = originalCharacterID And entry.chapter = FE8DeathQuoteDefaultAddress Then
+                            entry.textID = targetTextID
+                            Exit For
+                        End If
+                    Next
+                End If
             End If
+
         End If
     End Sub
 
@@ -321,6 +392,24 @@ Public Class QuoteManager
                         type2OriginalIdList.Add(entry.characterID)
                     Next
                 End If
+            Else
+                filePtr.Seek(realAddress, IO.SeekOrigin.Begin)
+                For i As Integer = 0 To entries.Count - 1
+
+                    DebugLogger.logMessage("[QuoteManager] - Wrote Address 0x" & Hex(filePtr.Position) & " to 0x" & Hex(filePtr.Position + FE8DeathQuoteEntrySize))
+
+                    Dim entry As FE8DeathQuoteEntry = entries.Item(i)
+                    Dim entryStartPosition As Integer = filePtr.Position
+
+                    filePtr.Seek(entryStartPosition + 6, IO.SeekOrigin.Begin)
+                    Utilities.WriteHalfWord(filePtr, entry.textID)
+                    ' Don't write anything else, because we shouldn't be changing those.
+
+                    filePtr.Seek(entryStartPosition + FE8DeathQuoteEntrySize, IO.SeekOrigin.Begin)
+
+                    ' Update the character ID list if we've comitted.
+                    originalIdList.Add(entry.textID)
+                Next
             End If
         End If
 

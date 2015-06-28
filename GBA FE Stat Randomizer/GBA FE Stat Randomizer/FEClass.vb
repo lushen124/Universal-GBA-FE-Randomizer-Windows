@@ -262,6 +262,16 @@
         filePtr.Seek(offset + entrySize, IO.SeekOrigin.Begin)
     End Sub
 
+    Public Function isHealer() As Boolean
+        If staffLevel > 0 And
+            swordLevel = 0 And spearLevel = 0 And axeLevel = 0 And bowLevel = 0 And
+            animaLevel = 0 And lightLevel = 0 And darkLevel = 0 Then
+            Return True
+        End If
+
+        Return False
+    End Function
+
     Public Sub randomizeMOV(ByVal minimumMOV As Integer, ByVal maximumMOV As Integer, ByRef rng As Random)
         baseMov = rng.Next(minimumMOV, maximumMOV)
     End Sub

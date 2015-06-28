@@ -946,6 +946,15 @@
         Return False
     End Function
 
+    Public Shared Function isHealingStaff(ByVal itemID As Byte) As Boolean
+        Dim itemIDObject As ItemList = System.Enum.ToObject(GetType(ItemList), itemID)
+        If itemIDObject = ItemList.Heal Or
+            itemIDObject = ItemList.Mend Or
+            itemIDObject = ItemList.Recover Or
+            itemIDObject = ItemList.Physic Then Return True
+        Return False
+    End Function
+
     Public Shared Function randomizedFromThiefEquipment() As ArrayList
         Dim list As ArrayList = New ArrayList()
 
@@ -959,14 +968,6 @@
         Dim list As ArrayList = New ArrayList()
 
         list.Add(ItemList.Lockpick)
-
-        Return list
-    End Function
-
-    Public Shared Function randomizedToDancerEquipment() As ArrayList
-        Dim list As ArrayList = New ArrayList()
-
-        list.Add(ItemList.NinisGrace)
 
         Return list
     End Function
