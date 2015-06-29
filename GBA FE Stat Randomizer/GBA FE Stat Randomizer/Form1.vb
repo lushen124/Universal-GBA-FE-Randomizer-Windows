@@ -193,6 +193,8 @@
 
         Dim spellAssociationManager As SpellAssociationManager = Nothing
 
+        Dim promotionManager As PromotionManager = Nothing
+
         Dim fileReader = IO.File.OpenRead(OpenFileDialog1.FileName)
 
         If type = Utilities.GameType.GameTypeFE6 Then
@@ -252,6 +254,8 @@
 
             quoteManager = New QuoteManager(Utilities.GameType.GameTypeFE6, fileReader)
             supportManager = New SupportManager(Utilities.GameType.GameTypeFE6, fileReader)
+
+            promotionManager = New PromotionManager(Utilities.GameType.GameTypeFE6, fileReader)
         ElseIf type = Utilities.GameType.GameTypeFE7 Then
 
             fileReader.Seek(FE7GameData.PointerToCharacterTableOffset, IO.SeekOrigin.Begin)
@@ -312,6 +316,8 @@
             supportManager = New SupportManager(Utilities.GameType.GameTypeFE7, fileReader)
 
             spellAssociationManager = New SpellAssociationManager(Utilities.GameType.GameTypeFE7, fileReader)
+
+            promotionManager = New PromotionManager(Utilities.GameType.GameTypeFE7, fileReader)
         ElseIf type = Utilities.GameType.GameTypeFE8 Then
 
             fileReader.Seek(FE8GameData.PointerToCharacterTableOffset, IO.SeekOrigin.Begin)
@@ -363,13 +369,15 @@
                 chapterUnitData.Add(unitList)
             Next
 
-            lordCharacters = FE7GameData.lordCharacterIDs()
-            thiefCharacters = FE7GameData.thiefCharacterIDs()
-            bossCharacters = FE7GameData.bossCharacterIDs()
-            exemptCharacters = FE7GameData.exemptCharacterIDs()
+            lordCharacters = FE8GameData.lordCharacterIDs()
+            thiefCharacters = FE8GameData.thiefCharacterIDs()
+            bossCharacters = FE8GameData.bossCharacterIDs()
+            exemptCharacters = FE8GameData.exemptCharacterIDs()
 
             quoteManager = New QuoteManager(Utilities.GameType.GameTypeFE8, fileReader)
             supportManager = New SupportManager(Utilities.GameType.GameTypeFE8, fileReader)
+
+            promotionManager = New PromotionManager(Utilities.GameType.GameTypeFE8, fileReader)
 
             MsgBox("You seem to be randomizing FE8. Note that depending on the randomizing results, the tutorial (Easy Mode) may no longer be completable." + vbCrLf + vbCrLf _
                    & "It is recommended that you only play this on the Normal Or Difficult Modes to ensure functionality.", MsgBoxStyle.Information, "Notice")
@@ -427,6 +435,19 @@
             If type = Utilities.GameType.GameTypeFE7 And FE7GameData.isBlacklisted(itemEntry.weaponID) Then Continue For
             If type = Utilities.GameType.GameTypeFE8 And FE8GameData.isBlacklisted(itemEntry.weaponID) Then Continue For
 
+            ' For FE8 update the monster weapons so that they can only be used by monsters.
+            ' This mostly applies to the magic ones, which are classified as dark weapons, but have
+            ' no rank (and actually aren't marked as monster weapons).
+            ' The monster classes that use monster weapons have their flag set, so they'll be use it
+            ' even if it is changed to a monster weapon. Also give it an E rank so
+            ' that only magic monsters can use it.
+            If type = Utilities.GameType.GameTypeFE8 Then
+                If monsterWeaponIDs.Contains(System.Enum.ToObject(GetType(FE8GameData.ItemList), itemEntry.weaponID)) Then
+                    itemEntry.weaponAbility2 = itemEntry.weaponAbility2 Or FEItem.Ability2.Ability2MonsterWeaponDragonLock
+                    itemEntry.rank = FE8GameData.WeaponRank.WeaponRankE
+                End If
+            End If
+
             Dim weaponType As FEItem.WeaponType = itemEntry.type
             Dim weaponList As ArrayList = itemByType.Item(weaponType)
             If IsNothing(weaponList) Then
@@ -442,24 +463,6 @@
                 itemByRank.Add(weaponRank, rankList)
             End If
             rankList.Add(itemEntry.weaponID)
-
-            ' For FE8 update the monster weapons so that they can only be used by monsters.
-            ' This mostly applies to the magic ones, which are classified as dark weapons, but have
-            ' no rank (and actually aren't marked as monster weapons).
-            ' The monster classes that use monster weapons have their flag set, so they'll be use it
-            ' even if it is changed to a monster weapon. Also give it an E rank so
-            ' that only magic monsters can use it.
-            If type = Utilities.GameType.GameTypeFE8 Then
-                If monsterWeaponIDs.Contains(System.Enum.ToObject(GetType(FE8GameData.ItemList), itemEntry.weaponID)) Then
-                    itemEntry.weaponAbility2 = itemEntry.weaponAbility2 Or FEItem.Ability2.Ability2MonsterWeaponDragonLock
-                    itemEntry.rank = FE8GameData.WeaponRank.WeaponRankE
-
-                    ' Remove these from consideration before they end up on regular units.
-                    ' We'll handle assigning monster weapons later.
-                    weaponList.Remove(itemEntry.weaponID)
-                    rankList.Add(itemEntry.weaponID)
-                End If
-            End If
         Next
 
         Dim rng As Random = New Random
@@ -784,9 +787,31 @@ StartOver:
                         Else
                             Utilities.setObjectForKey(originalClasses, oldClass.classId, unit.characterId)
                             If shouldRandomizeClasses Then
-                                newClassId = IIf(type = Utilities.GameType.GameTypeFE6, FE6GameData.randomClassFromOriginalClass(oldClass.classId, randomLords, randomThieves, uniqueClasses, lordCharacters.Contains(characterIDObject), wasLord Or isBoss, rng),
-                                                 IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.randomClassFromOriginalClass(oldClass.classId, randomLords, randomThieves, uniqueClasses, lordCharacters.Contains(characterIDObject), wasLord Or isBoss, rng),
-                                                     FE8GameData.randomClassFromOriginalClass(oldClass.classId, randomLords, randomThieves, uniqueClasses, lordCharacters.Contains(characterIDObject), wasLord Or isBoss, FE8GameData.traineeCharacterIDs.Contains(characterIDObject), rng)))
+                                If type = Utilities.GameType.GameTypeFE6 Then
+                                    newClassId = FE6GameData.randomClassFromOriginalClass(oldClass.classId,
+                                                                                          randomLords,
+                                                                                          randomThieves,
+                                                                                          uniqueClasses,
+                                                                                          lordCharacters.Contains(characterIDObject),
+                                                                                          wasLord Or isBoss,
+                                                                                          rng)
+                                ElseIf type = Utilities.GameType.GameTypeFE7 Then
+                                    newClassId = FE7GameData.randomClassFromOriginalClass(oldClass.classId,
+                                                                                          randomLords,
+                                                                                          randomThieves,
+                                                                                          uniqueClasses,
+                                                                                          lordCharacters.Contains(characterIDObject),
+                                                                                          wasLord Or isBoss,
+                                                                                          rng)
+                                Else
+                                    newClassId = FE8GameData.randomClassFromOriginalClass(oldClass.classId,
+                                                                                          randomLords,
+                                                                                          randomThieves,
+                                                                                          uniqueClasses,
+                                                                                          lordCharacters.Contains(characterIDObject),
+                                                                                          wasLord Or isBoss,
+                                                                                          FE8GameData.traineeCharacterIDs.Contains(characterIDObject), rng)
+                                End If
                             Else
                                 newClassId = currentCharacter.classId
                             End If
@@ -1430,7 +1455,16 @@ StartOver:
                             Dim monsterClasses As ArrayList = FE8GameData.monsterClassIDs()
                             Dim newClassIDObject As FE8GameData.ClassList = System.Enum.ToObject(GetType(FE8GameData.ClassList), newClassId)
                             If monsterClasses.Contains(newClassIDObject) Then
-                                validatedInventory.Clear()
+                                ' Remove any weapons.
+                                For Each item In validatedInventory
+                                    Dim itemID As Byte = Convert.ToByte(item)
+                                    Dim itemObject As FEItem = itemLookup.Item(itemID)
+                                    If Not IsNothing(itemObject) Then
+                                        If itemObject.isWeapon() Then
+                                            validatedInventory.Remove(item)
+                                        End If
+                                    End If
+                                Next
                                 If newClassIDObject = FE8GameData.ClassList.Gorgon Then
                                     validatedInventory.Add(FE8GameData.ItemList.DemonSurge)
                                 End If
@@ -1453,6 +1487,77 @@ StartOver:
                     End If
                 Next
             Next
+
+            ' Fix promotion items, though only do this if necessary.
+            If Not IsNothing(promotionManager) Then
+                If type = Utilities.GameType.GameTypeFE6 Then
+                    If randomLords Then
+                        promotionManager.addClassToPromotionItem(FE6GameData.ClassList.Lord, PromotionManager.PromotionItems.KnightCrest)
+                    End If
+                    If uniqueClasses Then
+                        Dim soldierClass As FEClass = classLookup.Item(Convert.ToByte(FE6GameData.ClassList.Soldier))
+                        If Not IsNothing(soldierClass) Then
+                            promotionManager.addClassToPromotionItem(FE6GameData.ClassList.Soldier, PromotionManager.PromotionItems.KnightCrest)
+                            soldierClass.promotedClassId = FE6GameData.ClassList.General
+                        End If
+                    End If
+                ElseIf type = Utilities.GameType.GameTypeFE7 Then
+                    If randomLords Then
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.LynLord, PromotionManager.PromotionItems.HeroCrest)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.EliwoodLord, PromotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.HectorLord, PromotionManager.PromotionItems.KnightCrest)
+
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.LynLord, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.EliwoodLord, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.HectorLord, PromotionManager.PromotionItems.MasterSeal)
+                    End If
+                    If uniqueClasses Then
+                        Dim soldierClass As FEClass = classLookup.Item(Convert.ToByte(FE7GameData.ClassList.Soldier))
+                        If Not IsNothing(soldierClass) Then
+                            soldierClass.promotedClassId = FE7GameData.ClassList.General
+                            promotionManager.addClassToPromotionItem(FE7GameData.ClassList.Soldier, PromotionManager.PromotionItems.KnightCrest)
+                            promotionManager.addClassToPromotionItem(FE7GameData.ClassList.Soldier, PromotionManager.PromotionItems.MasterSeal)
+                        End If
+                    End If
+                ElseIf type = Utilities.GameType.GameTypeFE8 Then
+                    If randomLords Then
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EirikaLord, PromotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EphraimLord, PromotionManager.PromotionItems.KnightCrest)
+
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EirikaLord, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EphraimLord, PromotionManager.PromotionItems.MasterSeal)
+                    End If
+                    If uniqueClasses Then
+                        Dim soldierClass As FEClass = classLookup.Item(Convert.ToByte(FE8GameData.ClassList.Soldier))
+                        If Not IsNothing(soldierClass) Then
+                            soldierClass.promotedClassId = FE8GameData.ClassList.General
+
+                            promotionManager.setPromotionBranchesForClass(FE8GameData.ClassList.Soldier, FE8GameData.ClassList.General, FE8GameData.ClassList.Paladin)
+
+                            promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Soldier, PromotionManager.PromotionItems.KnightCrest)
+                            promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Soldier, PromotionManager.PromotionItems.MasterSeal)
+                        End If
+                        ' Handle ALL the monster classes.
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Zombie, PromotionManager.PromotionItems.HeroCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Zombie, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Skeleton, PromotionManager.PromotionItems.HeroCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Skeleton, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.SkeletonWithBow, PromotionManager.PromotionItems.OrionBolt)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.SkeletonWithBow, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Bael, PromotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Bael, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mauthedoog, PromotionManager.PromotionItems.HeroCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mauthedoog, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Tarvos, PromotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Tarvos, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mogall, PromotionManager.PromotionItems.GuidingRing)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mogall, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Gargoyle, PromotionManager.PromotionItems.ElysianWhip)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Gargoyle, PromotionManager.PromotionItems.MasterSeal)
+                    End If
+                End If
+            End If
+
         End If
 
         If buffEnemies Then
@@ -1609,6 +1714,9 @@ StartOver:
         End If
         If Not IsNothing(spellAssociationManager) Then
             spellAssociationManager.commitChanges(fileWriter)
+        End If
+        If Not IsNothing(promotionManager) Then
+            promotionManager.commitChanges(fileWriter)
         End If
 
         If Not hasAlreadyRandomized Then

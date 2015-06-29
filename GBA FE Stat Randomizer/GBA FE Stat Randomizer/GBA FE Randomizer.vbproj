@@ -112,6 +112,7 @@
     <Compile Include="FEChapterUnit.vb" />
     <Compile Include="FEClass.vb" />
     <Compile Include="Patcher.vb" />
+    <Compile Include="PromotionManager.vb" />
     <Compile Include="QuoteManager.vb" />
     <Compile Include="SpellAssociationManager.vb" />
     <Compile Include="SupportManager.vb" />

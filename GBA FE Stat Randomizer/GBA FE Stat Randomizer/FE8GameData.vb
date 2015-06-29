@@ -155,8 +155,8 @@
         Cerberus = &H5C
         Tarvos = &H5D
         Macdaire = &H5E
-        Mogall = &H5D
-        ArchMogall = &H5F
+        Mogall = &H5F
+        ArchMogall = &H60
         Gorgon = &H61
 
         Gargoyle = &H63
@@ -657,6 +657,7 @@
             list.Add(ClassList.Pupil3)
             list.Add(ClassList.Warrior)
             list.Add(ClassList.Berserker)
+            list.Add(ClassList.Necromancer)
         End If
 
         If includeMonsters Then
@@ -822,11 +823,7 @@
 
     Public Shared Function isValidClass(ByVal characterClass As Byte) As Boolean
         Return characterClass <> Convert.ToByte(ClassList.None) And
-            (characterClass <= Convert.ToByte(ClassList.Rogue) Or
-             (characterClass >= Convert.ToByte(ClassList.GreatKnight) And characterClass <= Convert.ToByte(ClassList.ArchMogall)) Or
-             characterClass = Convert.ToByte(ClassList.Gorgon) Or
-             (characterClass >= Convert.ToByte(ClassList.Gargoyle) And characterClass <= Convert.ToByte(ClassList.DemonKing)) Or
-             (characterClass >= Convert.ToByte(ClassList.Cyclops2) And characterClass <= Convert.ToByte(ClassList.Pupil2)))
+            System.Enum.IsDefined(GetType(ClassList), Convert.ToInt32(characterClass))
     End Function
 
     Public Shared Function shouldNotDemoteCharacterIDs() As ArrayList
@@ -960,6 +957,10 @@
                 classListPromoted.Remove(ClassList.Pupil3)
                 classListPromoted.Remove(ClassList.Journeyman3)
             End If
+
+            ' Don't allow these classes ever
+            classListPromoted.Remove(ClassList.Necromancer)
+            classListPromoted.Remove(ClassList.DragonZombie)
 
             If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
                 Dim newClass As ClassList
@@ -1380,74 +1381,75 @@
     Public Shared Function UnitsInEachChapter() As ArrayList
         Dim arrayList As ArrayList = New ArrayList()
 
+        arrayList.Add(6)            ' Prologue
         arrayList.Add(26)           ' Prologue Cutscene
         arrayList.Add(9)            ' Prologue Cutscene #2
-        arrayList.Add(6)            ' Prologue
         arrayList.Add(21)           ' Chapter 1
         arrayList.Add(26)           ' Chapter 2
-        arrayList.Add(10)           ' Chapter 3 Cutscene
         arrayList.Add(23)           ' Chapter 3
+        arrayList.Add(10)           ' Chapter 3 Cutscene
         arrayList.Add(153)          ' Chapter 4
         arrayList.Add(51)           ' Chapter 5
+        arrayList.Add(52)           ' Chapter 5x
         arrayList.Add(6)            ' Chapter 5x Cutscene
         arrayList.Add(23)           ' Chapter 5x Cutscene #2
-        arrayList.Add(52)           ' Chapter 5x
         arrayList.Add(160)          ' Chapter 6
         arrayList.Add(31)           ' Chapter 7
         arrayList.Add(5)            ' Chapter 8 Cutscene
-        arrayList.Add(30)           ' Chapter 8 Cutscene #2
         arrayList.Add(73)           ' Chapter 8
-        arrayList.Add(11)           ' Chapter 9A Cutscene
+        arrayList.Add(30)           ' Chapter 8 Cutscene #2
         arrayList.Add(96)           ' Chapter 9A
-        arrayList.Add(6)            ' Chapter 9B Cutscene
-        arrayList.Add(5)            ' Chapter 9B Cutscene #2
-        arrayList.Add(81)           ' Chapter 9B
+        arrayList.Add(11)           ' Chapter 9A Cutscene
         arrayList.Add(215)          ' Chapter 10A
-        arrayList.Add(13)           ' Chapter 10B Cutscene
-        arrayList.Add(204)          ' Chapter 10B
-        arrayList.Add(15)           ' Chapter 11A Cutscene
         arrayList.Add(78)           ' Chapter 11A
-        arrayList.Add(94)           ' Chapter 11B
+        arrayList.Add(15)           ' Chapter 11A Cutscene
         arrayList.Add(86)           ' Chapter 12A
-        arrayList.Add(95)           ' Chapter 12B
+        arrayList.Add(217)          ' Chapter 13A
         arrayList.Add(6)            ' Chapter 13A Cutscene
         arrayList.Add(4)            ' Chapter 13A Cutscene #2
-        arrayList.Add(217)          ' Chapter 13A
-        arrayList.Add(208)          ' Chapter 13B
+        arrayList.Add(96)           ' Chapter 14A
         arrayList.Add(6)            ' Chapter 14A Cutscene
         arrayList.Add(4)            ' Chapter 14A Cutscene #2
         arrayList.Add(7)            ' Chapter 14A Cutscene #3
-        arrayList.Add(96)           ' Chapter 14A
-        arrayList.Add(8)            ' Chapter 14B Cutscene
-        arrayList.Add(21)           ' Chapter 14B Cutscene #2
-        arrayList.Add(14)           ' Chapter 14B Cutscene #3
-        arrayList.Add(112)          ' Chapter 14B
         arrayList.Add(92)           ' Chapter 15A
-        arrayList.Add(101)          ' Chapter 15B
+        arrayList.Add(96)           ' Chapter 16A
         arrayList.Add(11)           ' Chapter 16A Cutscene
         arrayList.Add(22)           ' Chapter 16A Cutscene #2
         arrayList.Add(8)            ' Chapter 16A Cutscene #3
         arrayList.Add(8)            ' Chapter 16A Cutscene #4
         arrayList.Add(11)           ' Chapter 16A Cutscene #5
-        arrayList.Add(96)           ' Chapter 16A
-        arrayList.Add(79)           ' Chapter 16B
         arrayList.Add(214)          ' Chapter 17A
-        arrayList.Add(175)          ' Chapter 17B
         arrayList.Add(228)          ' Chapter 18A
-        arrayList.Add(220)          ' Chapter 18B
-        arrayList.Add(11)           ' Chapter 19A Cutscene
         arrayList.Add(112)          ' Chapter 19A
-        arrayList.Add(109)          ' Chapter 19B
-        arrayList.Add(1)            ' Chapter 20A Cutscene
+        arrayList.Add(11)           ' Chapter 19A Cutscene
         arrayList.Add(123)          ' Chapter 20A
-        arrayList.Add(123)          ' Chapter 20B
+        arrayList.Add(1)            ' Chapter 20A Cutscene
         arrayList.Add(86)           ' Final Chapter (A)
-        arrayList.Add(110)          ' Final Chapter (B) + Valni 1
         arrayList.Add(19)           ' Final Boss
-        arrayList.Add(599)          ' Lagdou 2 + Melkaen Coast
+        arrayList.Add(81)           ' Chapter 9B
+        arrayList.Add(6)            ' Chapter 9B Cutscene
+        arrayList.Add(5)            ' Chapter 9B Cutscene #2
+        arrayList.Add(204)          ' Chapter 10B
+        arrayList.Add(13)           ' Chapter 10B Cutscene
+        arrayList.Add(94)           ' Chapter 11B
+        arrayList.Add(95)           ' Chapter 12B
+        arrayList.Add(208)          ' Chapter 13B
+        arrayList.Add(112)          ' Chapter 14B
+        arrayList.Add(8)            ' Chapter 14B Cutscene
+        arrayList.Add(21)           ' Chapter 14B Cutscene #2
+        arrayList.Add(14)           ' Chapter 14B Cutscene #3
+        arrayList.Add(101)          ' Chapter 15B
+        arrayList.Add(79)           ' Chapter 16B
+        arrayList.Add(175)          ' Chapter 17B
+        arrayList.Add(220)          ' Chapter 18B
+        arrayList.Add(109)          ' Chapter 19B
+        arrayList.Add(123)          ' Chapter 20B
+
+        arrayList.Add(110)          ' Final Chapter (B) + Valni 1
         arrayList.Add(77)           ' Valni 2
         arrayList.Add(133)          ' Valni 3
         arrayList.Add(445)          ' Valni 4 + Lagdou 1
+        arrayList.Add(599)          ' Lagdou 2 + Melkaen Coast
 
         Return arrayList
     End Function
