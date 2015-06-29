@@ -1073,36 +1073,38 @@
         arrayList.Add(92)   ' Chapter 6
         arrayList.Add(66)   ' Chapter 7
         arrayList.Add(105)  ' Chapter 8
-        arrayList.Add(78)   ' Chapter 8x
         arrayList.Add(70)   ' Chapter 9
         arrayList.Add(67)   ' Chapter 10A
-        arrayList.Add(82)   ' Chapter 10B
         arrayList.Add(94)   ' Chapter 11A
-        arrayList.Add(85)   ' Chapter 11B
         arrayList.Add(66)   ' Chapter 12
-        arrayList.Add(36)   ' Chapter 12x
         arrayList.Add(94)   ' Chapter 13
         arrayList.Add(79)   ' Chapter 14
-        arrayList.Add(44)   ' Chapter 14x
         arrayList.Add(64)   ' Chapter 15
         arrayList.Add(71)   ' Chapter 16
-        arrayList.Add(49)   ' Chapter 16x
         arrayList.Add(64)   ' Chapter 17A
-        arrayList.Add(56)   ' Chapter 17B
         arrayList.Add(58)   ' Chapter 18A
-        arrayList.Add(90)   ' Chapter 18B
         arrayList.Add(61)   ' Chapter 19A
-        arrayList.Add(82)   ' Chapter 19B
         arrayList.Add(65)   ' Chapter 20A
-        arrayList.Add(55)   ' Chapter 20Ax
-        arrayList.Add(64)   ' Chapter 20B
-        arrayList.Add(96)   ' Chapter 20Bx
         arrayList.Add(126)  ' Chapter 21
-        arrayList.Add(69)   ' Chapter 21x
         arrayList.Add(115)  ' Chapter 22
         arrayList.Add(63)   ' Chapter 23
         arrayList.Add(53)   ' Chapter 24
         arrayList.Add(27)   ' Final
+
+        arrayList.Add(82)   ' Chapter 10B
+        arrayList.Add(85)   ' Chapter 11B
+        arrayList.Add(56)   ' Chapter 17B
+        arrayList.Add(90)   ' Chapter 18B
+        arrayList.Add(82)   ' Chapter 19B
+        arrayList.Add(64)   ' Chapter 20B
+
+        arrayList.Add(78)   ' Chapter 8x
+        arrayList.Add(36)   ' Chapter 12x
+        arrayList.Add(44)   ' Chapter 14x
+        arrayList.Add(49)   ' Chapter 16x
+        arrayList.Add(55)   ' Chapter 20Ax
+        arrayList.Add(96)   ' Chapter 20Bx
+        arrayList.Add(69)   ' Chapter 21x
 
         Return arrayList
     End Function

@@ -1279,10 +1279,10 @@
         arrayList.Add(229)              ' Chapter 22
         arrayList.Add(186)              ' Chapter 23
         arrayList.Add(116)              ' Chapter 23x
-        arrayList.Add(210)              ' Chapter 24 - Linus
         arrayList.Add(167)              ' Chapter 24 - Lloyd
-        arrayList.Add(4)                ' Chapter 25 - Cutscene (for a cutscene?)
+        arrayList.Add(210)              ' Chapter 24 - Linus
         arrayList.Add(130)              ' Chapter 25
+        arrayList.Add(4)                ' Chapter 25 - Cutscene (for a cutscene?)
         arrayList.Add(219)              ' Chapter 26
         arrayList.Add(248)              ' Chapter 27 - Jerme
         arrayList.Add(222)              ' Chapter 27 - Kenneth
@@ -1295,8 +1295,8 @@
         arrayList.Add(26)               ' Chapter 31x
         arrayList.Add(347)              ' Chapter 32
         arrayList.Add(86)               ' Chapter 32x
-        arrayList.Add(56)               ' Chapter Final Boss
         arrayList.Add(132)              ' Chapter Final
+        arrayList.Add(56)               ' Chapter Final Boss
 
         Return arrayList
     End Function
