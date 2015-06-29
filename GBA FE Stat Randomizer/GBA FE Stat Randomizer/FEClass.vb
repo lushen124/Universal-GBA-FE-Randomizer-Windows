@@ -2,6 +2,8 @@
 
     Property classId As Byte            'offset 4, 1 byte
 
+    Property promotedClassId As Byte    'offset 5, 1 byte
+
     Property baseHP As Byte             'offset 11, 1 byte
     Property baseStr As Byte            'offset 12, 1 byte
     Property baseSkl As Byte            'offset 13, 1 byte
@@ -123,6 +125,7 @@
     Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal type As Utilities.GameType)
         filePtr.Seek(offset + 4, IO.SeekOrigin.Begin)
         classId = filePtr.ReadByte()
+        promotedClassId = filePtr.ReadByte()
 
         filePtr.Seek(offset + 11, IO.SeekOrigin.Begin)
         baseHP = filePtr.ReadByte()
@@ -214,6 +217,10 @@
     Public Sub writeClassStartingAtOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal type As Utilities.GameType)
 
         DebugLogger.logMessage("[FEClass(" & Hex(classId) & ")] - Wrote Address 0x" & Hex(offset) & " to 0x" & Hex(offset + entrySize))
+
+        ' Only for soldiers. Give them a promotion to General.
+        filePtr.Seek(offset + 5, IO.SeekOrigin.Begin)
+        filePtr.WriteByte(promotedClassId)
 
         ' The only thing that's really modifiable here is the growths and MOV.
         filePtr.Seek(offset + 18, IO.SeekOrigin.Begin)
