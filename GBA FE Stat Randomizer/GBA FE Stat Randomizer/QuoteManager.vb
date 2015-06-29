@@ -248,11 +248,12 @@ Public Class QuoteManager
                 Next
             Else
                 ' It's far easier to just swap text IDs for FE8.
+                ' The variable names are kind of flipped due to FE6 and FE7. The first paramter is the replacement. The second paramter is who he's replacing.
                 Dim targetTextID As UShort = 0
                 ' Find the new character's original text ID.
                 For i As Integer = 0 To entries.Count - 1
                     Dim entry As FE8DeathQuoteEntry = entries.Item(i)
-                    If entry.characterID = newCharacterID And entry.chapter = FE8DeathQuoteAllChaptersValue Then
+                    If entry.characterID = originalCharacterID And entry.chapter = FE8DeathQuoteAllChaptersValue Then
                         targetTextID = originalIdList.Item(i)
                         Exit For
                     End If
@@ -262,7 +263,7 @@ Public Class QuoteManager
                     ' Paste it over the old character's text ID.
                     For i As Integer = 0 To entries.Count - 1
                         Dim entry As FE8DeathQuoteEntry = entries.Item(i)
-                        If entry.characterID = originalCharacterID And entry.chapter = FE8DeathQuoteDefaultAddress Then
+                        If entry.characterID = newCharacterID And entry.chapter = FE8DeathQuoteAllChaptersValue Then
                             entry.textID = targetTextID
                             Exit For
                         End If

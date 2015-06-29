@@ -1456,19 +1456,22 @@ StartOver:
                             Dim newClassIDObject As FE8GameData.ClassList = System.Enum.ToObject(GetType(FE8GameData.ClassList), newClassId)
                             If monsterClasses.Contains(newClassIDObject) Then
                                 ' Remove any weapons.
+                                Dim newInventory As ArrayList = New ArrayList()
                                 For Each item In validatedInventory
                                     Dim itemID As Byte = Convert.ToByte(item)
                                     Dim itemObject As FEItem = itemLookup.Item(itemID)
                                     If Not IsNothing(itemObject) Then
-                                        If itemObject.isWeapon() Then
-                                            validatedInventory.Remove(item)
+                                        If Not itemObject.isWeapon() Then
+                                            newInventory.Add(item)
                                         End If
                                     End If
                                 Next
+
+                                validatedInventory = newInventory
                                 If newClassIDObject = FE8GameData.ClassList.Gorgon Then
-                                    validatedInventory.Add(FE8GameData.ItemList.DemonSurge)
+                                    validatedInventory.Insert(0, FE8GameData.ItemList.DemonSurge)
                                 End If
-                                validatedInventory.Add(FE8GameData.randomMonsterWeaponForMonsterClass(newClassId, rng))
+                                validatedInventory.Insert(0, FE8GameData.randomMonsterWeaponForMonsterClass(newClassId, rng))
                             End If
                         End If
 
@@ -1492,40 +1495,40 @@ StartOver:
             If Not IsNothing(promotionManager) Then
                 If type = Utilities.GameType.GameTypeFE6 Then
                     If randomLords Then
-                        promotionManager.addClassToPromotionItem(FE6GameData.ClassList.Lord, PromotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE6GameData.ClassList.Lord, promotionManager.PromotionItems.KnightCrest)
                     End If
                     If uniqueClasses Then
                         Dim soldierClass As FEClass = classLookup.Item(Convert.ToByte(FE6GameData.ClassList.Soldier))
                         If Not IsNothing(soldierClass) Then
-                            promotionManager.addClassToPromotionItem(FE6GameData.ClassList.Soldier, PromotionManager.PromotionItems.KnightCrest)
+                            promotionManager.addClassToPromotionItem(FE6GameData.ClassList.Soldier, promotionManager.PromotionItems.KnightCrest)
                             soldierClass.promotedClassId = FE6GameData.ClassList.General
                         End If
                     End If
                 ElseIf type = Utilities.GameType.GameTypeFE7 Then
                     If randomLords Then
-                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.LynLord, PromotionManager.PromotionItems.HeroCrest)
-                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.EliwoodLord, PromotionManager.PromotionItems.KnightCrest)
-                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.HectorLord, PromotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.LynLord, promotionManager.PromotionItems.HeroCrest)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.EliwoodLord, promotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.HectorLord, promotionManager.PromotionItems.KnightCrest)
 
-                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.LynLord, PromotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.EliwoodLord, PromotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.HectorLord, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.LynLord, promotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.EliwoodLord, promotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.HectorLord, promotionManager.PromotionItems.MasterSeal)
                     End If
                     If uniqueClasses Then
                         Dim soldierClass As FEClass = classLookup.Item(Convert.ToByte(FE7GameData.ClassList.Soldier))
                         If Not IsNothing(soldierClass) Then
                             soldierClass.promotedClassId = FE7GameData.ClassList.General
-                            promotionManager.addClassToPromotionItem(FE7GameData.ClassList.Soldier, PromotionManager.PromotionItems.KnightCrest)
-                            promotionManager.addClassToPromotionItem(FE7GameData.ClassList.Soldier, PromotionManager.PromotionItems.MasterSeal)
+                            promotionManager.addClassToPromotionItem(FE7GameData.ClassList.Soldier, promotionManager.PromotionItems.KnightCrest)
+                            promotionManager.addClassToPromotionItem(FE7GameData.ClassList.Soldier, promotionManager.PromotionItems.MasterSeal)
                         End If
                     End If
                 ElseIf type = Utilities.GameType.GameTypeFE8 Then
                     If randomLords Then
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EirikaLord, PromotionManager.PromotionItems.KnightCrest)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EphraimLord, PromotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EirikaLord, promotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EphraimLord, promotionManager.PromotionItems.KnightCrest)
 
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EirikaLord, PromotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EphraimLord, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EirikaLord, promotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EphraimLord, promotionManager.PromotionItems.MasterSeal)
                     End If
                     If uniqueClasses Then
                         Dim soldierClass As FEClass = classLookup.Item(Convert.ToByte(FE8GameData.ClassList.Soldier))
@@ -1534,26 +1537,26 @@ StartOver:
 
                             promotionManager.setPromotionBranchesForClass(FE8GameData.ClassList.Soldier, FE8GameData.ClassList.General, FE8GameData.ClassList.Paladin)
 
-                            promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Soldier, PromotionManager.PromotionItems.KnightCrest)
-                            promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Soldier, PromotionManager.PromotionItems.MasterSeal)
+                            promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Soldier, promotionManager.PromotionItems.KnightCrest)
+                            promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Soldier, promotionManager.PromotionItems.MasterSeal)
                         End If
                         ' Handle ALL the monster classes.
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Zombie, PromotionManager.PromotionItems.HeroCrest)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Zombie, PromotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Skeleton, PromotionManager.PromotionItems.HeroCrest)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Skeleton, PromotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.SkeletonWithBow, PromotionManager.PromotionItems.OrionBolt)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.SkeletonWithBow, PromotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Bael, PromotionManager.PromotionItems.KnightCrest)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Bael, PromotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mauthedoog, PromotionManager.PromotionItems.HeroCrest)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mauthedoog, PromotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Tarvos, PromotionManager.PromotionItems.KnightCrest)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Tarvos, PromotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mogall, PromotionManager.PromotionItems.GuidingRing)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mogall, PromotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Gargoyle, PromotionManager.PromotionItems.ElysianWhip)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Gargoyle, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Zombie, promotionManager.PromotionItems.HeroCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Zombie, promotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Skeleton, promotionManager.PromotionItems.HeroCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Skeleton, promotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.SkeletonWithBow, promotionManager.PromotionItems.OrionBolt)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.SkeletonWithBow, promotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Bael, promotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Bael, promotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mauthedoog, promotionManager.PromotionItems.HeroCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mauthedoog, promotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Tarvos, promotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Tarvos, promotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mogall, promotionManager.PromotionItems.GuidingRing)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mogall, promotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Gargoyle, promotionManager.PromotionItems.ElysianWhip)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Gargoyle, promotionManager.PromotionItems.MasterSeal)
                     End If
                 End If
             End If
@@ -1581,7 +1584,7 @@ StartOver:
                     For Each character As FECharacter In characterList
                         Dim characterIDObject As FE6GameData.CharacterList = System.Enum.ToObject(GetType(FE6GameData.CharacterList), character.characterId)
                         If bossList.Contains(characterIDObject) Then
-                            Dim characterClass As FEClass = classList.Item(character.classId)
+                            Dim characterClass As FEClass = classLookup.Item(character.classId)
                             character.buffHPWithAdditionalLevelsAtRate(character.level, characterClass.hpGrowthDelta, characterClass.hpCap, rng)
                             character.buffStrWithAdditionalLevelsAtRate(character.level, characterClass.strGrowthDelta, characterClass.strCap, rng)
                             character.buffSklWithAdditionalLevelsAtRate(character.level, characterClass.sklGrowthDelta, characterClass.sklCap, rng)
@@ -1596,7 +1599,22 @@ StartOver:
                     For Each character As FECharacter In characterList
                         Dim characterIDObject As FE7GameData.CharacterList = System.Enum.ToObject(GetType(FE7GameData.CharacterList), character.characterId)
                         If bossList.Contains(characterIDObject) Then
-                            Dim characterClass As FEClass = classList.Item(character.classId)
+                            Dim characterClass As FEClass = classLookup.Item(character.classId)
+                            character.buffHPWithAdditionalLevelsAtRate(character.level, characterClass.hpGrowthDelta, characterClass.hpCap, rng)
+                            character.buffStrWithAdditionalLevelsAtRate(character.level, characterClass.strGrowthDelta, characterClass.strCap, rng)
+                            character.buffSklWithAdditionalLevelsAtRate(character.level, characterClass.sklGrowthDelta, characterClass.sklCap, rng)
+                            character.buffSpdWithAdditionalLevelsAtRate(character.level, characterClass.spdGrowthDelta, characterClass.spdCap, rng)
+                            character.buffLckWithAdditionalLevelsAtRate(character.level, characterClass.lckGrowthDelta, 30, rng)
+                            character.buffDefWithAdditionalLevelsAtRate(character.level, characterClass.defGrowthDelta, characterClass.defCap, rng)
+                            character.buffResWithAdditionalLevelsAtRate(character.level, characterClass.resGrowthDelta, characterClass.resCap, rng)
+                        End If
+                    Next
+                ElseIf type = Utilities.GameType.GameTypeFE8 Then
+                    Dim bossList As ArrayList = New ArrayList(FE8GameData.bossCharacterIDs)
+                    For Each character As FECharacter In characterList
+                        Dim characterIDObject As FE8GameData.CharacterList = System.Enum.ToObject(GetType(FE8GameData.CharacterList), character.characterId)
+                        If bossList.Contains(characterIDObject) Then
+                            Dim characterClass As FEClass = classLookup.Item(character.classId)
                             character.buffHPWithAdditionalLevelsAtRate(character.level, characterClass.hpGrowthDelta, characterClass.hpCap, rng)
                             character.buffStrWithAdditionalLevelsAtRate(character.level, characterClass.strGrowthDelta, characterClass.strCap, rng)
                             character.buffSklWithAdditionalLevelsAtRate(character.level, characterClass.sklGrowthDelta, characterClass.sklCap, rng)
@@ -1836,11 +1854,9 @@ StartOver:
         SetConstantEnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
         BuffBossesToggle.Enabled = IncreaseEnemyGrowthsToggle.Checked
 
-        If type <> Utilities.GameType.GameTypeFE8 Then
-            NormalRecruitmentOption.Enabled = True
-            ReverseRecruitmentOption.Enabled = True
-            RandomRecruitmentOption.Enabled = True
-        End If
+        NormalRecruitmentOption.Enabled = True
+        ReverseRecruitmentOption.Enabled = True
+        RandomRecruitmentOption.Enabled = True
 
         RandomizeButton.Enabled = type <> Utilities.GameType.GameTypeUnknown
     End Sub
