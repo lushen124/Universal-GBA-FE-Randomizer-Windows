@@ -1157,14 +1157,18 @@ StartOver:
                                                     End If
                                                 End If
                                             ElseIf type = Utilities.GameType.GameTypeFE8 Then
-                                                If newClass.classId = FE8GameData.ClassList.Manakete_F Then
-                                                    validatedInventory.Add(FE8GameData.ItemList.HolyDragonStone)
-                                                    hasUniqueItemAlready = True
+                                                If hasUniqueItemAlready Then
+                                                    validatedInventory.Add(FE8GameData.ItemList.Elixir)
                                                 Else
-                                                    validatedInventory.Add(item2.weaponID)
+                                                    If newClass.classId = FE8GameData.ClassList.Manakete_F Then
+                                                        validatedInventory.Add(FE8GameData.ItemList.HolyDragonStone)
+                                                        hasUniqueItemAlready = True
+                                                    Else
+                                                        validatedInventory.Add(item2.weaponID)
+                                                    End If
                                                 End If
                                             Else
-                                                validatedInventory.Add(item2.weaponID)
+                                                    validatedInventory.Add(item2.weaponID)
                                             End If
                                         End If
                                     End If
@@ -1231,14 +1235,18 @@ StartOver:
                                                     End If
                                                 End If
                                             ElseIf type = Utilities.GameType.GameTypeFE8 Then
-                                                If newClass.classId = FE8GameData.ClassList.Manakete_F Then
-                                                    validatedInventory.Add(FE8GameData.ItemList.HolyDragonStone)
-                                                    hasUniqueItemAlready = True
+                                                If hasUniqueItemAlready Then
+                                                    validatedInventory.Add(FE8GameData.ItemList.Elixir)
                                                 Else
-                                                    validatedInventory.Add(item3.weaponID)
+                                                    If newClass.classId = FE8GameData.ClassList.Manakete_F Then
+                                                        validatedInventory.Add(FE8GameData.ItemList.HolyDragonStone)
+                                                        hasUniqueItemAlready = True
+                                                    Else
+                                                        validatedInventory.Add(item3.weaponID)
+                                                    End If
                                                 End If
                                             Else
-                                                validatedInventory.Add(item3.weaponID)
+                                                    validatedInventory.Add(item3.weaponID)
                                             End If
                                         End If
                                     End If
@@ -1305,14 +1313,18 @@ StartOver:
                                                     End If
                                                 End If
                                             ElseIf type = Utilities.GameType.GameTypeFE8 Then
-                                                If newClass.classId = FE8GameData.ClassList.Manakete_F Then
-                                                    validatedInventory.Add(FE8GameData.ItemList.HolyDragonStone)
-                                                    hasUniqueItemAlready = True
+                                                If hasUniqueItemAlready Then
+                                                    validatedInventory.Add(FE8GameData.ItemList.Elixir)
                                                 Else
-                                                    validatedInventory.Add(item4.weaponID)
+                                                    If newClass.classId = FE8GameData.ClassList.Manakete_F Then
+                                                        validatedInventory.Add(FE8GameData.ItemList.HolyDragonStone)
+                                                        hasUniqueItemAlready = True
+                                                    Else
+                                                        validatedInventory.Add(item4.weaponID)
+                                                    End If
                                                 End If
                                             Else
-                                                validatedInventory.Add(item4.weaponID)
+                                                    validatedInventory.Add(item4.weaponID)
                                             End If
                                         End If
                                     End If
