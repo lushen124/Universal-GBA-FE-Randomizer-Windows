@@ -167,6 +167,7 @@ Partial Class Form1
         '
         'OpenFileDialog1
         '
+        Me.OpenFileDialog1.Filter = "GBA Files|*.gba"
         '
         'GameDetectionLabel
         '
