@@ -194,48 +194,28 @@
     Public Sub randomizeItemMight(ByVal variance As Integer, ByVal minimum As Integer, ByRef rng As Random)
         If isWeapon() And variance > 0 Then
             Dim randomDelta As Integer = randomDeltaWithVariance(variance, rng)
-            If randomDelta > 0 Then
-                might = Math.Max(IIf(&HFF - randomDelta >= might, might + randomDelta, might), minimum)
-            Else
-                randomDelta *= -1
-                might = Math.Max(IIf(randomDelta <= might, might - randomDelta, might), minimum)
-            End If
+            might = Convert.ToByte(Math.Max(Convert.ToInt32(might) + randomDelta, minimum))
         End If
     End Sub
 
     Public Sub randomizeItemCritical(ByVal variance As Integer, ByVal minimum As Integer, ByRef rng As Random)
         If isWeapon() And variance > 0 Then
             Dim randomDelta As Integer = randomDeltaWithVariance(variance, rng)
-            If randomDelta > 0 Then
-                critical = Math.Max(IIf(&HFF - randomDelta >= critical, critical + randomDelta, critical), minimum)
-            Else
-                randomDelta *= -1
-                critical = Math.Max(IIf(randomDelta <= critical, critical - randomDelta, critical), minimum)
-            End If
+            critical = Convert.ToByte(Math.Max(Convert.ToInt32(critical) + randomDelta, minimum))
         End If
     End Sub
 
     Public Sub randomizeItemHit(ByVal variance As Integer, ByVal minimum As Integer, ByRef rng As Random)
         If isWeapon() And variance > 0 Then
             Dim randomDelta As Integer = randomDeltaWithVariance(variance, rng)
-            If randomDelta > 0 Then
-                hit = Math.Max(IIf(&HFF - randomDelta >= hit, hit + randomDelta, hit), minimum)
-            Else
-                randomDelta *= -1
-                hit = Math.Max(IIf(randomDelta <= hit, hit - randomDelta, hit), minimum)
-            End If
+            hit = Convert.ToByte(Math.Max(Convert.ToInt32(hit) + randomDelta, minimum))
         End If
     End Sub
 
     Public Sub randomizeItemWeight(ByVal variance As Integer, ByVal minimum As Integer, ByVal maximum As Integer, ByRef rng As Random)
         If isWeapon() And variance > 0 Then
             Dim randomDelta As Integer = randomDeltaWithVariance(variance, rng)
-            If randomDelta > 0 Then
-                weight = Math.Max(IIf(&HFF - randomDelta >= weight, weight + randomDelta, weight), minimum)
-            Else
-                randomDelta *= -1
-                weight = Math.Max(IIf(randomDelta <= weight, weight - randomDelta, weight), minimum)
-            End If
+            weight = Convert.ToByte(Math.Max(Math.Min(Convert.ToInt32(weight) + randomDelta, maximum), minimum))
         End If
     End Sub
 
