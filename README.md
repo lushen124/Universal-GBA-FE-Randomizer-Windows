@@ -3,6 +3,10 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**June 30, 2015**
+
+*Beta Release* - Fixed a lot more issues that surfaced with the additional testing efforts and added support for FE8 random classes and recruitment. The other notable change across all games is the new ability to promote the Soldier class into General (or Paladin in FE8) with Knight's Crests. Additionally, if lords are randomized, they also can now promote using the Knight Crest (Hero Crest for Lyn).
+
 **June 28, 2015**
 
 First pass at randomizing FE8 classes.
@@ -107,6 +111,7 @@ The intent for this project was to create an easy-to-use and customizable random
 * Note that, for random and reverse recruitment, characters were swapped wholesale. This means their death quotes and support conversations remain intact, but who is used to talk to who has not been updated (makes sense, since you can't get Roy to talk to somebody if Roy hasn't joined yet). So you'll have to remember who certain characters are to recruit people (for example, whoever replaces Clarine has to talk to whoever replaces Klein to recruit him), but whenever you get Clarine and Klein, they can still support each other (even starting from Chapter 1 if they randomly joined then).
 * When deleveling and demoting characters for reverse and random recruitment, their growths are used to determine how many stats they lose (and may not be balanced initially). Characters with low growth (Niime, Yodel, etc.) will barely lose any stats even after losing a lot of levels, which makes them particularly strong at the start. But remember, their growths are terrible, so I figure it's a tradeoff for being so powerful early on. Think of them as unpromoted Jeigans if they join early.
 * When demoting a character, I assume they promoted at level 10 for the purpose of delevling their stats to reasonable levels. As such, they'll be a bit better than normal if they promote at level 20 (though only slightly, with their growths).
+* If lords are randomized, Lords can promote with the Knight's Crest. Soldiers can also now promote to General with the Knight's Crest.
 
 ### FE7 Notes
 
@@ -114,22 +119,24 @@ The intent for this project was to create an easy-to-use and customizable random
 * By default, all classes that don't naturally show up in the game are removed from the pool when randomizing classes. That is, a large chunk of female classes (thief, mercenary, myrmidon, cavalier, nomad, wyvern knight, shaman, and armor knight, I think) will not show up. I'd rather things work well, then deal with glitches.
 * Figuring out mappings for reverse recruitment is a bit difficult due to a high chance of Isadora and Vaida getting demoted into classes that may be buggy. We'll roll with it for now and see how badly it breaks. **EDIT: I've settled for using Hector mode as the basis for reverse recruitment (with slight modifications for less issues).**
 * Need a solution for Athos in Reverse Recruitment, as he starts with no stats, and in a unique class that can't promote. Will probably have to create a special class for him.
+* Soldiers can promote with the use of Knight's Crest. If lords are randomized, they can also promote with Knight's Crest (Lyn with Hero's Crest).
 
 ### FE8 Notes
 
 * Preliminary research seems to indicate that trainees promoting at level 10 are hardcoded to the character. This means that if anybody but Ross, Amelia, or Ewan gets stuck with a trainee class, they're stuck. At the same time (and more notably), regardless of the class Ross, Amelia, and Ewan get, they will get a forced level 10 promotion. As far as I know, no patch exists to fix this. I did some digging in the ASM with no luck, so this may have to stay like this. :(
 * While Trainee classes are kind of unfortunate, Trainee (2) classes should be ok, since they act like regular unpromoted classes (i.e. max level 20). So basically, if Ross, Ewan, or Amelia get trainee classes, they will start with the Trainee (1) class, while everybody else will get the Trainee (2) variant. Promoted units, if they get trainee classes, will get the Super Trainee version.
-* Special feature for FE8, would random promotion branches be something desired? Maybe I can add a game-specific modifications section. The only problem I see is that it will almost certainly cause issues when transferring weapon levels in most cases. I'll leave it out for now just because of potential issues.
-* Monster Classes would fit under the "Allow unique classes" option for randomizing classes, but I'll have to do some more research on how to actually promote them. I may just make a patch to do so, and auto-apply the patch for a custom item that does promotion for monsters (and maybe throw it in the Ch.5 item store or something).
-* The other problem with allowing monster classes is free monster weapons, which technically anybody can use (free unbreakable weapons!) As little sense as them becoming breakable and buyable at shops makes, maybe we should? Also, monster weapons with random effects? :)
+* Monsters promote with items that fit the monster. The list is:
+  * **Guiding Ring**: Mogalls > Arch Mogalls
+  * **Hero Crest**: Revenant > Entombed, Bonewalker > Wight, Mauthe doog > Gwyllgi
+  * **Knight Crest**: Bael > Elder Bael, Tarvos > Maelduin
+  * **Orion's Bolt**: Bow Bonewalker > Bow Wight
+  * **Elysian Whip**: Gargoyle > Deathgoyle
 
 ## Future Plans
 
 The remaining feature list (which you can get a sneak peek at with the app) is as follows:
 
-* Random Classes for FE8
 * Option to Randomize regular enemies
-* Random Recruitment Order for FE8
 * Attempt to un-messify color palettes for randomized classes.
 * Maybe try to get faces consistent in cutscenes when modifying recruitment.
 
