@@ -990,7 +990,7 @@ Partial Class Form1
         Me.Controls.Add(Me.FilenameTextBox)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "Form1"
-        Me.Text = "GBA FE Randomizer v0.66 by OtakuReborn"
+        Me.Text = "GBA FE Randomizer v0.99 by OtakuReborn"
         CType(Me.GrowthVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.BaseVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.MightVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()
