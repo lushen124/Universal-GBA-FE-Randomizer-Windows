@@ -1383,7 +1383,7 @@
 
         arrayList.Add(6)            ' Prologue
         arrayList.Add(26)           ' Prologue Cutscene
-        arrayList.Add(9)            ' Prologue Cutscene #2
+        arrayList.Add(8)            ' Prologue Cutscene #2
         arrayList.Add(21)           ' Chapter 1
         arrayList.Add(26)           ' Chapter 2
         arrayList.Add(23)           ' Chapter 3

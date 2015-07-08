@@ -44,10 +44,10 @@
         filePtr.Seek(offset + entrySize, IO.SeekOrigin.Begin)
     End Sub
 
-    Public Sub writeChapterUnitToOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal type As Utilities.GameType)
+    Public Sub writeChapterUnitToOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal type As Utilities.GameType, ByVal debugInfo As String)
 
         If hasChanged Then
-            DebugLogger.logMessage("[ChapterUnit] - Wrote Address 0x" & Hex(offset) & " to 0x" & Hex(offset + entrySize))
+            DebugLogger.logMessage("[ChapterUnit (" & debugInfo & ")] - Wrote Address 0x" & Hex(offset) & " to 0x" & Hex(offset + entrySize))
 
             filePtr.Seek(offset, IO.SeekOrigin.Begin)
             filePtr.WriteByte(characterId)

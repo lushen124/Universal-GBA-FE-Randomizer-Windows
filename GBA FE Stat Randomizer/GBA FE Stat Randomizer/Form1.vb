@@ -1168,7 +1168,7 @@ StartOver:
                                                     End If
                                                 End If
                                             Else
-                                                    validatedInventory.Add(item2.weaponID)
+                                                validatedInventory.Add(item2.weaponID)
                                             End If
                                         End If
                                     End If
@@ -1246,7 +1246,7 @@ StartOver:
                                                     End If
                                                 End If
                                             Else
-                                                    validatedInventory.Add(item3.weaponID)
+                                                validatedInventory.Add(item3.weaponID)
                                             End If
                                         End If
                                     End If
@@ -1324,7 +1324,7 @@ StartOver:
                                                     End If
                                                 End If
                                             Else
-                                                    validatedInventory.Add(item4.weaponID)
+                                                validatedInventory.Add(item4.weaponID)
                                             End If
                                         End If
                                     End If
@@ -1703,7 +1703,7 @@ StartOver:
                 Dim unitList As ArrayList = chapterUnitData.Item(i)
                 For j As Integer = 0 To unitList.Count - 1
                     Dim unit As FEChapterUnit = unitList.Item(j)
-                    unit.writeChapterUnitToOffset(fileWriter, fileWriter.Position, FE6GameData.ChapterUnitEntrySize, Utilities.GameType.GameTypeFE6)
+                    unit.writeChapterUnitToOffset(fileWriter, fileWriter.Position, FE6GameData.ChapterUnitEntrySize, Utilities.GameType.GameTypeFE6, pointer.ToString())
                 Next
             Next
         ElseIf type = Utilities.GameType.GameTypeFE7 Then
@@ -1717,7 +1717,7 @@ StartOver:
                 Dim unitList As ArrayList = chapterUnitData.Item(i)
                 For j As Integer = 0 To unitList.Count - 1
                     Dim unit As FEChapterUnit = unitList.Item(j)
-                    unit.writeChapterUnitToOffset(fileWriter, fileWriter.Position, FE7GameData.ChapterUnitEntrySize, Utilities.GameType.GameTypeFE7)
+                    unit.writeChapterUnitToOffset(fileWriter, fileWriter.Position, FE7GameData.ChapterUnitEntrySize, Utilities.GameType.GameTypeFE7, pointer.ToString())
                 Next
             Next
         ElseIf type = Utilities.GameType.GameTypeFE8 Then
@@ -1731,7 +1731,7 @@ StartOver:
                 Dim unitList As ArrayList = chapterUnitData.Item(i)
                 For j As Integer = 0 To unitList.Count - 1
                     Dim unit As FEChapterUnit = unitList.Item(j)
-                    unit.writeChapterUnitToOffset(fileWriter, fileWriter.Position, FE8GameData.ChapterUnitEntrySize, Utilities.GameType.GameTypeFE8)
+                    unit.writeChapterUnitToOffset(fileWriter, fileWriter.Position, FE8GameData.ChapterUnitEntrySize, Utilities.GameType.GameTypeFE8, pointer.ToString())
                 Next
             Next
         End If
