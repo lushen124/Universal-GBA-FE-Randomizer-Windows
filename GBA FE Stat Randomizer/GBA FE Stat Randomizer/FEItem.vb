@@ -1,6 +1,6 @@
 ﻿Public Class FEItem
 
-    Enum WeaponEffect
+    Enum WeaponEffect As Byte
         WeaponEffectNone
         WeaponEffectPoison
         WeaponEffectStealsHP
@@ -9,7 +9,7 @@
         WeaponEffectStone   ' Only in FE8
     End Enum
 
-    Enum Ability1   ' These can be bitmasked together.
+    Enum Ability1 As Byte  ' These can be bitmasked together.
         Ability1None = &H0
         Ability1Weapon = &H1
         Ability1Magic = &H2     ' Tomes should always bitmask weapon and magic!
@@ -21,7 +21,7 @@
         Ability1Uncounterable = &H80
     End Enum
 
-    Enum Ability2   ' These can be bitmasked together (those not listed shouldn't be touched)
+    Enum Ability2 As Byte  ' These can be bitmasked together (those not listed shouldn't be touched)
         Ability2None = &H0
         Ability2ReverseTriangle = &H1
         Ability2Hammerne = &H2  ' For FE6 only, FE8 lists "special effect"
@@ -33,7 +33,7 @@
         Ability2NegateCritical = &H80
     End Enum
 
-    Enum Ability3   ' Can be bitmasked
+    Enum Ability3 As Byte  ' Can be bitmasked
         Ability3None = &H0
         Ability3NegateDefenses = &H2    ' Only in FE7 and FE8
         Ability3EliwoodEirikaLock = &H4
@@ -42,7 +42,7 @@
         Ability3AthosLock = &H20
     End Enum
 
-    Enum WeaponType
+    Enum WeaponType As Byte
         WeaponTypeSword = &H0
         WeaponTypeSpear = &H1
         WeaponTypeAxe = &H2
@@ -56,7 +56,7 @@
         WeaponTypeRing = &HC                        ' Only in FE7, I think.
     End Enum
 
-    Enum PotentialTrait
+    Enum PotentialTrait As Byte
         PotentialTraitNone
         PotentialTraitPoison
         PotentialTraitHalveHP
@@ -91,6 +91,8 @@
     Property weaponAbility2 As Byte     'offset 9, 1 byte
     Property weaponAbility3 As Byte     'offset 10, 1 byte (only in FE7, FE8 (for Luna))
 
+    Property range As Byte              'offset 25, 1 byte
+
     Property type As Byte               'offset 7, 1 byte
     Property weaponID As Byte           'offset 6, 1 byte
 
@@ -116,6 +118,8 @@
         hit = filePtr.ReadByte()
         weight = filePtr.ReadByte()
         critical = filePtr.ReadByte()
+
+        range = filePtr.ReadByte()
 
         filePtr.Seek(offset + 28, IO.SeekOrigin.Begin)
         rank = filePtr.ReadByte()
@@ -153,6 +157,8 @@
         filePtr.WriteByte(hit)
         filePtr.WriteByte(weight)
         filePtr.WriteByte(critical)
+
+        filePtr.WriteByte(range)
 
         filePtr.Seek(offset + 28, IO.SeekOrigin.Begin)
         filePtr.WriteByte(rank)
@@ -253,19 +259,20 @@
                     weaponAbility1 = weaponAbility1 Or Ability1.Ability1Brave
                 End If
             ElseIf randomTrait = PotentialTrait.PotentialTraitMagicDamage Then
-                If weaponAbility1 And Ability1.Ability1MagicDamage Or type = WeaponType.WeaponTypeLight Or type = WeaponType.WeaponTypeDark Or type = WeaponType.WeaponTypeAnima Then
+                If (weaponAbility1 And Ability1.Ability1MagicDamage) Or type = Convert.ToByte(WeaponType.WeaponTypeLight) Or type = Convert.ToByte(WeaponType.WeaponTypeDark) Or type = Convert.ToByte(WeaponType.WeaponTypeAnima) Then
                     assignRandomEffect(rng, gameType)
                 Else
                     weaponAbility1 = weaponAbility1 Or Ability1.Ability1MagicDamage
+
+                    ' Give those magic weapons range if they weren't ranged before.
+                    ' Except axes, because those work funny.
+                    If range = &H11 And type <> Convert.ToByte(WeaponType.WeaponTypeAxe) Then range = &H12
                 End If
             Else
                 ' FE6 does not handle uncounterable very well (forcing it to be animated from 3+ spaces away and locking up weapons that can't do that)
                 ' FE7 kind of works, but enemies will force a soft lock when using it.
-                If (weaponAbility1 And Ability1.Ability1Uncounterable) Or gameType <> Utilities.GameType.GameTypeFE8 Then
-                    assignRandomEffect(rng, gameType)
-                Else
-                    weaponAbility1 = weaponAbility1 Or Ability1.Ability1Uncounterable
-                End If
+                ' FE8 bugs out too. :(
+                assignRandomEffect(rng, gameType)
             End If
         ElseIf randomTrait = PotentialTrait.PotentialTraitReverseTriangle Then
             ' These apply to weapon ability 2. Also bit masked.

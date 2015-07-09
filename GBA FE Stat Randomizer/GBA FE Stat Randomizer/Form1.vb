@@ -255,6 +255,8 @@
             quoteManager = New QuoteManager(Utilities.GameType.GameTypeFE6, fileReader)
             supportManager = New SupportManager(Utilities.GameType.GameTypeFE6, fileReader)
 
+            spellAssociationManager = New SpellAssociationManager(Utilities.GameType.GameTypeFE6, fileReader)
+
             promotionManager = New PromotionManager(Utilities.GameType.GameTypeFE6, fileReader)
         ElseIf type = Utilities.GameType.GameTypeFE7 Then
 
@@ -377,6 +379,8 @@
             quoteManager = New QuoteManager(Utilities.GameType.GameTypeFE8, fileReader)
             supportManager = New SupportManager(Utilities.GameType.GameTypeFE8, fileReader)
 
+            spellAssociationManager = New SpellAssociationManager(Utilities.GameType.GameTypeFE8, fileReader)
+
             promotionManager = New PromotionManager(Utilities.GameType.GameTypeFE8, fileReader)
 
             MsgBox("You seem to be randomizing FE8. Note that depending on the randomizing results, the tutorial (Easy Mode) may no longer be completable." + vbCrLf + vbCrLf _
@@ -454,7 +458,10 @@
                 weaponList = New ArrayList()
                 itemByType.Add(weaponType, weaponList)
             End If
-            weaponList.Add(itemEntry.weaponID)
+
+            If itemEntry.type <> FEItem.WeaponType.WeaponTypeDragonstoneMonsterWeapon Then
+                weaponList.Add(itemEntry.weaponID)
+            End If
 
             Dim weaponRank = itemEntry.rank
             Dim rankList As ArrayList = itemByRank.Item(weaponRank)
@@ -462,7 +469,10 @@
                 rankList = New ArrayList()
                 itemByRank.Add(weaponRank, rankList)
             End If
-            rankList.Add(itemEntry.weaponID)
+
+            If itemEntry.type <> FEItem.WeaponType.WeaponTypeDragonstoneMonsterWeapon Then
+                rankList.Add(itemEntry.weaponID)
+            End If
         Next
 
         Dim rng As Random = New Random
@@ -674,7 +684,7 @@ StartOver:
 
         If shouldRandomizeItems Then
             For Each item As FEItem In itemList
-                If item.isWeapon() Then
+                If item.isWeapon() And item.weaponID <> &H0 Then
                     item.randomizeItemDurability(durabilityVariance, minimumDurability, rng)
                     item.randomizeItemMight(mightVariance, minimumMight, rng)
                     item.randomizeItemHit(hitVariance, minimumHit, rng)
@@ -682,7 +692,8 @@ StartOver:
                     item.randomizeItemCritical(criticalVariance, minimumCritical, rng)
                     If randomTraits Then
                         item.assignRandomEffect(rng, type)
-                        If item.weaponAbility1 And FEItem.Ability1.Ability1MagicDamage And Not IsNothing(spellAssociationManager) Then spellAssociationManager.assignRandomSpellAnimationToWeaponWithID(item.weaponID, rng)
+                        Dim andResult As Integer = (item.weaponAbility1 And FEItem.Ability1.Ability1MagicDamage)
+                        If andResult <> &H0 And Not IsNothing(spellAssociationManager) Then spellAssociationManager.assignRandomSpellAnimationToWeaponWithID(item.weaponID, type, rng)
                     End If
                 End If
             Next
