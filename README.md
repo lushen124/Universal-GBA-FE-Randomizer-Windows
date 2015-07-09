@@ -3,6 +3,10 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**July 8, 2015**
+
+*Beta Release* - A real one this time. This one should hopefully solve issues with Eirika disappearing in Chapter 1. The counts for the previous chapter's units were wrong (1 too many) so it was overwriting important data for Chapter 1 (i.e. where Eirika moves to when she initially spawns).
+
 **June 30, 2015**
 
 *Beta Release* - Fixed a lot more issues that surfaced with the additional testing efforts and added support for FE8 random classes and recruitment. The other notable change across all games is the new ability to promote the Soldier class into General (or Paladin in FE8) with Knight's Crests. Additionally, if lords are randomized, they also can now promote using the Knight Crest (Hero Crest for Lyn).
