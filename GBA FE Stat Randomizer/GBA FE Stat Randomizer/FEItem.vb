@@ -200,21 +200,21 @@
     Public Sub randomizeItemMight(ByVal variance As Integer, ByVal minimum As Integer, ByRef rng As Random)
         If isWeapon() And variance > 0 Then
             Dim randomDelta As Integer = randomDeltaWithVariance(variance, rng)
-            might = Convert.ToByte(Math.Max(Convert.ToInt32(might) + randomDelta, minimum))
+            might = Convert.ToByte(Math.Min(Math.Max(Convert.ToInt32(might) + randomDelta, minimum), &HFF))
         End If
     End Sub
 
     Public Sub randomizeItemCritical(ByVal variance As Integer, ByVal minimum As Integer, ByRef rng As Random)
         If isWeapon() And variance > 0 Then
             Dim randomDelta As Integer = randomDeltaWithVariance(variance, rng)
-            critical = Convert.ToByte(Math.Max(Convert.ToInt32(critical) + randomDelta, minimum))
+            critical = Convert.ToByte(Math.Min(Math.Max(Convert.ToInt32(critical) + randomDelta, minimum), &HFF))
         End If
     End Sub
 
     Public Sub randomizeItemHit(ByVal variance As Integer, ByVal minimum As Integer, ByRef rng As Random)
         If isWeapon() And variance > 0 Then
             Dim randomDelta As Integer = randomDeltaWithVariance(variance, rng)
-            hit = Convert.ToByte(Math.Max(Convert.ToInt32(hit) + randomDelta, minimum))
+            hit = Convert.ToByte(Math.Min(Math.Max(Convert.ToInt32(hit) + randomDelta, minimum), &HFF))
         End If
     End Sub
 
