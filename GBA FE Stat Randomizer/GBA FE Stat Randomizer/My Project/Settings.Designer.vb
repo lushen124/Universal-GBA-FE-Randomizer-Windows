@@ -53,18 +53,6 @@ Namespace My
                 Return defaultInstance
             End Get
         End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
-        Public Property HasSeenBetaNotice() As Boolean
-            Get
-                Return CType(Me("HasSeenBetaNotice"),Boolean)
-            End Get
-            Set
-                Me("HasSeenBetaNotice") = value
-            End Set
-        End Property
     End Class
 End Namespace
 

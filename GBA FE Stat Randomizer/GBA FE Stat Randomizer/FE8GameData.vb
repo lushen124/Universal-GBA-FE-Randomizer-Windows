@@ -1096,7 +1096,10 @@
             itemIDObject = ItemList.Dummy_ManiKatti Or
             itemIDObject = ItemList.Ballista Or
             itemIDObject = ItemList.KillerBallista Or
-            itemIDObject = ItemList.IronBallista Then
+            itemIDObject = ItemList.IronBallista Or
+            itemIDObject = ItemList.DemonLight Or
+            itemIDObject = ItemList.Ravager Or
+            itemIDObject = ItemList.Nightmare Then
             Return True
         End If
 

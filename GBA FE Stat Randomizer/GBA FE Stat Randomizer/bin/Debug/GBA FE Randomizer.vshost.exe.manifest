@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="GBA FE Randomizer.exe" size="2429440">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="GBA FE Randomizer.exe" size="2432000">
       <assemblyIdentity name="GBA FE Randomizer" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>GY7yKDCS7anG9jP5V6scd0XqFKw=</dsig:DigestValue>
+        <dsig:DigestValue>N3pUZxkGwryiwN8WMsXauOGT0Cc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

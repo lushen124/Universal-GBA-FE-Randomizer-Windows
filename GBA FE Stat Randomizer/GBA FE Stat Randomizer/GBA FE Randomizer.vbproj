@@ -26,8 +26,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>14</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -109,6 +109,7 @@
     <Compile Include="DebugLogger.vb" />
     <Compile Include="FE7GameData.vb" />
     <Compile Include="FE8GameData.vb" />
+    <Compile Include="FE8SummonerModule.vb" />
     <Compile Include="FEChapterUnit.vb" />
     <Compile Include="FEClass.vb" />
     <Compile Include="Patcher.vb" />

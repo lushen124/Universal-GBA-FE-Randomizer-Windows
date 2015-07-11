@@ -128,20 +128,6 @@
 
         If type <> Utilities.GameType.GameTypeUnknown Then
             reenableAllControls()
-
-            Dim hasSeenNotice As Boolean = My.Settings.HasSeenBetaNotice
-            If Not hasSeenNotice Then
-                MsgBox("Thanks for testing out the Universal GBA FE Randomizer!" + vbCrLf + vbCrLf _
-                           & "This is an early build of the app that is still missing several features, but I figure it should be good enough to test with so that we catch any other issues I'm not aware of sooner rather than later." + vbCrLf + vbCrLf _
-                           & "Controls that are disabled are likely not yet implemented. Most notably, Random classes has only been implemented with FE6. FE7 and FE8 should soon follow." + vbCrLf + vbCrLf _
-                           & "Please report any issues you encounter when using this app. You can share a randomized instance of a game using NUPS to create ups patches with your randomized info. Please do so to report issues." + vbCrLf + vbCrLf _
-                           & "Thanks again!" + vbCrLf + vbCrLf _
-                           & "- /u/OtakuReborn", MsgBoxStyle.Information, "Notice")
-
-                My.Settings.HasSeenBetaNotice = True
-                My.Settings.Save()
-            End If
-
         End If
 
     End Sub
@@ -194,6 +180,8 @@
         Dim spellAssociationManager As SpellAssociationManager = Nothing
 
         Dim promotionManager As PromotionManager = Nothing
+
+        Dim summonManager As FE8SummonerModule = Nothing
 
         Dim fileReader = IO.File.OpenRead(OpenFileDialog1.FileName)
 
@@ -383,6 +371,8 @@
 
             promotionManager = New PromotionManager(Utilities.GameType.GameTypeFE8, fileReader)
 
+            summonManager = New FE8SummonerModule(fileReader)
+
             MsgBox("You seem to be randomizing FE8. Note that depending on the randomizing results, the tutorial (Easy Mode) may no longer be completable." + vbCrLf + vbCrLf _
                    & "It is recommended that you only play this on the Normal Or Difficult Modes to ensure functionality.", MsgBoxStyle.Information, "Notice")
         End If
@@ -445,11 +435,15 @@
             ' The monster classes that use monster weapons have their flag set, so they'll be use it
             ' even if it is changed to a monster weapon. Also give it an E rank so
             ' that only magic monsters can use it.
+            Dim isMonsterWeapon As Boolean = False
+
             If type = Utilities.GameType.GameTypeFE8 Then
                 If monsterWeaponIDs.Contains(System.Enum.ToObject(GetType(FE8GameData.ItemList), itemEntry.weaponID)) Then
                     itemEntry.weaponAbility2 = itemEntry.weaponAbility2 Or FEItem.Ability2.Ability2MonsterWeaponDragonLock
                     itemEntry.rank = FE8GameData.WeaponRank.WeaponRankE
                 End If
+                Dim bitwiseResult As Integer = itemEntry.weaponAbility2 And FEItem.Ability2.Ability2MonsterWeaponDragonLock
+                isMonsterWeapon = (bitwiseResult <> 0)
             End If
 
             Dim weaponType As FEItem.WeaponType = itemEntry.type
@@ -459,7 +453,7 @@
                 itemByType.Add(weaponType, weaponList)
             End If
 
-            If itemEntry.type <> FEItem.WeaponType.WeaponTypeDragonstoneMonsterWeapon Then
+            If Not isMonsterWeapon Then
                 weaponList.Add(itemEntry.weaponID)
             End If
 
@@ -470,7 +464,7 @@
                 itemByRank.Add(weaponRank, rankList)
             End If
 
-            If itemEntry.type <> FEItem.WeaponType.WeaponTypeDragonstoneMonsterWeapon Then
+            If Not isMonsterWeapon Then
                 rankList.Add(itemEntry.weaponID)
             End If
         Next
@@ -850,6 +844,18 @@ StartOver:
                         End If
 
                         Dim newClass As FEClass = classLookup.Item(newClassId)
+
+                        ' For FE8, anybody ending up as a Shaman or Summoner will need a summoner entry.
+                        If type = Utilities.GameType.GameTypeFE8 Then
+                            Dim fe8Class As FE8GameData.ClassList = System.Enum.ToObject(classType, newClassId)
+                            If fe8Class = FE8GameData.ClassList.Shaman Or fe8Class = FE8GameData.ClassList.Summoner Or
+                                fe8Class = FE8GameData.ClassList.Shaman_F Or fe8Class = FE8GameData.ClassList.Summoner_F Then
+                                If Not IsNothing(summonManager) Then
+                                    summonManager.registerSummoner(unit.characterId, rng)
+                                End If
+
+                            End If
+                        End If
 
                         ' If we're randomly assigning classes (or just re-assigning classes in general)
                         ' make sure the scripts don't blow up if they're told to move somewhere.
@@ -1758,6 +1764,10 @@ StartOver:
         End If
         If Not IsNothing(promotionManager) Then
             promotionManager.commitChanges(fileWriter)
+        End If
+
+        If Not IsNothing(summonManager) Then
+            summonManager.commitChanges(fileWriter)
         End If
 
         If Not hasAlreadyRandomized Then
