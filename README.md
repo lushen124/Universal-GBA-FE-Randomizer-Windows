@@ -3,6 +3,14 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**July 10, 2015**
+
+**Official Release!** - With this release adding support for new summoners to still be able to summon monsters and truly fixing the monster weapons showing up unintentionally, I think this puts FE8 in a good enough place for me to call it an official release. All three games have been tested enough to be reasonably stable with most setting combinations.
+
+The remaining features to be worked on are mostly cosmetic, so we'll save those for v1.1 maybe. I also have some ideas to play around with some of the settings to give even more control, so maybe there will be a v2.0 as well.
+
+I also need to get on the mac version soon. :laughing:
+
 **July 8, 2015**
 
 *Beta Release* - A real one this time. This one should hopefully solve issues with Eirika disappearing in Chapter 1. The counts for the previous chapter's units were wrong (1 too many) so it was overwriting important data for Chapter 1 (i.e. where Eirika moves to when she initially spawns).
