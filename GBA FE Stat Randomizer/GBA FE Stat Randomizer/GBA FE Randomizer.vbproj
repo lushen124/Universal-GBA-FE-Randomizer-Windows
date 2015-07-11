@@ -80,7 +80,7 @@
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>GBARandIcon1.ico</ApplicationIcon>
+    <ApplicationIcon>GBARandIcon-v1.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -198,8 +198,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="GBARandIcon.ico" />
-    <Content Include="GBARandIcon1.ico" />
+    <Content Include="GBARandIcon-Alpha.ico" />
+    <Content Include="GBARandIcon-v1.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

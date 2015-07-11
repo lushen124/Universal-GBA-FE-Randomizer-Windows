@@ -8,14 +8,14 @@
     <framework targetVersion="4.0" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="GBA FE Randomizer.exe.manifest" size="4905">
+    <dependentAssembly dependencyType="install" codebase="GBA FE Randomizer.exe.manifest" size="4915">
       <assemblyIdentity name="GBA FE Randomizer.exe" version="1.0.0.0" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="x86" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>HmnhgULg7PooveW4J9EH6zi1Dsc=</dsig:DigestValue>
+        <dsig:DigestValue>9XFa8xtAMR07u6zoreywQYSG6yc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
