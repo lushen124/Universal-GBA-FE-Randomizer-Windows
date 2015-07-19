@@ -3,6 +3,18 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**July 19, 2015**
+
+v1.0.1 Release
+
+Changes:
+* Added logic to make sure legendary weapons don't show up prematurely.
+* Updated logic for movement costs to only update them for classes of units that need them (FE6: Miledy and Gale, FE7: Fiora and Farina, FE8: Glen and Valter).
+* Removed Enemy Buff: At least Amount.
+* Added Cross Gender option when randomizing classes.
+* Fixed an issue where FE8 monster weapons were getting 1-2 range causing crashes.
+* Fixed an issue where FE8 wasn't determining an appropriate promoted class for trainees (should only affect random recruitment).
+
 **July 10, 2015**
 
 **Official Release!** - With this release adding support for new summoners to still be able to summon monsters and truly fixing the monster weapons showing up unintentionally, I think this puts FE8 in a good enough place for me to call it an official release. All three games have been tested enough to be reasonably stable with most setting combinations.
