@@ -83,7 +83,6 @@ Partial Class Form1
         Me.EnemyBuffControl = New System.Windows.Forms.NumericUpDown()
         Me.SetMaximumEnemyBuffControl = New System.Windows.Forms.RadioButton()
         Me.SetConstantEnemyBuffControl = New System.Windows.Forms.RadioButton()
-        Me.SetMinimumEnemyBuffControl = New System.Windows.Forms.RadioButton()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.MinimumDurabilityControl = New System.Windows.Forms.NumericUpDown()
         Me.GrowthsTooltip = New System.Windows.Forms.ToolTip(Me.components)
@@ -125,6 +124,8 @@ Partial Class Form1
         Me.CONVarianceControl = New System.Windows.Forms.NumericUpDown()
         Me.CONVarianceTooltip = New System.Windows.Forms.ToolTip(Me.components)
         Me.GameSpecificCheckbox = New System.Windows.Forms.CheckBox()
+        Me.CrossgenderCheckbox = New System.Windows.Forms.CheckBox()
+        Me.CrossgenderTooltip = New System.Windows.Forms.ToolTip(Me.components)
         CType(Me.GrowthVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.BaseVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.MightVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -645,7 +646,7 @@ Partial Class Form1
         'IncreaseEnemyGrowthsToggle
         '
         Me.IncreaseEnemyGrowthsToggle.AutoSize = True
-        Me.IncreaseEnemyGrowthsToggle.Location = New System.Drawing.Point(435, 202)
+        Me.IncreaseEnemyGrowthsToggle.Location = New System.Drawing.Point(435, 222)
         Me.IncreaseEnemyGrowthsToggle.Name = "IncreaseEnemyGrowthsToggle"
         Me.IncreaseEnemyGrowthsToggle.Size = New System.Drawing.Size(144, 17)
         Me.IncreaseEnemyGrowthsToggle.TabIndex = 53
@@ -665,7 +666,7 @@ Partial Class Form1
         'Label17
         '
         Me.Label17.AutoSize = True
-        Me.Label17.Location = New System.Drawing.Point(453, 224)
+        Me.Label17.Location = New System.Drawing.Point(453, 244)
         Me.Label17.Name = "Label17"
         Me.Label17.Size = New System.Drawing.Size(43, 13)
         Me.Label17.TabIndex = 55
@@ -674,7 +675,7 @@ Partial Class Form1
         'EnemyBuffControl
         '
         Me.EnemyBuffControl.Increment = New Decimal(New Integer() {5, 0, 0, 0})
-        Me.EnemyBuffControl.Location = New System.Drawing.Point(502, 222)
+        Me.EnemyBuffControl.Location = New System.Drawing.Point(502, 242)
         Me.EnemyBuffControl.Name = "EnemyBuffControl"
         Me.EnemyBuffControl.Size = New System.Drawing.Size(72, 20)
         Me.EnemyBuffControl.TabIndex = 56
@@ -682,7 +683,7 @@ Partial Class Form1
         'SetMaximumEnemyBuffControl
         '
         Me.SetMaximumEnemyBuffControl.AutoSize = True
-        Me.SetMaximumEnemyBuffControl.Location = New System.Drawing.Point(480, 244)
+        Me.SetMaximumEnemyBuffControl.Location = New System.Drawing.Point(480, 264)
         Me.SetMaximumEnemyBuffControl.Name = "SetMaximumEnemyBuffControl"
         Me.SetMaximumEnemyBuffControl.Size = New System.Drawing.Size(94, 17)
         Me.SetMaximumEnemyBuffControl.TabIndex = 57
@@ -693,23 +694,13 @@ Partial Class Form1
         '
         Me.SetConstantEnemyBuffControl.AutoSize = True
         Me.SetConstantEnemyBuffControl.Checked = True
-        Me.SetConstantEnemyBuffControl.Location = New System.Drawing.Point(480, 268)
+        Me.SetConstantEnemyBuffControl.Location = New System.Drawing.Point(480, 288)
         Me.SetConstantEnemyBuffControl.Name = "SetConstantEnemyBuffControl"
         Me.SetConstantEnemyBuffControl.Size = New System.Drawing.Size(98, 17)
         Me.SetConstantEnemyBuffControl.TabIndex = 58
         Me.SetConstantEnemyBuffControl.TabStop = True
         Me.SetConstantEnemyBuffControl.Text = "Exactly Amount"
         Me.SetConstantEnemyBuffControl.UseVisualStyleBackColor = True
-        '
-        'SetMinimumEnemyBuffControl
-        '
-        Me.SetMinimumEnemyBuffControl.AutoSize = True
-        Me.SetMinimumEnemyBuffControl.Location = New System.Drawing.Point(480, 292)
-        Me.SetMinimumEnemyBuffControl.Name = "SetMinimumEnemyBuffControl"
-        Me.SetMinimumEnemyBuffControl.Size = New System.Drawing.Size(103, 17)
-        Me.SetMinimumEnemyBuffControl.TabIndex = 59
-        Me.SetMinimumEnemyBuffControl.Text = "At Least Amount"
-        Me.SetMinimumEnemyBuffControl.UseVisualStyleBackColor = True
         '
         'Label1
         '
@@ -826,6 +817,18 @@ Partial Class Form1
         Me.MinimumMightTooltip.InitialDelay = 500
         Me.MinimumMightTooltip.ReshowDelay = 100
         '
+        'MinimumHitTooltip
+        '
+        Me.MinimumHitTooltip.AutoPopDelay = 30000
+        Me.MinimumHitTooltip.InitialDelay = 500
+        Me.MinimumHitTooltip.ReshowDelay = 100
+        '
+        'HitVarianceTooltip
+        '
+        Me.HitVarianceTooltip.AutoPopDelay = 30000
+        Me.HitVarianceTooltip.InitialDelay = 500
+        Me.HitVarianceTooltip.ReshowDelay = 100
+        '
         'CriticalVarianceTooltip
         '
         Me.CriticalVarianceTooltip.AutoPopDelay = 30000
@@ -843,6 +846,12 @@ Partial Class Form1
         Me.WeightVarianceTooltip.AutoPopDelay = 30000
         Me.WeightVarianceTooltip.InitialDelay = 500
         Me.WeightVarianceTooltip.ReshowDelay = 100
+        '
+        'MinimumWeightTooltip
+        '
+        Me.MinimumWeightTooltip.AutoPopDelay = 30000
+        Me.MinimumWeightTooltip.InitialDelay = 500
+        Me.MinimumWeightTooltip.ReshowDelay = 100
         '
         'MaximumWeightTooltip
         '
@@ -892,6 +901,36 @@ Partial Class Form1
         Me.RandomizeBossesTooltip.InitialDelay = 500
         Me.RandomizeBossesTooltip.ReshowDelay = 100
         '
+        'UniqueClassesTooltip
+        '
+        Me.UniqueClassesTooltip.AutoPopDelay = 30000
+        Me.UniqueClassesTooltip.InitialDelay = 500
+        Me.UniqueClassesTooltip.ReshowDelay = 100
+        '
+        'EnemyBuffTooltip
+        '
+        Me.EnemyBuffTooltip.AutoPopDelay = 30000
+        Me.EnemyBuffTooltip.InitialDelay = 500
+        Me.EnemyBuffTooltip.ReshowDelay = 100
+        '
+        'BuffAmountTooltip
+        '
+        Me.BuffAmountTooltip.AutoPopDelay = 30000
+        Me.BuffAmountTooltip.InitialDelay = 500
+        Me.BuffAmountTooltip.ReshowDelay = 100
+        '
+        'BossBuffTooltip
+        '
+        Me.BossBuffTooltip.AutoPopDelay = 30000
+        Me.BossBuffTooltip.InitialDelay = 500
+        Me.BossBuffTooltip.ReshowDelay = 100
+        '
+        'RecruitmentTooltip
+        '
+        Me.RecruitmentTooltip.AutoPopDelay = 30000
+        Me.RecruitmentTooltip.InitialDelay = 500
+        Me.RecruitmentTooltip.ReshowDelay = 100
+        '
         'Label18
         '
         Me.Label18.AutoSize = True
@@ -911,6 +950,12 @@ Partial Class Form1
         Me.CONVarianceControl.TabIndex = 63
         Me.CONVarianceControl.Value = New Decimal(New Integer() {1, 0, 0, 0})
         '
+        'CONVarianceTooltip
+        '
+        Me.CONVarianceTooltip.AutoPopDelay = 30000
+        Me.CONVarianceTooltip.InitialDelay = 500
+        Me.CONVarianceTooltip.ReshowDelay = 100
+        '
         'GameSpecificCheckbox
         '
         Me.GameSpecificCheckbox.AutoSize = True
@@ -922,17 +967,33 @@ Partial Class Form1
         Me.GameSpecificCheckbox.UseVisualStyleBackColor = True
         Me.GameSpecificCheckbox.Visible = False
         '
+        'CrossgenderCheckbox
+        '
+        Me.CrossgenderCheckbox.AutoSize = True
+        Me.CrossgenderCheckbox.Location = New System.Drawing.Point(456, 191)
+        Me.CrossgenderCheckbox.Name = "CrossgenderCheckbox"
+        Me.CrossgenderCheckbox.Size = New System.Drawing.Size(113, 17)
+        Me.CrossgenderCheckbox.TabIndex = 65
+        Me.CrossgenderCheckbox.Text = "Allow Crossgender"
+        Me.CrossgenderCheckbox.UseVisualStyleBackColor = True
+        '
+        'CrossgenderTooltip
+        '
+        Me.CrossgenderTooltip.AutoPopDelay = 30000
+        Me.CrossgenderTooltip.InitialDelay = 500
+        Me.CrossgenderTooltip.ReshowDelay = 100
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(586, 480)
+        Me.Controls.Add(Me.CrossgenderCheckbox)
         Me.Controls.Add(Me.GameSpecificCheckbox)
         Me.Controls.Add(Me.CONVarianceControl)
         Me.Controls.Add(Me.Label18)
         Me.Controls.Add(Me.MinimumDurabilityControl)
         Me.Controls.Add(Me.Label1)
-        Me.Controls.Add(Me.SetMinimumEnemyBuffControl)
         Me.Controls.Add(Me.SetConstantEnemyBuffControl)
         Me.Controls.Add(Me.SetMaximumEnemyBuffControl)
         Me.Controls.Add(Me.EnemyBuffControl)
@@ -990,7 +1051,7 @@ Partial Class Form1
         Me.Controls.Add(Me.FilenameTextBox)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "Form1"
-        Me.Text = "GBA FE Randomizer v1.0 by OtakuReborn"
+        Me.Text = "GBA FE Randomizer v1.0.1 by OtakuReborn"
         CType(Me.GrowthVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.BaseVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.MightVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()
@@ -1074,7 +1135,6 @@ Partial Class Form1
     Friend WithEvents EnemyBuffControl As System.Windows.Forms.NumericUpDown
     Friend WithEvents SetMaximumEnemyBuffControl As System.Windows.Forms.RadioButton
     Friend WithEvents SetConstantEnemyBuffControl As System.Windows.Forms.RadioButton
-    Friend WithEvents SetMinimumEnemyBuffControl As System.Windows.Forms.RadioButton
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents MinimumDurabilityControl As System.Windows.Forms.NumericUpDown
     Friend WithEvents GrowthsTooltip As System.Windows.Forms.ToolTip
@@ -1116,5 +1176,7 @@ Partial Class Form1
     Friend WithEvents CONVarianceControl As System.Windows.Forms.NumericUpDown
     Friend WithEvents CONVarianceTooltip As System.Windows.Forms.ToolTip
     Friend WithEvents GameSpecificCheckbox As System.Windows.Forms.CheckBox
+    Friend WithEvents CrossgenderCheckbox As System.Windows.Forms.CheckBox
+    Friend WithEvents CrossgenderTooltip As System.Windows.Forms.ToolTip
 
 End Class

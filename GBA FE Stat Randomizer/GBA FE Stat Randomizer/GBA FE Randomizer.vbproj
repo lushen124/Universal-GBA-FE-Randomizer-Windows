@@ -27,7 +27,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <ApplicationVersion>1.0.1.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -115,6 +115,7 @@
     <Compile Include="Patcher.vb" />
     <Compile Include="PromotionManager.vb" />
     <Compile Include="QuoteManager.vb" />
+    <Compile Include="SpecialMovementManager.vb" />
     <Compile Include="SpellAssociationManager.vb" />
     <Compile Include="SupportManager.vb" />
     <Compile Include="Utilities.vb" />

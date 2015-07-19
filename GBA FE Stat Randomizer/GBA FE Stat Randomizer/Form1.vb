@@ -9,7 +9,6 @@
     Enum EnemyBuffType
         BuffTypeSetConstant
         BuffTypeSetMaximum
-        BuffTypeSetMinimum
     End Enum
 
     Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BrowseButton.Click
@@ -41,6 +40,7 @@
     Private randomThieves As Boolean
     Private randomBosses As Boolean
     Private uniqueClasses As Boolean
+    Private crossgender As Boolean
 
     Private shouldRandomizeItems As Boolean
     Private mightVariance As Integer
@@ -174,6 +174,8 @@
         Dim bossCharacters As ArrayList = New ArrayList()
         Dim exemptCharacters As ArrayList = New ArrayList()
 
+        Dim specialMovementCharacters As ArrayList = New ArrayList()
+
         Dim quoteManager As QuoteManager = Nothing
         Dim supportManager As SupportManager = Nothing
 
@@ -182,6 +184,8 @@
         Dim promotionManager As PromotionManager = Nothing
 
         Dim summonManager As FE8SummonerModule = Nothing
+
+        Dim specialMovementManager As SpecialMovementManager = Nothing
 
         Dim fileReader = IO.File.OpenRead(OpenFileDialog1.FileName)
 
@@ -239,11 +243,14 @@
             thiefCharacters = FE6GameData.thiefCharacterIDs()
             bossCharacters = FE6GameData.bossCharacterIDs()
             exemptCharacters = FE6GameData.exemptCharacterIDs()
+            specialMovementCharacters = FE6GameData.specialMovementCharacterIDs()
 
             quoteManager = New QuoteManager(Utilities.GameType.GameTypeFE6, fileReader)
             supportManager = New SupportManager(Utilities.GameType.GameTypeFE6, fileReader)
 
             spellAssociationManager = New SpellAssociationManager(Utilities.GameType.GameTypeFE6, fileReader)
+
+            specialMovementManager = New SpecialMovementManager(Utilities.GameType.GameTypeFE6)
 
             promotionManager = New PromotionManager(Utilities.GameType.GameTypeFE6, fileReader)
         ElseIf type = Utilities.GameType.GameTypeFE7 Then
@@ -301,11 +308,14 @@
             thiefCharacters = FE7GameData.thiefCharacterIDs()
             bossCharacters = FE7GameData.bossCharacterIDs()
             exemptCharacters = FE7GameData.exemptCharacterIDs()
+            specialMovementCharacters = FE7GameData.specialMovementCharacterIDs()
 
             quoteManager = New QuoteManager(Utilities.GameType.GameTypeFE7, fileReader)
             supportManager = New SupportManager(Utilities.GameType.GameTypeFE7, fileReader)
 
             spellAssociationManager = New SpellAssociationManager(Utilities.GameType.GameTypeFE7, fileReader)
+
+            specialMovementManager = New SpecialMovementManager(Utilities.GameType.GameTypeFE7)
 
             promotionManager = New PromotionManager(Utilities.GameType.GameTypeFE7, fileReader)
         ElseIf type = Utilities.GameType.GameTypeFE8 Then
@@ -363,6 +373,7 @@
             thiefCharacters = FE8GameData.thiefCharacterIDs()
             bossCharacters = FE8GameData.bossCharacterIDs()
             exemptCharacters = FE8GameData.exemptCharacterIDs()
+            specialMovementCharacters = FE8GameData.specialMovementCharacterIDs()
 
             quoteManager = New QuoteManager(Utilities.GameType.GameTypeFE8, fileReader)
             supportManager = New SupportManager(Utilities.GameType.GameTypeFE8, fileReader)
@@ -372,6 +383,8 @@
             promotionManager = New PromotionManager(Utilities.GameType.GameTypeFE8, fileReader)
 
             summonManager = New FE8SummonerModule(fileReader)
+
+            specialMovementManager = New SpecialMovementManager(Utilities.GameType.GameTypeFE8)
 
             MsgBox("You seem to be randomizing FE8. Note that depending on the randomizing results, the tutorial (Easy Mode) may no longer be completable." + vbCrLf + vbCrLf _
                    & "It is recommended that you only play this on the Normal Or Difficult Modes to ensure functionality.", MsgBoxStyle.Information, "Notice")
@@ -425,9 +438,11 @@
             If itemEntry.weaponID = 0 Then Continue For
 
             ' Be on the lookout for any blacklisted items.
-            If type = Utilities.GameType.GameTypeFE6 And FE6GameData.isBlacklisted(itemEntry.weaponID) Then Continue For
-            If type = Utilities.GameType.GameTypeFE7 And FE7GameData.isBlacklisted(itemEntry.weaponID) Then Continue For
-            If type = Utilities.GameType.GameTypeFE8 And FE8GameData.isBlacklisted(itemEntry.weaponID) Then Continue For
+            ' Legendary weapons should also not be touched. This means they show up exactly where they shouldbe
+            ' and cannot be randomly assigned and also cannot be accidentally removed.
+            If type = Utilities.GameType.GameTypeFE6 And (FE6GameData.isBlacklisted(itemEntry.weaponID) Or FE6GameData.isLegendaryWeapon(itemEntry.weaponID)) Then Continue For
+            If type = Utilities.GameType.GameTypeFE7 And (FE7GameData.isBlacklisted(itemEntry.weaponID) Or FE7GameData.isLegendaryWeapon(itemEntry.weaponID)) Then Continue For
+            If type = Utilities.GameType.GameTypeFE8 And (FE8GameData.isBlacklisted(itemEntry.weaponID) Or FE8GameData.isLegendaryWeapon(itemEntry.weaponID)) Then Continue For
 
             ' For FE8 update the monster weapons so that they can only be used by monsters.
             ' This mostly applies to the magic ones, which are classified as dark weapons, but have
@@ -799,6 +814,7 @@ StartOver:
                                                                                           uniqueClasses,
                                                                                           lordCharacters.Contains(characterIDObject),
                                                                                           wasLord Or isBoss,
+                                                                                          crossgender,
                                                                                           rng)
                                 ElseIf type = Utilities.GameType.GameTypeFE7 Then
                                     newClassId = FE7GameData.randomClassFromOriginalClass(oldClass.classId,
@@ -807,6 +823,7 @@ StartOver:
                                                                                           uniqueClasses,
                                                                                           lordCharacters.Contains(characterIDObject),
                                                                                           wasLord Or isBoss,
+                                                                                          crossgender,
                                                                                           rng)
                                 Else
                                     newClassId = FE8GameData.randomClassFromOriginalClass(oldClass.classId,
@@ -815,7 +832,9 @@ StartOver:
                                                                                           uniqueClasses,
                                                                                           lordCharacters.Contains(characterIDObject),
                                                                                           wasLord Or isBoss,
-                                                                                          FE8GameData.traineeCharacterIDs.Contains(characterIDObject), rng)
+                                                                                          FE8GameData.traineeCharacterIDs.Contains(characterIDObject),
+                                                                                          crossgender,
+                                                                                          rng)
                                 End If
                             Else
                                 newClassId = currentCharacter.classId
@@ -862,7 +881,9 @@ StartOver:
                         ' Tell the class to normalize its movement costs so that units can pass through all tiles
                         ' while moving as part of a script.
                         If Not IsNothing(newClass) Then
-                            newClass.normalizeImpassableTiles(type)
+                            If Not IsNothing(specialMovementManager) Then
+                                specialMovementManager.registerClassForMovementFix(newClass)
+                            End If
                         End If
 
                         ' If the old class was a lord, then apply the lord status on the 
@@ -1601,10 +1622,6 @@ StartOver:
                 For Each characterClass As FEClass In classList
                     characterClass.buffUpToAmount(buffAmount, rng)
                 Next
-            ElseIf buffType = EnemyBuffType.BuffTypeSetMinimum Then
-                For Each characterClass As FEClass In classList
-                    characterClass.buffAtLeastAmount(buffAmount, rng)
-                Next
             End If
 
             If buffBosses Then
@@ -1671,6 +1688,10 @@ StartOver:
         End If
 
         Dim fileWriter = IO.File.OpenWrite(OpenFileDialog1.FileName)
+
+        If Not IsNothing(specialMovementManager) Then
+            specialMovementManager.commitFixes(fileWriter)
+        End If
 
         fileWriter.Seek(characterTableOffset, IO.SeekOrigin.Begin)
 
@@ -1810,6 +1831,7 @@ StartOver:
         IncludeThievesToggle.Enabled = False
         IncludeBossesToggle.Enabled = False
         AllowUniqueClassesToggle.Enabled = False
+        CrossgenderCheckbox.Enabled = False
 
         RandomizeItemsToggle.Enabled = False
         MightVarianceControl.Enabled = False
@@ -1827,7 +1849,6 @@ StartOver:
 
         IncreaseEnemyGrowthsToggle.Enabled = False
         EnemyBuffControl.Enabled = False
-        SetMinimumEnemyBuffControl.Enabled = False
         SetMaximumEnemyBuffControl.Enabled = False
         SetConstantEnemyBuffControl.Enabled = False
         BuffBossesToggle.Enabled = False
@@ -1865,6 +1886,7 @@ StartOver:
         IncludeThievesToggle.Enabled = RandomizeClassesToggle.Checked
         IncludeBossesToggle.Enabled = RandomizeClassesToggle.Checked
         AllowUniqueClassesToggle.Enabled = RandomizeClassesToggle.Checked
+        CrossgenderCheckbox.Enabled = RandomizeClassesToggle.Checked
 
         RandomizeItemsToggle.Enabled = True
         MightVarianceControl.Enabled = RandomizeItemsToggle.Checked
@@ -1882,7 +1904,6 @@ StartOver:
 
         IncreaseEnemyGrowthsToggle.Enabled = True
         EnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
-        SetMinimumEnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
         SetMaximumEnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
         SetConstantEnemyBuffControl.Enabled = IncreaseEnemyGrowthsToggle.Checked
         BuffBossesToggle.Enabled = IncreaseEnemyGrowthsToggle.Checked
@@ -2079,6 +2100,7 @@ StartOver:
         IncludeThievesToggle.Enabled = shouldRandomizeClasses
         IncludeBossesToggle.Enabled = shouldRandomizeClasses
         AllowUniqueClassesToggle.Enabled = shouldRandomizeClasses
+        CrossgenderCheckbox.Enabled = shouldRandomizeClasses
     End Sub
 
     Private Sub IncludeLordsToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IncludeLordsToggle.CheckedChanged
@@ -2097,13 +2119,16 @@ StartOver:
         uniqueClasses = AllowUniqueClassesToggle.Checked
     End Sub
 
+    Private Sub CrossgenderCheckbox_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CrossgenderCheckbox.CheckedChanged
+        crossgender = CrossgenderCheckbox.Checked
+    End Sub
+
     Private Sub IncreaseEnemyGrowthsToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IncreaseEnemyGrowthsToggle.CheckedChanged
         buffEnemies = IncreaseEnemyGrowthsToggle.Checked
 
         EnemyBuffControl.Enabled = buffEnemies
         SetMaximumEnemyBuffControl.Enabled = buffEnemies
         SetConstantEnemyBuffControl.Enabled = buffEnemies
-        SetMinimumEnemyBuffControl.Enabled = buffEnemies
         BuffBossesToggle.Enabled = buffEnemies
     End Sub
 
@@ -2120,23 +2145,13 @@ StartOver:
         If SetMaximumEnemyBuffControl.Checked Then
             buffType = EnemyBuffType.BuffTypeSetMaximum
             SetConstantEnemyBuffControl.Checked = False
-            SetMinimumEnemyBuffControl.Checked = False
         End If
     End Sub
 
     Private Sub SetConstantEnemyBuffControl_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SetConstantEnemyBuffControl.CheckedChanged
         If SetConstantEnemyBuffControl.Checked Then
             buffType = EnemyBuffType.BuffTypeSetConstant
-            SetMinimumEnemyBuffControl.Checked = False
             SetMaximumEnemyBuffControl.Checked = False
-        End If
-    End Sub
-
-    Private Sub SetMinimumEnemyBuffControl_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SetMinimumEnemyBuffControl.CheckedChanged
-        If SetMinimumEnemyBuffControl.Checked Then
-            buffType = EnemyBuffType.BuffTypeSetMinimum
-            SetMaximumEnemyBuffControl.Checked = False
-            SetConstantEnemyBuffControl.Checked = False
         End If
     End Sub
 
@@ -2195,7 +2210,7 @@ StartOver:
         GrowthsVarianceTooltip.SetToolTip(GrowthVarianceControl, "Before redistributing growths, a random amount from 0" + vbCrLf _
                                     & "and the amount entered (in increments of 5%) is either" + vbCrLf _
                                     & "added to or subtracted from a character's total growths." + vbCrLf _
-                                    & "Maximum varaince is 100.")
+                                    & "Maximum variance is 100.")
         MinimumGrowthTooltip.SetToolTip(MinimumGrowthToggle, "Before redistributing growths, 5% is assigned to each" + vbCrLf _
                                         & "growth area and subtracted from the total. This ensures" + vbCrLf _
                                         & "the lowest growth a stat can have is 5%.")
@@ -2289,8 +2304,10 @@ StartOver:
         RandomizeBossesTooltip.SetToolTip(IncludeBossesToggle, "Also randomize boss characters to different classes. This does not modify classes" + vbCrLf _
                                           & "of boss characters with unique classes (most final bosses).")
         UniqueClassesTooltip.SetToolTip(AllowUniqueClassesToggle, "Allow unique classes from each game into the random pool of classes available." + vbCrLf _
-                                        & "Additionally, this allows classes that do not promote (such as Soldier) into the pool as well and they" + vbCrLf _
-                                        & "will continue to be unpromotable. For FE8, this adds monster classes to the pool.")
+                                        & "This includes Soldiers and Dancers into the mix. For FE6, this also adds Manaketes." + vbCrLf _
+                                        & "For FE8, this includes the trainee classes, maneketes, and monster classes.")
+        CrossgenderTooltip.SetToolTip(CrossgenderCheckbox, "Allows class assignments across gender lines (e.g. male pegasus knights and " + vbCrLf _
+                                      & "female fighters).")
 
         EnemyBuffTooltip.SetToolTip(IncreaseEnemyGrowthsToggle, "Increases the growths of all classes by a constant or random amount." + vbCrLf _
                                     & "Playable characters override this growth so this does not affect them.")
@@ -2298,8 +2315,7 @@ StartOver:
                                      & "and the result is added to the every class's growth rates. The options below" + vbCrLf _
                                      & "dictate how to use this value." + vbCrLf _
                                      & """Up To Amount"" generates a random value beween 0 and the value specified to be added to growths." + vbCrLf _
-                                     & """Exactly Amount"" adds the listed value to all stat areas for all classes." + vbCrLf _
-                                     & """At Least Amount"" adds a random value between the listed amount and 255 to the growths (capping at 255 growth).")
+                                     & """Exactly Amount"" adds the listed value to all stat areas for all classes.")
         BossBuffTooltip.SetToolTip(BuffBossesToggle, "By default, bosses also override growths and will not autolevel to match their" + vbCrLf _
                                    & "subordinates. Enabling this adjusts this by applying a small (random) amount to bases to correct for that.")
 

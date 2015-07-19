@@ -669,25 +669,55 @@
         Return list
     End Function
 
-    Public Shared Function randomClassFromOriginalClass(ByVal originalClass As Byte, ByVal allowLord As Boolean, ByVal allowThief As Boolean, ByVal allowUnique As Boolean, ByVal requiresPromotion As Boolean, ByVal requiresAttack As Boolean, ByRef rng As Random) As ClassList
+    Public Shared Function randomClassFromOriginalClass(ByVal originalClass As Byte, ByVal allowLord As Boolean, ByVal allowThief As Boolean, ByVal allowUnique As Boolean, ByVal requiresPromotion As Boolean, ByVal requiresAttack As Boolean, ByVal allowCrossgender As Boolean, ByRef rng As Random) As ClassList
         Dim original As ClassList = System.Enum.ToObject(GetType(ClassList), originalClass)
 
-        Dim classListUnpromoted As ArrayList = unpromotedClassList(True)
+        Dim classListUnpromoted As ArrayList
+
+        If allowCrossgender Then
+            classListUnpromoted = Utilities.arrayUnion(unpromotedClassList(True), unpromotedClassList(False))
+        Else
+            classListUnpromoted = unpromotedClassList(True)
+        End If
+
         If Not allowLord Then
             classListUnpromoted.Remove(ClassList.LynLord)
+            If allowCrossgender Then
+                classListUnpromoted.Remove(ClassList.EliwoodLord)
+                classListUnpromoted.Remove(ClassList.HectorLord)
+            End If
         End If
+
+        If Not allowThief Then
+            If allowCrossgender Then
+                classListUnpromoted.Remove(ClassList.Thief)
+            End If
+        End If
+
         If Not allowUnique Then
             classListUnpromoted.Remove(ClassList.Dancer)
+            If allowCrossgender Then
+                classListUnpromoted.Remove(ClassList.Brigand)
+                classListUnpromoted.Remove(ClassList.Soldier)
+                classListUnpromoted.Remove(ClassList.Bard)
+            End If
         End If
 
         If requiresAttack Then
             classListUnpromoted.Remove(ClassList.Troubadour)
             classListUnpromoted.Remove(ClassList.Cleric)
             classListUnpromoted.Remove(ClassList.Dancer)
+            If allowCrossgender Then
+                classListUnpromoted.Remove(ClassList.Bard)
+            End If
         End If
 
         If requiresPromotion Then
             classListUnpromoted.Remove(ClassList.Dancer)
+            If allowCrossgender Then
+                classListUnpromoted.Remove(ClassList.Bard)
+                classListUnpromoted.Remove(ClassList.Soldier)
+            End If
         End If
 
         If classListUnpromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
@@ -698,10 +728,24 @@
 
             Return newClass
         Else
-            Dim classListPromoted = promotedClassList(True)
+            Dim classListPromoted As ArrayList = New ArrayList
+
+            If allowCrossgender Then
+                classListPromoted = Utilities.arrayUnion(promotedClassList(True), promotedClassList(False))
+            Else
+                classListPromoted = promotedClassList(True)
+            End If
 
             If Not allowLord Then
                 classListPromoted.Remove(ClassList.BladeLord)
+                If allowCrossgender Then
+                    classListPromoted.Remove(ClassList.LordKnight)
+                    classListPromoted.Remove(ClassList.GreatLord)
+                End If
+            End If
+
+            If allowCrossgender Then
+                classListPromoted.Remove(ClassList.Archsage)
             End If
 
             If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
@@ -712,63 +756,64 @@
 
                 Return newClass
             End If
-        End If
+            End If
 
-        classListUnpromoted = unpromotedClassList(False)
-
-        If Not allowLord Then
-            classListUnpromoted.Remove(ClassList.EliwoodLord)
-            classListUnpromoted.Remove(ClassList.HectorLord)
-        End If
-        If Not allowThief Then
-            classListUnpromoted.Remove(ClassList.Thief)
-        End If
-        If Not allowUnique Then
-            classListUnpromoted.Remove(ClassList.Brigand)
-            classListUnpromoted.Remove(ClassList.Soldier)
-            classListUnpromoted.Remove(ClassList.Bard)
-        End If
-
-        If requiresAttack Then
-            classListUnpromoted.Remove(ClassList.Bard)
-        End If
-
-        If requiresPromotion Then
-            classListUnpromoted.Remove(ClassList.Bard)
-            classListUnpromoted.Remove(ClassList.Soldier)
-        End If
-
-        If classListUnpromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
-            Dim newClass As ClassList
-            Do
-                newClass = classListUnpromoted.Item(rng.Next(classListUnpromoted.Count))
-            Loop While newClass = original
-
-            Return newClass
-        Else
-            Dim classListPromoted As ArrayList = promotedClassList(False)
+            ' If we've gotten this far, allowCrossgender is false and we need to look at male classes.
+            classListUnpromoted = unpromotedClassList(False)
 
             If Not allowLord Then
-                classListPromoted.Remove(ClassList.LordKnight)
-                classListPromoted.Remove(ClassList.GreatLord)
+                classListUnpromoted.Remove(ClassList.EliwoodLord)
+                classListUnpromoted.Remove(ClassList.HectorLord)
             End If
-            ' Archsage is OP.
-            'If Not allowUnique Then
-            classListPromoted.Remove(ClassList.Archsage)
-            'End If
+            If Not allowThief Then
+                classListUnpromoted.Remove(ClassList.Thief)
+            End If
+            If Not allowUnique Then
+                classListUnpromoted.Remove(ClassList.Brigand)
+                classListUnpromoted.Remove(ClassList.Soldier)
+                classListUnpromoted.Remove(ClassList.Bard)
+            End If
 
-            If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
+            If requiresAttack Then
+                classListUnpromoted.Remove(ClassList.Bard)
+            End If
+
+            If requiresPromotion Then
+                classListUnpromoted.Remove(ClassList.Bard)
+                classListUnpromoted.Remove(ClassList.Soldier)
+            End If
+
+            If classListUnpromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
                 Dim newClass As ClassList
                 Do
-                    newClass = classListPromoted.Item(rng.Next(classListPromoted.Count))
+                    newClass = classListUnpromoted.Item(rng.Next(classListUnpromoted.Count))
                 Loop While newClass = original
 
                 Return newClass
-            End If
-        End If
+            Else
+                Dim classListPromoted As ArrayList = promotedClassList(False)
 
-        ' We shouldn't get this far, but if we do, just return the original (i.e. no change)
-        Return original
+                If Not allowLord Then
+                    classListPromoted.Remove(ClassList.LordKnight)
+                    classListPromoted.Remove(ClassList.GreatLord)
+                End If
+                ' Archsage is OP.
+                'If Not allowUnique Then
+                classListPromoted.Remove(ClassList.Archsage)
+                'End If
+
+                If classListPromoted.Contains(System.Enum.ToObject(GetType(ClassList), original)) Then
+                    Dim newClass As ClassList
+                    Do
+                        newClass = classListPromoted.Item(rng.Next(classListPromoted.Count))
+                    Loop While newClass = original
+
+                    Return newClass
+                End If
+            End If
+
+            ' We shouldn't get this far, but if we do, just return the original (i.e. no change)
+            Return original
     End Function
 
     Public Shared Function playableCharacterIDs(ByVal includeTutorial As Boolean) As ArrayList
@@ -932,6 +977,21 @@
         Return list
     End Function
 
+    ' Some characters have a special requirement to have their
+    ' movement costs modified since they do interesting things during
+    ' their initial or scripted appearances. Mostly applies to fliers that spawn
+    ' on otherwise impassable terrain.
+    ' Since movement costs are on a by-class basis, we want to keep this list
+    ' as small as we can, so that we affect as little as possible.
+    Public Shared Function specialMovementCharacterIDs() As ArrayList
+        Dim list As ArrayList = New ArrayList()
+
+        list.Add(CharacterList.Fiora)
+        list.Add(CharacterList.Farina)
+
+        Return list
+    End Function
+
     Shared Function isBlacklisted(ByVal itemID As Byte) As Boolean
         Dim itemIDObject As ItemList = System.Enum.ToObject(GetType(ItemList), itemID)
         ' Ereshkigal has no rank. Don't let it show up in any randomized inventory.
@@ -952,6 +1012,26 @@
             itemIDObject = ItemList.Mend Or
             itemIDObject = ItemList.Recover Or
             itemIDObject = ItemList.Physic Then Return True
+        Return False
+    End Function
+
+    Public Shared Function isLegendaryWeapon(ByVal itemID As Byte) As Boolean
+        Dim itemIDObject As ItemList = System.Enum.ToObject(GetType(ItemList), itemID)
+        If itemIDObject = ItemList.Durandal Or
+            itemIDObject = ItemList.Armads Or
+            itemIDObject = ItemList.Aureola Or
+            itemIDObject = ItemList.Forblaze Or
+            itemIDObject = ItemList.RegalBlade Or
+            itemIDObject = ItemList.SolKatti Or
+            itemIDObject = ItemList.RexHasta Or
+            itemIDObject = ItemList.Basilikos Or
+            itemIDObject = ItemList.Rienfleche Or
+            itemIDObject = ItemList.Excalibur Or
+            itemIDObject = ItemList.Gespenst Or
+            itemIDObject = ItemList.Luce Then
+            Return True
+        End If
+
         Return False
     End Function
 

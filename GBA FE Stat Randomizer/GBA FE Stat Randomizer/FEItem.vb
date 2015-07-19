@@ -266,7 +266,8 @@
 
                     ' Give those magic weapons range if they weren't ranged before.
                     ' Except axes, because those work funny.
-                    If range = &H11 And type <> Convert.ToByte(WeaponType.WeaponTypeAxe) Then range = &H12
+                    ' Also disallow monster weapons because there's probably no ranged animation for them.
+                    If range = &H11 And type <> Convert.ToByte(WeaponType.WeaponTypeAxe) And type <> Convert.ToByte(WeaponType.WeaponTypeDragonstoneMonsterWeapon) Then range = &H12
                 End If
             Else
                 ' FE6 does not handle uncounterable very well (forcing it to be animated from 3+ spaces away and locking up weapons that can't do that)

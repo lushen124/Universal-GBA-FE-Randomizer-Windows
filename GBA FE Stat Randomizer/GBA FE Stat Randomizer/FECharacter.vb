@@ -464,6 +464,34 @@
         characterAffinity = newAffinity
     End Sub
 
+    Public Sub setupWeaponRanksForGameType(ByVal type As Utilities.GameType, ByRef noRank As Byte, ByRef eRank As Byte, ByRef dRank As Byte, ByRef cRank As Byte, ByRef bRank As Byte, ByRef aRank As Byte, ByRef sRank As Byte)
+        If type = Utilities.GameType.GameTypeFE6 Then
+            noRank = FE6GameData.WeaponRank.WeaponRankNone
+            eRank = FE6GameData.WeaponRank.WeaponRankE
+            dRank = FE6GameData.WeaponRank.WeaponRankD
+            cRank = FE6GameData.WeaponRank.WeaponRankC
+            bRank = FE6GameData.WeaponRank.WeaponRankB
+            aRank = FE6GameData.WeaponRank.WeaponRankA
+            sRank = FE6GameData.WeaponRank.WeaponRankS
+        ElseIf type = Utilities.GameType.GameTypeFE7 Then
+            noRank = FE7GameData.WeaponRank.WeaponRankNone
+            eRank = FE7GameData.WeaponRank.WeaponRankE
+            dRank = FE7GameData.WeaponRank.WeaponRankD
+            cRank = FE7GameData.WeaponRank.WeaponRankC
+            bRank = FE7GameData.WeaponRank.WeaponRankB
+            aRank = FE7GameData.WeaponRank.WeaponRankA
+            sRank = FE7GameData.WeaponRank.WeaponRankS
+        ElseIf type = Utilities.GameType.GameTypeFE8 Then
+            noRank = FE8GameData.WeaponRank.WeaponRankNone
+            eRank = FE8GameData.WeaponRank.WeaponRankE
+            dRank = FE8GameData.WeaponRank.WeaponRankD
+            cRank = FE8GameData.WeaponRank.WeaponRankC
+            bRank = FE8GameData.WeaponRank.WeaponRankB
+            aRank = FE8GameData.WeaponRank.WeaponRankA
+            sRank = FE8GameData.WeaponRank.WeaponRankS
+        End If
+    End Sub
+
     Public Sub increaseWeaponRanksWithPercentChance(ByVal chance As Integer, ByVal type As Utilities.GameType, ByRef rng As Random)
         If chance <= 0 Then Return
 
@@ -475,15 +503,7 @@
         Dim aRank As Byte
         Dim sRank As Byte
 
-        If type = Utilities.GameType.GameTypeFE6 Then
-            noRank = FE6GameData.WeaponRank.WeaponRankNone
-            eRank = FE6GameData.WeaponRank.WeaponRankE
-            dRank = FE6GameData.WeaponRank.WeaponRankD
-            cRank = FE6GameData.WeaponRank.WeaponRankC
-            bRank = FE6GameData.WeaponRank.WeaponRankB
-            aRank = FE6GameData.WeaponRank.WeaponRankA
-            sRank = FE6GameData.WeaponRank.WeaponRankS
-        End If
+        setupWeaponRanksForGameType(type, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
 
         Dim maxRank As Byte = aRank
 
@@ -551,15 +571,7 @@
         Dim aRank As Byte
         Dim sRank As Byte
 
-        If gameType = Utilities.GameType.GameTypeFE6 Then
-            noRank = FE6GameData.WeaponRank.WeaponRankNone
-            eRank = FE6GameData.WeaponRank.WeaponRankE
-            dRank = FE6GameData.WeaponRank.WeaponRankD
-            cRank = FE6GameData.WeaponRank.WeaponRankC
-            bRank = FE6GameData.WeaponRank.WeaponRankB
-            aRank = FE6GameData.WeaponRank.WeaponRankA
-            sRank = FE6GameData.WeaponRank.WeaponRankS
-        End If
+        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
 
         If swordLevel < eRank Then
             swordLevel = eRank
@@ -586,15 +598,7 @@
         Dim aRank As Byte
         Dim sRank As Byte
 
-        If gameType = Utilities.GameType.GameTypeFE6 Then
-            noRank = FE6GameData.WeaponRank.WeaponRankNone
-            eRank = FE6GameData.WeaponRank.WeaponRankE
-            dRank = FE6GameData.WeaponRank.WeaponRankD
-            cRank = FE6GameData.WeaponRank.WeaponRankC
-            bRank = FE6GameData.WeaponRank.WeaponRankB
-            aRank = FE6GameData.WeaponRank.WeaponRankA
-            sRank = FE6GameData.WeaponRank.WeaponRankS
-        End If
+        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
 
         If spearLevel < eRank Then
             spearLevel = eRank
@@ -621,15 +625,7 @@
         Dim aRank As Byte
         Dim sRank As Byte
 
-        If gameType = Utilities.GameType.GameTypeFE6 Then
-            noRank = FE6GameData.WeaponRank.WeaponRankNone
-            eRank = FE6GameData.WeaponRank.WeaponRankE
-            dRank = FE6GameData.WeaponRank.WeaponRankD
-            cRank = FE6GameData.WeaponRank.WeaponRankC
-            bRank = FE6GameData.WeaponRank.WeaponRankB
-            aRank = FE6GameData.WeaponRank.WeaponRankA
-            sRank = FE6GameData.WeaponRank.WeaponRankS
-        End If
+        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
 
         If axeLevel < eRank Then
             axeLevel = eRank
@@ -656,15 +652,7 @@
         Dim aRank As Byte
         Dim sRank As Byte
 
-        If gameType = Utilities.GameType.GameTypeFE6 Then
-            noRank = FE6GameData.WeaponRank.WeaponRankNone
-            eRank = FE6GameData.WeaponRank.WeaponRankE
-            dRank = FE6GameData.WeaponRank.WeaponRankD
-            cRank = FE6GameData.WeaponRank.WeaponRankC
-            bRank = FE6GameData.WeaponRank.WeaponRankB
-            aRank = FE6GameData.WeaponRank.WeaponRankA
-            sRank = FE6GameData.WeaponRank.WeaponRankS
-        End If
+        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
 
         If bowLevel < eRank Then
             bowLevel = eRank
@@ -691,15 +679,7 @@
         Dim aRank As Byte
         Dim sRank As Byte
 
-        If gameType = Utilities.GameType.GameTypeFE6 Then
-            noRank = FE6GameData.WeaponRank.WeaponRankNone
-            eRank = FE6GameData.WeaponRank.WeaponRankE
-            dRank = FE6GameData.WeaponRank.WeaponRankD
-            cRank = FE6GameData.WeaponRank.WeaponRankC
-            bRank = FE6GameData.WeaponRank.WeaponRankB
-            aRank = FE6GameData.WeaponRank.WeaponRankA
-            sRank = FE6GameData.WeaponRank.WeaponRankS
-        End If
+        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
 
         If lightLevel < eRank Then
             lightLevel = eRank
@@ -726,15 +706,7 @@
         Dim aRank As Byte
         Dim sRank As Byte
 
-        If gameType = Utilities.GameType.GameTypeFE6 Then
-            noRank = FE6GameData.WeaponRank.WeaponRankNone
-            eRank = FE6GameData.WeaponRank.WeaponRankE
-            dRank = FE6GameData.WeaponRank.WeaponRankD
-            cRank = FE6GameData.WeaponRank.WeaponRankC
-            bRank = FE6GameData.WeaponRank.WeaponRankB
-            aRank = FE6GameData.WeaponRank.WeaponRankA
-            sRank = FE6GameData.WeaponRank.WeaponRankS
-        End If
+        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
 
         If darkLevel < eRank Then
             darkLevel = eRank
@@ -761,15 +733,7 @@
         Dim aRank As Byte
         Dim sRank As Byte
 
-        If gameType = Utilities.GameType.GameTypeFE6 Then
-            noRank = FE6GameData.WeaponRank.WeaponRankNone
-            eRank = FE6GameData.WeaponRank.WeaponRankE
-            dRank = FE6GameData.WeaponRank.WeaponRankD
-            cRank = FE6GameData.WeaponRank.WeaponRankC
-            bRank = FE6GameData.WeaponRank.WeaponRankB
-            aRank = FE6GameData.WeaponRank.WeaponRankA
-            sRank = FE6GameData.WeaponRank.WeaponRankS
-        End If
+        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
 
         If animaLevel < eRank Then
             animaLevel = eRank
@@ -796,15 +760,7 @@
         Dim aRank As Byte
         Dim sRank As Byte
 
-        If gameType = Utilities.GameType.GameTypeFE6 Then
-            noRank = FE6GameData.WeaponRank.WeaponRankNone
-            eRank = FE6GameData.WeaponRank.WeaponRankE
-            dRank = FE6GameData.WeaponRank.WeaponRankD
-            cRank = FE6GameData.WeaponRank.WeaponRankC
-            bRank = FE6GameData.WeaponRank.WeaponRankB
-            aRank = FE6GameData.WeaponRank.WeaponRankA
-            sRank = FE6GameData.WeaponRank.WeaponRankS
-        End If
+        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
 
         If staffLevel < eRank Then
             staffLevel = eRank
@@ -1037,15 +993,7 @@
         Dim aRank As Byte
         Dim sRank As Byte
 
-        If gameType = Utilities.GameType.GameTypeFE6 Then
-            noRank = FE6GameData.WeaponRank.WeaponRankNone
-            eRank = FE6GameData.WeaponRank.WeaponRankE
-            dRank = FE6GameData.WeaponRank.WeaponRankD
-            cRank = FE6GameData.WeaponRank.WeaponRankC
-            bRank = FE6GameData.WeaponRank.WeaponRankB
-            aRank = FE6GameData.WeaponRank.WeaponRankA
-            sRank = FE6GameData.WeaponRank.WeaponRankS
-        End If
+        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
 
         If characterClass.swordLevel = noRank Then swordLevel = noRank
         If characterClass.spearLevel = noRank Then spearLevel = noRank
