@@ -17,6 +17,14 @@
 
     Public Const ChapterUnitEntrySize = 16
 
+    Public Const HuffmanTreeStart = &H6BC               ' Redirects once (0xB7D71C)
+    Public Const HuffmanTreeEnd = &H6B8                 ' Redirects twice (0xB808A8 > 0xB808A4)
+    Public Const TextArrayPointerAddress = &H12CB8              ' Where to find the text array offset
+    Public Const TextArrayDefaultOffset = &HB808AC      ' The default location of the text array
+    Public Const TextArrayDefaultCount = &H133E         ' Default number of text entries available.
+
+    Public Const CleanCRC32 = &H2A524221
+
     Public Enum EffectivenessPointers
         EffectivenessPointerNone = &H0
         EffectivenessPointerKnightsAndCavalry = &H8C97E9C
@@ -1135,7 +1143,7 @@
         If classIdObject = ClassList.Sniper Or classIdObject = ClassList.Sniper_F Or
             classIdObject = ClassList.NomadTrooper Then
             Return ItemList.Rienfleche
-        ElseIf classIdObject = ClassList.Bishop_F Or classIdObject = ClassList.Bishop_F Then
+        ElseIf classIdObject = ClassList.Bishop Or classIdObject = ClassList.Bishop_F Then
             Return ItemList.Luce
         ElseIf classIdObject = ClassList.Druid Then
             Return ItemList.Gespenst

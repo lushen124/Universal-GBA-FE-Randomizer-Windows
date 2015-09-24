@@ -17,6 +17,14 @@
 
     Public Const ChapterUnitEntrySize = 20
 
+    Public Const HuffmanTreeStart = &H6E0               ' Redirects once (0x15A72C)
+    Public Const HuffmanTreeEnd = &H6DC                 ' Redirects twice (0x15D488 > 0x15D484)
+    Public Const TextArrayPointerAddress = &HA2A0               ' Where to find the text array offset
+    Public Const TextArrayDefaultOffset = &H15D48C      ' The default location of the text array
+    Public Const TextArrayDefaultCount = &HD4C          ' Default number of text entries available.
+
+    Public Const CleanCRC32 = &HA47246AE
+
     Public Enum EffectivenessPointers
         EffectivenessPointerNone = &H0
         EffectivenessPointerKnights = &H88ADEBB

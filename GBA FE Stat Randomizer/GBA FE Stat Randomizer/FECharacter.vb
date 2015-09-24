@@ -1,4 +1,8 @@
-﻿Public Class FECharacter
+﻿Imports WindowsApplication1
+
+Public Class FECharacter
+    Implements RecordKeeper.RecordableItem
+
     Property characterAffinity As Short 'offset 9, 1 byte
     Property level As Byte 'offset 11, 1 byte
 
@@ -50,6 +54,9 @@
     Property supportDataPointer As Integer 'offset 44, 4 bytes (address)
 
     Property shouldResetCustomSpriteToDefault As Boolean
+
+    Property displayName As String
+    Property classDisplayName As String
 
     Enum ClassAbility1 'Bitmaskable
         None = &H0
@@ -140,6 +147,9 @@
 
         copiedCharacter.shouldResetCustomSpriteToDefault = shouldResetCustomSpriteToDefault
 
+        copiedCharacter.displayName = displayName
+        copiedCharacter.classDisplayName = classDisplayName
+
         Return copiedCharacter
     End Function
 
@@ -154,13 +164,17 @@
         AffinityAnima = &H7
     End Enum
 
-    Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gameType As Utilities.GameType)
+    Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gameType As Utilities.GameType, ByRef textManager As TextManager, ByRef classLookup As Hashtable)
         filePtr.Seek(offset, IO.SeekOrigin.Begin)
         nameIndex = Utilities.ReadHalfWord(filePtr)
+        displayName = textManager.stringForTextAtIndex(nameIndex)
+
         bioIndex = Utilities.ReadHalfWord(filePtr)
 
         characterId = filePtr.ReadByte()
         classId = filePtr.ReadByte()
+        Dim charClass As FEClass = classLookup.Item(classId)
+        classDisplayName = charClass.classDisplayName
 
         portraitIndex = filePtr.ReadByte()
 
@@ -334,17 +348,22 @@
         baseRes = 0
     End Sub
 
-    Public Function resolvedAffinity() As Affinity
-        If characterAffinity = Affinity.AffinityFire Then Return Affinity.AffinityFire
-        If characterAffinity = Affinity.AffinityThunder Then Return Affinity.AffinityThunder
-        If characterAffinity = Affinity.AffinityWind Then Return Affinity.AffinityWind
-        If characterAffinity = Affinity.AffinityIce Then Return Affinity.AffinityIce
-        If characterAffinity = Affinity.AffinityDark Then Return Affinity.AffinityDark
-        If characterAffinity = Affinity.AffinityLight Then Return Affinity.AffinityLight
-        If characterAffinity = Affinity.AffinityAnima Then Return Affinity.AffinityAnima
+    Public Function resolvedAffinity() As String
+        If characterAffinity = Affinity.AffinityFire Then Return "Fire"
+        If characterAffinity = Affinity.AffinityThunder Then Return "Thunder"
+        If characterAffinity = Affinity.AffinityWind Then Return "Wind"
+        If characterAffinity = Affinity.AffinityIce Then Return "Ice"
+        If characterAffinity = Affinity.AffinityDark Then Return "Dark"
+        If characterAffinity = Affinity.AffinityLight Then Return "Light"
+        If characterAffinity = Affinity.AffinityAnima Then Return "Anima"
 
-        Return Affinity.AffinityNone
+        Return "None"
     End Function
+
+    Public Sub updateClassWithClass(ByRef classObject As FEClass)
+        classId = classObject.classId
+        classDisplayName = classObject.classDisplayName
+    End Sub
 
     Public Sub randomizeBases(ByVal variance As Integer, ByRef rng As Random)
         Dim total = totalBases()
@@ -1016,4 +1035,9 @@
         End If
     End Function
 
+    Public Function stringDescription() As String Implements RecordKeeper.RecordableItem.stringDescription
+        Return "[ (0x" + Hex(characterId) + ") " + displayName + "] Class: " + classDisplayName + " Level: " + level.ToString + vbCrLf _
+            & " Bases: HP: " + baseHP.ToString + " STR/MAG: " + baseStr.ToString + " SKL: " + baseSkl.ToString + " SPD: " + baseSpd.ToString + " LCK: " + baseLck.ToString + " DEF: " + baseDef.ToString + " RES: " + baseRes.ToString + " CON: " + baseCon.ToString + vbCrLf _
+            & " Growths: HP: " + hpGrowth.ToString + "% STR/MAG: " + strGrowth.ToString + "% SKL: " + sklGrowth.ToString + "% SPD: " + spdGrowth.ToString + "% LCK: " + lckGrowth.ToString + "% DEF: " + defGrowth.ToString + "% RES: " + resGrowth.ToString + "%"
+    End Function
 End Class

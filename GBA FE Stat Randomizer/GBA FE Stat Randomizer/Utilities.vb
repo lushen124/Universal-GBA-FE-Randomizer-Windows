@@ -25,6 +25,15 @@
         Return result
     End Function
 
+    Public Shared Function ReadSignedHalfWord(ByRef filePtr As IO.FileStream) As Short
+        Dim result As Short = 0
+
+        result = result Or filePtr.ReadByte()
+        result = result Or (Convert.ToInt16(filePtr.ReadByte()) << 8)
+
+        Return result
+    End Function
+
     Public Shared Sub WriteWord(ByRef filePtr As IO.FileStream, ByVal wordToWrite As UInteger)
         filePtr.WriteByte(wordToWrite And &HFF)
         filePtr.WriteByte((wordToWrite >> 8) And &HFF)

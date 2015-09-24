@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -13,8 +13,9 @@
     <AssemblyName>GBA FE Randomizer</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>WindowsForms</MyType>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>C:\Users\lushe_000\Desktop\GBAFE Randomizer\</PublishUrl>
     <Install>true</Install>
@@ -41,6 +42,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>GBA FE Randomizer.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -51,6 +53,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>GBA FE Randomizer.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
@@ -95,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
+    <Import Include="Microsoft.VisualBasic.MyServices" />
     <Import Include="System" />
     <Import Include="System.Collections" />
     <Import Include="System.Collections.Generic" />
@@ -106,18 +110,29 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdvancedClassOptionsView.Designer.vb">
+      <DependentUpon>AdvancedClassOptionsView.vb</DependentUpon>
+    </Compile>
+    <Compile Include="AdvancedClassOptionsView.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CRC32Helper.vb" />
     <Compile Include="DebugLogger.vb" />
     <Compile Include="FE7GameData.vb" />
     <Compile Include="FE8GameData.vb" />
     <Compile Include="FE8SummonerModule.vb" />
     <Compile Include="FEChapterUnit.vb" />
     <Compile Include="FEClass.vb" />
+    <Compile Include="HuffmanHelper.vb" />
     <Compile Include="Patcher.vb" />
     <Compile Include="PromotionManager.vb" />
     <Compile Include="QuoteManager.vb" />
+    <Compile Include="RandomizeSettings.vb" />
+    <Compile Include="RecordKeeper.vb" />
     <Compile Include="SpecialMovementManager.vb" />
     <Compile Include="SpellAssociationManager.vb" />
     <Compile Include="SupportManager.vb" />
+    <Compile Include="TextManager.vb" />
     <Compile Include="Utilities.vb" />
     <Compile Include="FEItem.vb" />
     <Compile Include="FE6GameData.vb" />
@@ -146,6 +161,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AdvancedClassOptionsView.resx">
+      <DependentUpon>AdvancedClassOptionsView.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.vb</DependentUpon>
     </EmbeddedResource>

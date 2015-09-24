@@ -1,4 +1,9 @@
-﻿Public Class FEClass
+﻿Imports WindowsApplication1
+
+Public Class FEClass
+    Implements RecordKeeper.RecordableItem
+
+    Property classNameIndex As UShort   'offset 0, 2 bytes
 
     Property classId As Byte            'offset 4, 1 byte
 
@@ -64,6 +69,8 @@
 
     Property writeMovementCostPointer As Boolean
 
+    Property classDisplayName As String
+
     Enum WeaponRank
         WeaponRankNone = &H0
         WeaponRankE = &H1
@@ -74,7 +81,7 @@
         WeaponRankS = &HFB
     End Enum
 
-    
+
 
     Enum ClassAbility1 'Bitmaskable
         None = &H0
@@ -124,7 +131,11 @@
         AthosWeaponLock = &H80 'FE7 only
     End Enum
 
-    Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal type As Utilities.GameType)
+    Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal type As Utilities.GameType, ByRef textManager As TextManager)
+        filePtr.Seek(offset, IO.SeekOrigin.Begin)
+        classNameIndex = Utilities.ReadHalfWord(filePtr)
+        classDisplayName = textManager.stringForTextAtIndex(classNameIndex)
+
         filePtr.Seek(offset + 4, IO.SeekOrigin.Begin)
         classId = filePtr.ReadByte()
         promotedClassId = filePtr.ReadByte()
@@ -258,7 +269,7 @@
 
             Utilities.WriteWord(filePtr, movementTypePointer + &H8000000)
         End If
-        
+
 
         filePtr.Seek(offset + entrySize, IO.SeekOrigin.Begin)
     End Sub
@@ -464,6 +475,9 @@
 
     End Sub
 
+    Public Function stringDescription() As String Implements RecordKeeper.RecordableItem.stringDescription
+        Return "[ (0x" + Hex(classId) + ") " + classDisplayName + IIf((ability2 And ClassAbility2.Female) <> 0, "(F)", "") + "] Promotes to: 0x" + Hex(promotedClassId) + " Movement: " + baseMov.ToString + vbCrLf + " Growths: HP: " + hpGrowth.ToString + "% STR/MAG: " + strGrowth.ToString + "% SKL: " + sklGrowth.ToString + "% SPD: " + spdGrowth.ToString + "% LCK: " + lckGrowth.ToString + "% DEF: " + defGrowth.ToString + "% RES: " + resGrowth.ToString + "%"
+    End Function
 End Class
 
 

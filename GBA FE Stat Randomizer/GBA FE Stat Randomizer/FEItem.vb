@@ -96,7 +96,12 @@
     Property type As Byte               'offset 7, 1 byte
     Property weaponID As Byte           'offset 6, 1 byte
 
+    Property itemNameIndex As UShort    'offset 0, 2 bytes
+
     Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gameType As Utilities.GameType)
+        filePtr.Seek(offset, IO.SeekOrigin.Begin)
+        itemNameIndex = Utilities.ReadHalfWord(filePtr)
+
         filePtr.Seek(offset + 6, IO.SeekOrigin.Begin)
         weaponID = filePtr.ReadByte()
         type = filePtr.ReadByte()

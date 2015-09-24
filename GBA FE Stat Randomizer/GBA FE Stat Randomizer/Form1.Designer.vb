@@ -126,6 +126,10 @@ Partial Class Form1
         Me.GameSpecificCheckbox = New System.Windows.Forms.CheckBox()
         Me.CrossgenderCheckbox = New System.Windows.Forms.CheckBox()
         Me.CrossgenderTooltip = New System.Windows.Forms.ToolTip(Me.components)
+        Me.SaveChangelogCheckbox = New System.Windows.Forms.CheckBox()
+        Me.FolderBrowserDialog1 = New System.Windows.Forms.FolderBrowserDialog()
+        Me.ChangelogPathField = New System.Windows.Forms.TextBox()
+        Me.ChangelogBrowseButton = New System.Windows.Forms.Button()
         CType(Me.GrowthVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.BaseVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.MightVarianceControl, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -213,7 +217,7 @@ Partial Class Form1
         'RandomizeButton
         '
         Me.RandomizeButton.Enabled = False
-        Me.RandomizeButton.Location = New System.Drawing.Point(16, 445)
+        Me.RandomizeButton.Location = New System.Drawing.Point(16, 465)
         Me.RandomizeButton.Name = "RandomizeButton"
         Me.RandomizeButton.Size = New System.Drawing.Size(558, 23)
         Me.RandomizeButton.TabIndex = 7
@@ -983,11 +987,44 @@ Partial Class Form1
         Me.CrossgenderTooltip.InitialDelay = 500
         Me.CrossgenderTooltip.ReshowDelay = 100
         '
+        'SaveChangelogCheckbox
+        '
+        Me.SaveChangelogCheckbox.AutoSize = True
+        Me.SaveChangelogCheckbox.Location = New System.Drawing.Point(16, 442)
+        Me.SaveChangelogCheckbox.Name = "SaveChangelogCheckbox"
+        Me.SaveChangelogCheckbox.Size = New System.Drawing.Size(105, 17)
+        Me.SaveChangelogCheckbox.TabIndex = 66
+        Me.SaveChangelogCheckbox.Text = "Save Changelog"
+        Me.SaveChangelogCheckbox.UseVisualStyleBackColor = True
+        '
+        'FolderBrowserDialog1
+        '
+        '
+        'ChangelogPathField
+        '
+        Me.ChangelogPathField.Location = New System.Drawing.Point(128, 442)
+        Me.ChangelogPathField.Name = "ChangelogPathField"
+        Me.ChangelogPathField.ReadOnly = True
+        Me.ChangelogPathField.Size = New System.Drawing.Size(365, 20)
+        Me.ChangelogPathField.TabIndex = 67
+        '
+        'ChangelogBrowseButton
+        '
+        Me.ChangelogBrowseButton.Location = New System.Drawing.Point(499, 438)
+        Me.ChangelogBrowseButton.Name = "ChangelogBrowseButton"
+        Me.ChangelogBrowseButton.Size = New System.Drawing.Size(75, 23)
+        Me.ChangelogBrowseButton.TabIndex = 68
+        Me.ChangelogBrowseButton.Text = "Browse..."
+        Me.ChangelogBrowseButton.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(586, 480)
+        Me.ClientSize = New System.Drawing.Size(586, 495)
+        Me.Controls.Add(Me.ChangelogBrowseButton)
+        Me.Controls.Add(Me.ChangelogPathField)
+        Me.Controls.Add(Me.SaveChangelogCheckbox)
         Me.Controls.Add(Me.CrossgenderCheckbox)
         Me.Controls.Add(Me.GameSpecificCheckbox)
         Me.Controls.Add(Me.CONVarianceControl)
@@ -1178,5 +1215,8 @@ Partial Class Form1
     Friend WithEvents GameSpecificCheckbox As System.Windows.Forms.CheckBox
     Friend WithEvents CrossgenderCheckbox As System.Windows.Forms.CheckBox
     Friend WithEvents CrossgenderTooltip As System.Windows.Forms.ToolTip
-
+    Friend WithEvents SaveChangelogCheckbox As CheckBox
+    Friend WithEvents FolderBrowserDialog1 As FolderBrowserDialog
+    Friend WithEvents ChangelogPathField As TextBox
+    Friend WithEvents ChangelogBrowseButton As Button
 End Class

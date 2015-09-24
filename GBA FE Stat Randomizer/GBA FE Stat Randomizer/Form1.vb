@@ -1,16 +1,5 @@
 ﻿Public Class Form1
 
-    Enum RecruitmentType
-        RecruitmentTypeNormal
-        RecruitmentTypeReverse
-        RecruitmentTypeRandom
-    End Enum
-
-    Enum EnemyBuffType
-        BuffTypeSetConstant
-        BuffTypeSetMaximum
-    End Enum
-
     Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BrowseButton.Click
         OpenFileDialog1.ShowDialog()
     End Sub
@@ -19,49 +8,7 @@
 
     Private hasAlreadyRandomized As Boolean
 
-    Private shouldRandomizeGrowths As Boolean
-    Private growthsVariance As Integer
-    Private shouldForceMinimumGrowth As Boolean
-    Private shouldWeightHPGrowths As Boolean
-
-    Private shouldRandomizeBases As Boolean
-    Private baseVariance As Integer
-    Private shouldRandomizeCON As Boolean
-    Private CONVariance As Integer
-    Private minimumCON As Integer
-    Private shouldRandomizeMOV As Boolean
-    Private minimumMOV As Integer
-    Private maximumMOV As Integer
-
-    Private shouldRandomizeAffinity As Boolean
-
-    Private shouldRandomizeClasses As Boolean
-    Private randomLords As Boolean
-    Private randomThieves As Boolean
-    Private randomBosses As Boolean
-    Private uniqueClasses As Boolean
-    Private crossgender As Boolean
-
-    Private shouldRandomizeItems As Boolean
-    Private mightVariance As Integer
-    Private minimumMight As Integer
-    Private hitVariance As Integer
-    Private minimumHit As Integer
-    Private criticalVariance As Integer
-    Private minimumCritical As Integer
-    Private weightVariance As Integer
-    Private minimumWeight As Integer
-    Private maximumWeight As Integer
-    Private durabilityVariance As Integer
-    Private minimumDurability As Integer
-    Private randomTraits As Boolean
-
-    Private buffEnemies As Boolean
-    Private buffAmount As Integer
-    Private buffType As EnemyBuffType
-    Private buffBosses As Boolean
-
-    Private recruitment As RecruitmentType
+    
 
     Private applyTutorialKiller As Boolean ' FE7 only.
 
@@ -90,6 +37,10 @@
             GameDetectionLabel.Text = "Game Detected: Fire Emblem 6"
             RandomizeButton.Enabled = True
             GameSpecificCheckbox.Hide()
+
+            Dim test As New AdvancedClassOptionsView(Utilities.GameType.GameTypeFE6)
+            test.ShowDialog()
+
             applyTutorialKiller = False
         ElseIf type = Utilities.GameType.GameTypeFE7 Then
             GameDetectionLabel.Text = "Game Detected: Fire Emblem 7"
@@ -145,6 +96,10 @@
 
         disableAllControls()
 
+        Dim recordKeeper = New RecordKeeper()
+
+        recordKeeper.recordStaticItemInSection("Randomization Settings", RandomizeSettings.recordableItem())
+
         Dim characterList As ArrayList = New ArrayList()
         Dim characterLookup As Hashtable = New Hashtable()
         Dim characterTableOffset As Integer = 0
@@ -186,6 +141,12 @@
         Dim summonManager As FE8SummonerModule = Nothing
 
         Dim specialMovementManager As SpecialMovementManager = Nothing
+
+        Dim textManager As TextManager = Nothing
+
+        Dim characterNameLookup As Hashtable = New Hashtable()
+        Dim itemNameLookup As Hashtable = New Hashtable()
+        Dim classNameLookup As Hashtable = New Hashtable()
 
         Dim fileReader = IO.File.OpenRead(OpenFileDialog1.FileName)
 
@@ -253,6 +214,8 @@
             specialMovementManager = New SpecialMovementManager(Utilities.GameType.GameTypeFE6)
 
             promotionManager = New PromotionManager(Utilities.GameType.GameTypeFE6, fileReader)
+
+            textManager = New TextManager(Utilities.GameType.GameTypeFE6, fileReader)
         ElseIf type = Utilities.GameType.GameTypeFE7 Then
 
             fileReader.Seek(FE7GameData.PointerToCharacterTableOffset, IO.SeekOrigin.Begin)
@@ -318,6 +281,8 @@
             specialMovementManager = New SpecialMovementManager(Utilities.GameType.GameTypeFE7)
 
             promotionManager = New PromotionManager(Utilities.GameType.GameTypeFE7, fileReader)
+
+            textManager = New TextManager(Utilities.GameType.GameTypeFE7, fileReader)
         ElseIf type = Utilities.GameType.GameTypeFE8 Then
 
             fileReader.Seek(FE8GameData.PointerToCharacterTableOffset, IO.SeekOrigin.Begin)
@@ -386,30 +351,40 @@
 
             specialMovementManager = New SpecialMovementManager(Utilities.GameType.GameTypeFE8)
 
+            textManager = New TextManager(Utilities.GameType.GameTypeFE8, fileReader)
+
             MsgBox("You seem to be randomizing FE8. Note that depending on the randomizing results, the tutorial (Easy Mode) may no longer be completable." + vbCrLf + vbCrLf _
                    & "It is recommended that you only play this on the Normal Or Difficult Modes to ensure functionality.", MsgBoxStyle.Information, "Notice")
         End If
-
-        fileReader.Seek(characterTableOffset, IO.SeekOrigin.Begin)
-
-        For index As Integer = 1 To numberOfCharacters
-            Dim currentCharacter As FECharacter = New FECharacter
-
-            currentCharacter.initializeWithBytesFromOffset(fileReader, fileReader.Position, characterEntrySize, type)
-
-            characterList.Add(currentCharacter)
-            Utilities.setObjectForKey(characterLookup, currentCharacter, currentCharacter.characterId)
-        Next
 
         fileReader.Seek(classTableOffset, IO.SeekOrigin.Begin)
 
         For index As Integer = 1 To numberOfClasses
             Dim currentClass As FEClass = New FEClass
 
-            currentClass.initializeWithBytesFromOffset(fileReader, fileReader.Position, classEntrySize, type)
+            currentClass.initializeWithBytesFromOffset(fileReader, fileReader.Position, classEntrySize, type, textManager)
 
             classList.Add(currentClass)
+            classNameLookup.Add(currentClass.classId, currentClass.classDisplayName)
+
             Utilities.setObjectForKey(classLookup, currentClass, currentClass.classId)
+
+            recordKeeper.recordPendingChangeInSectionWithExisting("Classes", currentClass, currentClass.classId.ToString)
+        Next
+
+        fileReader.Seek(characterTableOffset, IO.SeekOrigin.Begin)
+
+        For index As Integer = 1 To numberOfCharacters
+            Dim currentCharacter As FECharacter = New FECharacter
+
+            currentCharacter.initializeWithBytesFromOffset(fileReader, fileReader.Position, characterEntrySize, type, textManager, classLookup)
+
+            characterList.Add(currentCharacter)
+            characterNameLookup.Add(currentCharacter.characterId, currentCharacter.displayName)
+
+            Utilities.setObjectForKey(characterLookup, currentCharacter, currentCharacter.characterId)
+
+            recordKeeper.recordPendingChangeInSectionWithExisting("Characters", currentCharacter, currentCharacter.characterId.ToString)
         Next
 
         fileReader.Seek(itemTableOffset, IO.SeekOrigin.Begin)
@@ -420,6 +395,11 @@
             currentItem.initializeWithBytesFromOffset(fileReader, fileReader.Position, itemEntrySize, type)
 
             itemList.Add(currentItem)
+
+            Dim itemName As String = textManager.stringForTextAtIndex(currentItem.itemNameIndex)
+            'DebugLogger.logMessage("Processing Item: " + itemName)
+            itemNameLookup.Add(currentItem.weaponID, itemName)
+
             Utilities.setObjectForKey(itemLookup, currentItem, currentItem.weaponID)
         Next
 
@@ -486,7 +466,7 @@
 
         Dim rng As Random = New Random
 
-        If recruitment <> RecruitmentType.RecruitmentTypeNormal Then
+        If RandomizeSettings.recruitment <> RandomizeSettings.RecruitmentType.RecruitmentTypeNormal Then
 StartOver:
             Dim usedCharacters As ArrayList = New ArrayList()
 
@@ -512,7 +492,7 @@ StartOver:
                     Dim replacingLordCharacter As Boolean = characterClass.ability2 And FEClass.ClassAbility2.Lord
                     ' Determine his replacement.
                     Dim replacement As Byte
-                    If recruitment = RecruitmentType.RecruitmentTypeReverse Then
+                    If RandomizeSettings.recruitment = RandomizeSettings.RecruitmentType.RecruitmentTypeReverse Then
                         replacement = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.reversedRecruitmentMappingForCharacter(characterIDObject)),
                                           IIf(type = Utilities.GameType.GameTypeFE7, Convert.ToByte(FE7GameData.reversedRecruitmentMappingForCharacter(characterIDObject)),
                                               Convert.ToByte(FE8GameData.reversedRecruitmentMappingForCharacter(characterIDObject))))
@@ -571,7 +551,7 @@ StartOver:
                             Dim targetLevel As Integer = character.level
                             Dim originalClass As FEClass = classLookup.Item(replacementCharacter.classId)
                             Dim newClassID As Byte
-                            If recruitment = RecruitmentType.RecruitmentTypeReverse Then
+                            If RandomizeSettings.recruitment = RandomizeSettings.RecruitmentType.RecruitmentTypeReverse Then
                                 newClassID = IIf(type = Utilities.GameType.GameTypeFE6, Convert.ToByte(FE6GameData.reversedRecruitmentClassMappingForCharacter(replacement)),
                                                  IIf(type = Utilities.GameType.GameTypeFE7, Convert.ToByte(FE7GameData.reversedRecruitmentClassMappingForCharacter(replacement)),
                                                      Convert.ToByte(FE8GameData.reversedRecruitmentClassMappingForCharacter(replacement))))
@@ -641,7 +621,7 @@ StartOver:
                                         replacementCharacter.levelWithClass(replacementClass, targetLevel - originalLevel, False, rng)
                                     End If
                                     replacementCharacter.level = IIf(replacementClass.ability2 And FEClass.ClassAbility2.Promoted, targetLevel - 9, targetLevel)
-                                    replacementCharacter.classId = newClassID
+                                    replacementCharacter.updateClassWithClass(replacementClass)
                                 End If
                             End If
                         Else
@@ -668,38 +648,38 @@ StartOver:
         End If
 
         For Each character As FECharacter In characterList
-            If shouldRandomizeBases Then
-                character.randomizeBases(baseVariance, rng)
+            If RandomizeSettings.shouldRandomizeBases Then
+                character.randomizeBases(RandomizeSettings.baseVariance, rng)
             End If
 
-            If shouldRandomizeGrowths Then
-                character.randomizeGrowths(growthsVariance, shouldForceMinimumGrowth, shouldWeightHPGrowths, rng)
+            If RandomizeSettings.shouldRandomizeGrowths Then
+                character.randomizeGrowths(RandomizeSettings.growthsVariance, RandomizeSettings.shouldForceMinimumGrowth, RandomizeSettings.shouldWeightHPGrowths, rng)
             End If
 
-            If shouldRandomizeCON Then
-                character.randomizeCON(minimumCON, CONVariance, classLookup.Item(character.classId), rng)
+            If RandomizeSettings.shouldRandomizeCON Then
+                character.randomizeCON(RandomizeSettings.minimumCON, RandomizeSettings.CONVariance, classLookup.Item(character.classId), rng)
             End If
 
-            If shouldRandomizeAffinity Then
+            If RandomizeSettings.shouldRandomizeAffinity Then
                 character.randomizeAffinity(rng)
             End If
         Next
 
-        If shouldRandomizeMOV Then
+        If RandomizeSettings.shouldRandomizeMOV Then
             For Each charClass As FEClass In classList
-                charClass.randomizeMOV(minimumMOV, maximumMOV, rng)
+                charClass.randomizeMOV(RandomizeSettings.minimumMOV, RandomizeSettings.maximumMOV, rng)
             Next
         End If
 
-        If shouldRandomizeItems Then
+        If RandomizeSettings.shouldRandomizeItems Then
             For Each item As FEItem In itemList
                 If item.isWeapon() And item.weaponID <> &H0 Then
-                    item.randomizeItemDurability(durabilityVariance, minimumDurability, rng)
-                    item.randomizeItemMight(mightVariance, minimumMight, rng)
-                    item.randomizeItemHit(hitVariance, minimumHit, rng)
-                    item.randomizeItemWeight(weightVariance, minimumWeight, maximumWeight, rng)
-                    item.randomizeItemCritical(criticalVariance, minimumCritical, rng)
-                    If randomTraits Then
+                    item.randomizeItemDurability(RandomizeSettings.durabilityVariance, RandomizeSettings.minimumDurability, rng)
+                    item.randomizeItemMight(RandomizeSettings.mightVariance, RandomizeSettings.minimumMight, rng)
+                    item.randomizeItemHit(RandomizeSettings.hitVariance, RandomizeSettings.minimumHit, rng)
+                    item.randomizeItemWeight(RandomizeSettings.weightVariance, RandomizeSettings.minimumWeight, RandomizeSettings.maximumWeight, rng)
+                    item.randomizeItemCritical(RandomizeSettings.criticalVariance, RandomizeSettings.minimumCritical, rng)
+                    If RandomizeSettings.randomTraits Then
                         item.assignRandomEffect(rng, type)
                         Dim andResult As Integer = (item.weaponAbility1 And FEItem.Ability1.Ability1MagicDamage)
                         If andResult <> &H0 And Not IsNothing(spellAssociationManager) Then spellAssociationManager.assignRandomSpellAnimationToWeaponWithID(item.weaponID, type, rng)
@@ -708,7 +688,7 @@ StartOver:
             Next
         End If
 
-        If shouldRandomizeClasses Or recruitment <> RecruitmentType.RecruitmentTypeNormal Then
+        If RandomizeSettings.shouldRandomizeClasses Or RandomizeSettings.recruitment <> RandomizeSettings.RecruitmentType.RecruitmentTypeNormal Then
             ' Cache results as they happen so that we maintain consistency.
             Dim targetClasses As Hashtable = New Hashtable()
             Dim originalClasses As Hashtable = New Hashtable()
@@ -757,12 +737,12 @@ StartOver:
                         ' If he's one of the units we shouldn't touch, then skip it.
                         ' Don't skip if we're not randomizing though, because we still want to
                         ' take advantage of the random starting items.
-                        If shouldRandomizeClasses Then
-                            If Not randomLords And lordCharacters.Contains(characterIDObject) Then
+                        If RandomizeSettings.shouldRandomizeClasses Then
+                            If Not RandomizeSettings.randomLords And lordCharacters.Contains(characterIDObject) Then
                                 Continue For
-                            ElseIf Not randomThieves And thiefCharacters.Contains(characterIDObject) Then
+                            ElseIf Not RandomizeSettings.randomThieves And thiefCharacters.Contains(characterIDObject) Then
                                 Continue For
-                            ElseIf Not randomBosses And bossCharacters.Contains(characterIDObject) Then
+                            ElseIf Not RandomizeSettings.randomBosses And bossCharacters.Contains(characterIDObject) Then
                                 Continue For
                             ElseIf exemptCharacters.Contains(characterIDObject) Then
                                 Continue For
@@ -806,34 +786,34 @@ StartOver:
                             newClassId = targetClasses.Item(characterIDObject)
                         Else
                             Utilities.setObjectForKey(originalClasses, oldClass.classId, unit.characterId)
-                            If shouldRandomizeClasses Then
+                            If RandomizeSettings.shouldRandomizeClasses Then
                                 If type = Utilities.GameType.GameTypeFE6 Then
                                     newClassId = FE6GameData.randomClassFromOriginalClass(oldClass.classId,
-                                                                                          randomLords,
-                                                                                          randomThieves,
-                                                                                          uniqueClasses,
+                                                                                          RandomizeSettings.randomLords,
+                                                                                          RandomizeSettings.randomThieves,
+                                                                                          RandomizeSettings.uniqueClasses,
                                                                                           lordCharacters.Contains(characterIDObject),
                                                                                           wasLord Or isBoss,
-                                                                                          crossgender,
+                                                                                          RandomizeSettings.crossgender,
                                                                                           rng)
                                 ElseIf type = Utilities.GameType.GameTypeFE7 Then
                                     newClassId = FE7GameData.randomClassFromOriginalClass(oldClass.classId,
-                                                                                          randomLords,
-                                                                                          randomThieves,
-                                                                                          uniqueClasses,
+                                                                                          RandomizeSettings.randomLords,
+                                                                                          RandomizeSettings.randomThieves,
+                                                                                          RandomizeSettings.uniqueClasses,
                                                                                           lordCharacters.Contains(characterIDObject),
                                                                                           wasLord Or isBoss,
-                                                                                          crossgender,
+                                                                                          RandomizeSettings.crossgender,
                                                                                           rng)
                                 Else
                                     newClassId = FE8GameData.randomClassFromOriginalClass(oldClass.classId,
-                                                                                          randomLords,
-                                                                                          randomThieves,
-                                                                                          uniqueClasses,
+                                                                                          RandomizeSettings.randomLords,
+                                                                                          RandomizeSettings.randomThieves,
+                                                                                          RandomizeSettings.uniqueClasses,
                                                                                           lordCharacters.Contains(characterIDObject),
                                                                                           wasLord Or isBoss,
                                                                                           FE8GameData.traineeCharacterIDs.Contains(characterIDObject),
-                                                                                          crossgender,
+                                                                                          RandomizeSettings.crossgender,
                                                                                           rng)
                                 End If
                             Else
@@ -893,7 +873,7 @@ StartOver:
                         End If
 
                         ' Update the character's class in the object.
-                        currentCharacter.classId = newClass.classId
+                        currentCharacter.updateClassWithClass(newClass)
 
                         ' Make sure their weapon levels are consistent with their new class.
                         currentCharacter.swordLevel = newClass.swordLevel
@@ -910,7 +890,7 @@ StartOver:
                         currentCharacter.increaseWeaponRanksWithPercentChance(weaponLevelIncreaseChance, type, rng)
 
                         ' Make sure their class has valid stats.
-                        currentCharacter.validate(newClass, minimumCON, type)
+                        currentCharacter.validate(newClass, RandomizeSettings.minimumCON, type)
 
                         If type = Utilities.GameType.GameTypeFE7 Then
                             ' For FE7, some characters have custom sprites that override their existing sprites.
@@ -1387,7 +1367,7 @@ StartOver:
                                                                IIf(type = Utilities.GameType.GameTypeFE7, FE7GameData.ItemList.Lockpick,
                                                                    FE8GameData.ItemList.Lockpick))
 
-                        If randomThieves Then
+                        If RandomizeSettings.randomThieves Then
                             If wasThief And Not newClass.isThief Then
 
                                 If Not IsNothing(lockpickItem) Then
@@ -1427,7 +1407,7 @@ StartOver:
                             End If
                         End If
 
-                        If recruitment <> RecruitmentType.RecruitmentTypeNormal Then
+                        If RandomizeSettings.recruitment <> RandomizeSettings.RecruitmentType.RecruitmentTypeNormal Then
                             Dim thiefArray As ArrayList = New ArrayList()
                             If type = Utilities.GameType.GameTypeFE6 Then
                                 thiefArray = FE6GameData.thiefCharacterIDs()
@@ -1544,87 +1524,87 @@ StartOver:
             ' Fix promotion items, though only do this if necessary.
             If Not IsNothing(promotionManager) Then
                 If type = Utilities.GameType.GameTypeFE6 Then
-                    If randomLords Then
-                        promotionManager.addClassToPromotionItem(FE6GameData.ClassList.Lord, promotionManager.PromotionItems.KnightCrest)
+                    If RandomizeSettings.randomLords Then
+                        promotionManager.addClassToPromotionItem(FE6GameData.ClassList.Lord, PromotionManager.PromotionItems.KnightCrest)
                     End If
-                    If uniqueClasses Then
+                    If RandomizeSettings.uniqueClasses Then
                         Dim soldierClass As FEClass = classLookup.Item(Convert.ToByte(FE6GameData.ClassList.Soldier))
                         If Not IsNothing(soldierClass) Then
-                            promotionManager.addClassToPromotionItem(FE6GameData.ClassList.Soldier, promotionManager.PromotionItems.KnightCrest)
+                            promotionManager.addClassToPromotionItem(FE6GameData.ClassList.Soldier, PromotionManager.PromotionItems.KnightCrest)
                             soldierClass.promotedClassId = FE6GameData.ClassList.General
                         End If
                     End If
                 ElseIf type = Utilities.GameType.GameTypeFE7 Then
-                    If randomLords Then
-                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.LynLord, promotionManager.PromotionItems.HeroCrest)
-                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.EliwoodLord, promotionManager.PromotionItems.KnightCrest)
-                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.HectorLord, promotionManager.PromotionItems.KnightCrest)
+                    If RandomizeSettings.randomLords Then
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.LynLord, PromotionManager.PromotionItems.HeroCrest)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.EliwoodLord, PromotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.HectorLord, PromotionManager.PromotionItems.KnightCrest)
 
-                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.LynLord, promotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.EliwoodLord, promotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.HectorLord, promotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.LynLord, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.EliwoodLord, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE7GameData.ClassList.HectorLord, PromotionManager.PromotionItems.MasterSeal)
                     End If
-                    If uniqueClasses Then
+                    If RandomizeSettings.uniqueClasses Then
                         Dim soldierClass As FEClass = classLookup.Item(Convert.ToByte(FE7GameData.ClassList.Soldier))
                         If Not IsNothing(soldierClass) Then
                             soldierClass.promotedClassId = FE7GameData.ClassList.General
-                            promotionManager.addClassToPromotionItem(FE7GameData.ClassList.Soldier, promotionManager.PromotionItems.KnightCrest)
-                            promotionManager.addClassToPromotionItem(FE7GameData.ClassList.Soldier, promotionManager.PromotionItems.MasterSeal)
+                            promotionManager.addClassToPromotionItem(FE7GameData.ClassList.Soldier, PromotionManager.PromotionItems.KnightCrest)
+                            promotionManager.addClassToPromotionItem(FE7GameData.ClassList.Soldier, PromotionManager.PromotionItems.MasterSeal)
                         End If
                     End If
                 ElseIf type = Utilities.GameType.GameTypeFE8 Then
-                    If randomLords Then
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EirikaLord, promotionManager.PromotionItems.KnightCrest)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EphraimLord, promotionManager.PromotionItems.KnightCrest)
+                    If RandomizeSettings.randomLords Then
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EirikaLord, PromotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EphraimLord, PromotionManager.PromotionItems.KnightCrest)
 
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EirikaLord, promotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EphraimLord, promotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EirikaLord, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.EphraimLord, PromotionManager.PromotionItems.MasterSeal)
                     End If
-                    If uniqueClasses Then
+                    If RandomizeSettings.uniqueClasses Then
                         Dim soldierClass As FEClass = classLookup.Item(Convert.ToByte(FE8GameData.ClassList.Soldier))
                         If Not IsNothing(soldierClass) Then
                             soldierClass.promotedClassId = FE8GameData.ClassList.General
 
                             promotionManager.setPromotionBranchesForClass(FE8GameData.ClassList.Soldier, FE8GameData.ClassList.General, FE8GameData.ClassList.Paladin)
 
-                            promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Soldier, promotionManager.PromotionItems.KnightCrest)
-                            promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Soldier, promotionManager.PromotionItems.MasterSeal)
+                            promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Soldier, PromotionManager.PromotionItems.KnightCrest)
+                            promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Soldier, PromotionManager.PromotionItems.MasterSeal)
                         End If
                         ' Handle ALL the monster classes.
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Zombie, promotionManager.PromotionItems.HeroCrest)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Zombie, promotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Skeleton, promotionManager.PromotionItems.HeroCrest)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Skeleton, promotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.SkeletonWithBow, promotionManager.PromotionItems.OrionBolt)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.SkeletonWithBow, promotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Bael, promotionManager.PromotionItems.KnightCrest)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Bael, promotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mauthedoog, promotionManager.PromotionItems.HeroCrest)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mauthedoog, promotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Tarvos, promotionManager.PromotionItems.KnightCrest)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Tarvos, promotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mogall, promotionManager.PromotionItems.GuidingRing)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mogall, promotionManager.PromotionItems.MasterSeal)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Gargoyle, promotionManager.PromotionItems.ElysianWhip)
-                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Gargoyle, promotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Zombie, PromotionManager.PromotionItems.HeroCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Zombie, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Skeleton, PromotionManager.PromotionItems.HeroCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Skeleton, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.SkeletonWithBow, PromotionManager.PromotionItems.OrionBolt)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.SkeletonWithBow, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Bael, PromotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Bael, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mauthedoog, PromotionManager.PromotionItems.HeroCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mauthedoog, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Tarvos, PromotionManager.PromotionItems.KnightCrest)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Tarvos, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mogall, PromotionManager.PromotionItems.GuidingRing)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Mogall, PromotionManager.PromotionItems.MasterSeal)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Gargoyle, PromotionManager.PromotionItems.ElysianWhip)
+                        promotionManager.addClassToPromotionItem(FE8GameData.ClassList.Gargoyle, PromotionManager.PromotionItems.MasterSeal)
                     End If
                 End If
             End If
 
         End If
 
-        If buffEnemies Then
-            If buffType = EnemyBuffType.BuffTypeSetConstant Then
+        If RandomizeSettings.buffEnemies Then
+            If RandomizeSettings.buffType = RandomizeSettings.EnemyBuffType.BuffTypeSetConstant Then
                 For Each characterClass As FEClass In classList
-                    characterClass.buffByAmount(buffAmount)
+                    characterClass.buffByAmount(RandomizeSettings.buffAmount)
                 Next
-            ElseIf buffType = EnemyBuffType.BuffTypeSetMaximum Then
+            ElseIf RandomizeSettings.buffType = RandomizeSettings.EnemyBuffType.BuffTypeSetMaximum Then
                 For Each characterClass As FEClass In classList
-                    characterClass.buffUpToAmount(buffAmount, rng)
+                    characterClass.buffUpToAmount(RandomizeSettings.buffAmount, rng)
                 Next
             End If
 
-            If buffBosses Then
+            If RandomizeSettings.buffBosses Then
                 If type = Utilities.GameType.GameTypeFE6 Then
                     Dim bossList As ArrayList = New ArrayList(FE6GameData.bossCharacterIDs)
                     For Each character As FECharacter In characterList
@@ -1703,8 +1683,10 @@ StartOver:
             Else
                 Dim character As FECharacter = characterList.Item(index)
                 ' One last validation before writing.
-                character.validate(classLookup.Item(character.classId), minimumCON, type)
+                character.validate(classLookup.Item(character.classId), RandomizeSettings.minimumCON, type)
                 character.writeStatsToCharacterStartingAtOffset(fileWriter, fileWriter.Position, characterEntrySize, type)
+
+                recordKeeper.finishRecordingPendingChangeInSectionWithKey("Characters", character, character.characterId.ToString)
             End If
         Next
 
@@ -1716,6 +1698,8 @@ StartOver:
             Else
                 Dim currentClass As FEClass = classList.Item(index)
                 currentClass.writeClassStartingAtOffset(fileWriter, fileWriter.Position, classEntrySize, type)
+
+                recordKeeper.finishRecordingPendingChangeInSectionWithKey("Classes", currentClass, currentClass.classId.ToString)
             End If
         Next
 
@@ -1801,6 +1785,10 @@ StartOver:
 
         fileWriter.Close()
 
+        If RandomizeSettings.shouldSaveChangelog Then
+            recordKeeper.writeChangesToDiskAtPath(RandomizeSettings.changelogPath)
+        End If
+
         MsgBox("Randomized!", MsgBoxStyle.OkOnly, "Notice")
 
         reenableAllControls()
@@ -1857,6 +1845,9 @@ StartOver:
         ReverseRecruitmentOption.Enabled = False
         RandomRecruitmentOption.Enabled = False
 
+        SaveChangelogCheckbox.Enabled = False
+        ChangelogBrowseButton.Enabled = False
+
         RandomizeButton.Enabled = False
     End Sub
 
@@ -1912,15 +1903,18 @@ StartOver:
         ReverseRecruitmentOption.Enabled = True
         RandomRecruitmentOption.Enabled = True
 
+        SaveChangelogCheckbox.Enabled = True
+        ChangelogBrowseButton.Enabled = SaveChangelogCheckbox.Checked
+
         RandomizeButton.Enabled = type <> Utilities.GameType.GameTypeUnknown
     End Sub
 
     Private Sub RandomizeGrowthsToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeGrowthsToggle.CheckedChanged
-        shouldRandomizeGrowths = RandomizeGrowthsToggle.Checked
+        RandomizeSettings.shouldRandomizeGrowths = RandomizeGrowthsToggle.Checked
 
-        GrowthVarianceControl.Enabled = shouldRandomizeGrowths
-        MinimumGrowthToggle.Enabled = shouldRandomizeGrowths
-        WeightedHPGrowthsToggle.Enabled = shouldRandomizeGrowths
+        GrowthVarianceControl.Enabled = RandomizeSettings.shouldRandomizeGrowths
+        MinimumGrowthToggle.Enabled = RandomizeSettings.shouldRandomizeGrowths
+        WeightedHPGrowthsToggle.Enabled = RandomizeSettings.shouldRandomizeGrowths
     End Sub
 
     Private Sub GrowthVarianceControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles GrowthVarianceControl.ValueChanged
@@ -1929,94 +1923,94 @@ StartOver:
             currentValue = currentValue + (5 - (currentValue Mod 5))
         End If
         GrowthVarianceControl.Value = currentValue
-        growthsVariance = currentValue
+        RandomizeSettings.growthsVariance = currentValue
     End Sub
 
     Private Sub MinimumGrowthToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MinimumGrowthToggle.CheckedChanged
-        shouldForceMinimumGrowth = MinimumGrowthToggle.Checked
+        RandomizeSettings.shouldForceMinimumGrowth = MinimumGrowthToggle.Checked
     End Sub
 
     Private Sub WeightedHPGrowthsToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles WeightedHPGrowthsToggle.CheckedChanged
-        shouldWeightHPGrowths = WeightedHPGrowthsToggle.Checked
+        RandomizeSettings.shouldWeightHPGrowths = WeightedHPGrowthsToggle.Checked
     End Sub
 
     Private Sub RandomizeBasesToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeBasesToggle.CheckedChanged
-        shouldRandomizeBases = RandomizeBasesToggle.Checked
+        RandomizeSettings.shouldRandomizeBases = RandomizeBasesToggle.Checked
 
-        BaseVarianceControl.Enabled = shouldRandomizeBases
+        BaseVarianceControl.Enabled = RandomizeSettings.shouldRandomizeBases
     End Sub
 
     Private Sub BaseVarianceControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BaseVarianceControl.ValueChanged
-        baseVariance = BaseVarianceControl.Value
+        RandomizeSettings.baseVariance = BaseVarianceControl.Value
     End Sub
 
     Private Sub RandomizeCONToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeCONToggle.CheckedChanged
-        shouldRandomizeCON = RandomizeCONToggle.Checked
-        MinimumCONControl.Enabled = shouldRandomizeCON
-        CONVarianceControl.Enabled = shouldRandomizeCON
+        RandomizeSettings.shouldRandomizeCON = RandomizeCONToggle.Checked
+        MinimumCONControl.Enabled = RandomizeSettings.shouldRandomizeCON
+        CONVarianceControl.Enabled = RandomizeSettings.shouldRandomizeCON
     End Sub
 
     Private Sub CONVarianceControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CONVarianceControl.ValueChanged
-        CONVariance = CONVarianceControl.Value
+        RandomizeSettings.CONVariance = CONVarianceControl.Value
     End Sub
 
     Private Sub MinimumCONControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MinimumCONControl.ValueChanged
-        minimumCON = MinimumCONControl.Value
+        RandomizeSettings.minimumCON = MinimumCONControl.Value
     End Sub
 
     Private Sub RandomizeMOVToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeMOVToggle.CheckedChanged
-        shouldRandomizeMOV = RandomizeMOVToggle.Checked
-        MinimumMOVControl.Enabled = shouldRandomizeMOV
-        MaximumMOVControl.Enabled = shouldRandomizeMOV
+        RandomizeSettings.shouldRandomizeMOV = RandomizeMOVToggle.Checked
+        MinimumMOVControl.Enabled = RandomizeSettings.shouldRandomizeMOV
+        MaximumMOVControl.Enabled = RandomizeSettings.shouldRandomizeMOV
     End Sub
 
     Private Sub MinimumMOVControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MinimumMOVControl.ValueChanged
         Dim targetMOV = MinimumMOVControl.Value
-        If targetMOV > maximumMOV Then
-            targetMOV = maximumMOV
+        If targetMOV > RandomizeSettings.maximumMOV Then
+            targetMOV = RandomizeSettings.maximumMOV
         End If
-        minimumMOV = targetMOV
+        RandomizeSettings.minimumMOV = targetMOV
         MinimumMOVControl.Value = targetMOV
         MaximumMOVControl.Minimum = targetMOV
     End Sub
 
     Private Sub MaximumMOVControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MaximumMOVControl.ValueChanged
         Dim targetMOV = MaximumMOVControl.Value
-        If targetMOV < minimumMOV Then
-            targetMOV = minimumMOV
+        If targetMOV < RandomizeSettings.minimumMOV Then
+            targetMOV = RandomizeSettings.minimumMOV
         End If
-        maximumMOV = targetMOV
+        RandomizeSettings.maximumMOV = targetMOV
         MaximumMOVControl.Value = targetMOV
         MinimumMOVControl.Maximum = targetMOV
     End Sub
 
     Private Sub RandomizeAffinityToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeAffinityToggle.CheckedChanged
-        shouldRandomizeAffinity = RandomizeAffinityToggle.Checked
+        RandomizeSettings.shouldRandomizeAffinity = RandomizeAffinityToggle.Checked
     End Sub
 
     Private Sub RandomizeItemsToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeItemsToggle.CheckedChanged
-        shouldRandomizeItems = RandomizeItemsToggle.Checked
+        RandomizeSettings.shouldRandomizeItems = RandomizeItemsToggle.Checked
 
-        MightVarianceControl.Enabled = shouldRandomizeItems
-        MinimumMightControl.Enabled = shouldRandomizeItems
-        HitVarianceControl.Enabled = shouldRandomizeItems
-        MinimumHitControl.Enabled = shouldRandomizeItems
-        CriticalVarianceControl.Enabled = shouldRandomizeItems
-        MinimumCriticalControl.Enabled = shouldRandomizeItems
-        WeightVarianceControl.Enabled = shouldRandomizeItems
-        MinimumWeightControl.Enabled = shouldRandomizeItems
-        MaximumWeightControl.Enabled = shouldRandomizeItems
-        MinimumDurabilityControl.Enabled = shouldRandomizeItems
-        DurabilityVarianceControl.Enabled = shouldRandomizeItems
-        AllowRandomTraitsToggle.Enabled = shouldRandomizeItems
+        MightVarianceControl.Enabled = RandomizeSettings.shouldRandomizeItems
+        MinimumMightControl.Enabled = RandomizeSettings.shouldRandomizeItems
+        HitVarianceControl.Enabled = RandomizeSettings.shouldRandomizeItems
+        MinimumHitControl.Enabled = RandomizeSettings.shouldRandomizeItems
+        CriticalVarianceControl.Enabled = RandomizeSettings.shouldRandomizeItems
+        MinimumCriticalControl.Enabled = RandomizeSettings.shouldRandomizeItems
+        WeightVarianceControl.Enabled = RandomizeSettings.shouldRandomizeItems
+        MinimumWeightControl.Enabled = RandomizeSettings.shouldRandomizeItems
+        MaximumWeightControl.Enabled = RandomizeSettings.shouldRandomizeItems
+        MinimumDurabilityControl.Enabled = RandomizeSettings.shouldRandomizeItems
+        DurabilityVarianceControl.Enabled = RandomizeSettings.shouldRandomizeItems
+        AllowRandomTraitsToggle.Enabled = RandomizeSettings.shouldRandomizeItems
     End Sub
 
     Private Sub MightVarianceControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MightVarianceControl.ValueChanged
-        mightVariance = MightVarianceControl.Value
+        RandomizeSettings.mightVariance = MightVarianceControl.Value
     End Sub
 
     Private Sub MinimumMightControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MinimumMightControl.ValueChanged
-        minimumMight = MinimumMightControl.Value
+        RandomizeSettings.minimumMight = MinimumMightControl.Value
     End Sub
 
     Private Sub HitVarianceControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HitVarianceControl.ValueChanged
@@ -2025,7 +2019,7 @@ StartOver:
             targetHit = targetHit + (5 - targetHit Mod 5)
         End If
         HitVarianceControl.Value = targetHit
-        hitVariance = targetHit
+        RandomizeSettings.hitVariance = targetHit
     End Sub
 
     Private Sub MinimumHitControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MinimumHitControl.ValueChanged
@@ -2033,7 +2027,7 @@ StartOver:
         If targetHit Mod 5 <> 0 Then
             targetHit = targetHit + (5 - targetHit Mod 5)
         End If
-        minimumHit = targetHit
+        RandomizeSettings.minimumHit = targetHit
         MinimumHitControl.Value = targetHit
     End Sub
 
@@ -2042,7 +2036,7 @@ StartOver:
         If targetCrit Mod 5 <> 0 Then
             targetCrit = targetCrit + (5 - targetCrit Mod 5)
         End If
-        criticalVariance = targetCrit
+        RandomizeSettings.criticalVariance = targetCrit
         CriticalVarianceControl.Value = targetCrit
     End Sub
 
@@ -2051,85 +2045,85 @@ StartOver:
         If targetCrit Mod 5 <> 0 Then
             targetCrit = targetCrit + (5 - targetCrit Mod 5)
         End If
-        minimumCritical = targetCrit
+        RandomizeSettings.minimumCritical = targetCrit
         MinimumCriticalControl.Value = targetCrit
     End Sub
 
     Private Sub WeightVarianceControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles WeightVarianceControl.ValueChanged
-        weightVariance = WeightVarianceControl.Value
+        RandomizeSettings.weightVariance = WeightVarianceControl.Value
     End Sub
 
     Private Sub MinimumWeightControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MinimumWeightControl.ValueChanged
         Dim targetWeight = MinimumWeightControl.Value
-        If targetWeight > maximumWeight Then
-            targetWeight = maximumWeight
+        If targetWeight > RandomizeSettings.maximumWeight Then
+            targetWeight = RandomizeSettings.maximumWeight
         End If
 
-        minimumWeight = targetWeight
+        RandomizeSettings.minimumWeight = targetWeight
         MinimumWeightControl.Value = targetWeight
         MaximumWeightControl.Minimum = targetWeight
     End Sub
 
     Private Sub MaximumWeightControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MaximumWeightControl.ValueChanged
         Dim targetWeight = MaximumWeightControl.Value
-        If targetWeight < minimumWeight Then
-            targetWeight = minimumWeight
+        If targetWeight < RandomizeSettings.minimumWeight Then
+            targetWeight = RandomizeSettings.minimumWeight
         End If
 
-        maximumWeight = targetWeight
+        RandomizeSettings.maximumWeight = targetWeight
         MaximumWeightControl.Value = targetWeight
         MinimumWeightControl.Maximum = targetWeight
     End Sub
 
     Private Sub DurabilityVarianceControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DurabilityVarianceControl.ValueChanged
-        durabilityVariance = DurabilityVarianceControl.Value
+        RandomizeSettings.durabilityVariance = DurabilityVarianceControl.Value
     End Sub
 
     Private Sub MinimumDurabilityControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MinimumDurabilityControl.ValueChanged
-        minimumDurability = MinimumDurabilityControl.Value
+        RandomizeSettings.minimumDurability = MinimumDurabilityControl.Value
     End Sub
 
     Private Sub AllowRandomTraitsToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AllowRandomTraitsToggle.CheckedChanged
-        randomTraits = AllowRandomTraitsToggle.Checked
+        RandomizeSettings.randomTraits = AllowRandomTraitsToggle.Checked
     End Sub
 
     Private Sub RandomizeClassesToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomizeClassesToggle.CheckedChanged
-        shouldRandomizeClasses = RandomizeClassesToggle.Checked
+        RandomizeSettings.shouldRandomizeClasses = RandomizeClassesToggle.Checked
 
-        IncludeLordsToggle.Enabled = shouldRandomizeClasses
-        IncludeThievesToggle.Enabled = shouldRandomizeClasses
-        IncludeBossesToggle.Enabled = shouldRandomizeClasses
-        AllowUniqueClassesToggle.Enabled = shouldRandomizeClasses
-        CrossgenderCheckbox.Enabled = shouldRandomizeClasses
+        IncludeLordsToggle.Enabled = RandomizeSettings.shouldRandomizeClasses
+        IncludeThievesToggle.Enabled = RandomizeSettings.shouldRandomizeClasses
+        IncludeBossesToggle.Enabled = RandomizeSettings.shouldRandomizeClasses
+        AllowUniqueClassesToggle.Enabled = RandomizeSettings.shouldRandomizeClasses
+        CrossgenderCheckbox.Enabled = RandomizeSettings.shouldRandomizeClasses
     End Sub
 
     Private Sub IncludeLordsToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IncludeLordsToggle.CheckedChanged
-        randomLords = IncludeLordsToggle.Checked
+        RandomizeSettings.randomLords = IncludeLordsToggle.Checked
     End Sub
 
     Private Sub IncludeThievesToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IncludeThievesToggle.CheckedChanged
-        randomThieves = IncludeThievesToggle.Checked
+        RandomizeSettings.randomThieves = IncludeThievesToggle.Checked
     End Sub
 
     Private Sub IncludeBossesToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IncludeBossesToggle.CheckedChanged
-        randomBosses = IncludeBossesToggle.Checked
+        RandomizeSettings.randomBosses = IncludeBossesToggle.Checked
     End Sub
 
     Private Sub AllowUniqueClassesToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AllowUniqueClassesToggle.CheckedChanged
-        uniqueClasses = AllowUniqueClassesToggle.Checked
+        RandomizeSettings.uniqueClasses = AllowUniqueClassesToggle.Checked
     End Sub
 
     Private Sub CrossgenderCheckbox_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CrossgenderCheckbox.CheckedChanged
-        crossgender = CrossgenderCheckbox.Checked
+        RandomizeSettings.crossgender = CrossgenderCheckbox.Checked
     End Sub
 
     Private Sub IncreaseEnemyGrowthsToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles IncreaseEnemyGrowthsToggle.CheckedChanged
-        buffEnemies = IncreaseEnemyGrowthsToggle.Checked
+        RandomizeSettings.buffEnemies = IncreaseEnemyGrowthsToggle.Checked
 
-        EnemyBuffControl.Enabled = buffEnemies
-        SetMaximumEnemyBuffControl.Enabled = buffEnemies
-        SetConstantEnemyBuffControl.Enabled = buffEnemies
-        BuffBossesToggle.Enabled = buffEnemies
+        EnemyBuffControl.Enabled = RandomizeSettings.buffEnemies
+        SetMaximumEnemyBuffControl.Enabled = RandomizeSettings.buffEnemies
+        SetConstantEnemyBuffControl.Enabled = RandomizeSettings.buffEnemies
+        BuffBossesToggle.Enabled = RandomizeSettings.buffEnemies
     End Sub
 
     Private Sub EnemyBuffControl_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles EnemyBuffControl.ValueChanged
@@ -2137,31 +2131,31 @@ StartOver:
         If targetAmount Mod 5 <> 0 Then
             targetAmount = targetAmount + (5 - targetAmount Mod 5)
         End If
-        buffAmount = targetAmount
+        RandomizeSettings.buffAmount = targetAmount
         EnemyBuffControl.Value = targetAmount
     End Sub
 
     Private Sub SetMaximumEnemyBuffControl_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SetMaximumEnemyBuffControl.CheckedChanged
         If SetMaximumEnemyBuffControl.Checked Then
-            buffType = EnemyBuffType.BuffTypeSetMaximum
+            RandomizeSettings.buffType = RandomizeSettings.EnemyBuffType.BuffTypeSetMaximum
             SetConstantEnemyBuffControl.Checked = False
         End If
     End Sub
 
     Private Sub SetConstantEnemyBuffControl_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SetConstantEnemyBuffControl.CheckedChanged
         If SetConstantEnemyBuffControl.Checked Then
-            buffType = EnemyBuffType.BuffTypeSetConstant
+            RandomizeSettings.buffType = RandomizeSettings.EnemyBuffType.BuffTypeSetConstant
             SetMaximumEnemyBuffControl.Checked = False
         End If
     End Sub
 
     Private Sub BuffBossesToggle_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BuffBossesToggle.CheckedChanged
-        buffBosses = BuffBossesToggle.Checked
+        RandomizeSettings.buffBosses = BuffBossesToggle.Checked
     End Sub
 
     Private Sub NormalRecruitmentOption_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles NormalRecruitmentOption.CheckedChanged
         If NormalRecruitmentOption.Checked Then
-            recruitment = RecruitmentType.RecruitmentTypeNormal
+            RandomizeSettings.recruitment = RandomizeSettings.RecruitmentType.RecruitmentTypeNormal
             ReverseRecruitmentOption.Checked = False
             RandomRecruitmentOption.Checked = False
         End If
@@ -2169,7 +2163,7 @@ StartOver:
 
     Private Sub ReverseRecruitmentOption_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReverseRecruitmentOption.CheckedChanged
         If ReverseRecruitmentOption.Checked Then
-            recruitment = RecruitmentType.RecruitmentTypeReverse
+            RandomizeSettings.recruitment = RandomizeSettings.RecruitmentType.RecruitmentTypeReverse
             NormalRecruitmentOption.Checked = False
             RandomRecruitmentOption.Checked = False
         End If
@@ -2177,9 +2171,46 @@ StartOver:
 
     Private Sub RandomRecruitmentOption_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RandomRecruitmentOption.CheckedChanged
         If RandomRecruitmentOption.Checked Then
-            recruitment = RecruitmentType.RecruitmentTypeRandom
+            RandomizeSettings.recruitment = RandomizeSettings.RecruitmentType.RecruitmentTypeRandom
             NormalRecruitmentOption.Checked = False
             ReverseRecruitmentOption.Checked = False
+        End If
+    End Sub
+
+    Private Sub SaveChangelogCheckbox_CheckedChanged(sender As Object, e As EventArgs) Handles SaveChangelogCheckbox.CheckedChanged
+        RandomizeSettings.shouldSaveChangelog = SaveChangelogCheckbox.Checked
+
+        ChangelogBrowseButton.Enabled = RandomizeSettings.shouldSaveChangelog
+        If RandomizeSettings.shouldSaveChangelog Then
+            Dim result As DialogResult = FolderBrowserDialog1.ShowDialog()
+            processChangelogPathSelection(result)
+        Else
+            RandomizeSettings.changelogPath = ""
+            ChangelogPathField.Text = ""
+        End If
+
+    End Sub
+
+    Private Sub ChangelogBrowseButton_Click(sender As Object, e As EventArgs) Handles ChangelogBrowseButton.Click
+        Dim result As DialogResult = FolderBrowserDialog1.ShowDialog()
+        processChangelogPathSelection(result)
+    End Sub
+
+    Private Sub processChangelogPathSelection(ByVal result As DialogResult)
+        If result = DialogResult.OK Then
+            RandomizeSettings.changelogPath = FolderBrowserDialog1.SelectedPath() + "\Changelog.txt"
+            ChangelogPathField.Text = FolderBrowserDialog1.SelectedPath() + "\Changelog.txt"
+
+            Dim recordKeeper As RecordKeeper = New RecordKeeper()
+
+            recordKeeper.writeChangesToDiskAtPath(RandomizeSettings.changelogPath)
+
+        ElseIf result = DialogResult.Cancel
+            If IsNothing(RandomizeSettings.changelogPath) Or RandomizeSettings.changelogPath.Equals("") Then
+                SaveChangelogCheckbox.Checked = False
+            Else
+                ' Do nothing
+            End If
         End If
     End Sub
 
@@ -2190,15 +2221,15 @@ StartOver:
         applyTutorialKiller = False
 
         ' The default min CON is 1
-        minimumCON = 1
+        RandomizeSettings.minimumCON = 1
         ' The default min MOV is 1 and the default max MOV is 9
-        minimumMOV = 1
-        maximumMOV = 9
+        RandomizeSettings.minimumMOV = 1
+        RandomizeSettings.maximumMOV = 9
         ' The default weapon max weapon weight is 20 and the default min weapon weight is 1
-        minimumWeight = 1
-        maximumWeight = 20
+        RandomizeSettings.minimumWeight = 1
+        RandomizeSettings.maximumWeight = 20
         ' The default minimum durability is 1
-        minimumDurability = 1
+        RandomizeSettings.minimumDurability = 1
 
         GrowthsTooltip.SetToolTip(RandomizeGrowthsToggle, "Applies a random growth to all characters (playable and bosses). " + vbCrLf _
                     & "A character's original growths are added together and then" + vbCrLf _

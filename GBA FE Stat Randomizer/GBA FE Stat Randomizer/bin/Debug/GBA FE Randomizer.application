@@ -4,18 +4,17 @@
   <description asmv2:publisher="GBA FE Randomizer" asmv2:product="GBA FE Randomizer" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <deployment install="true" mapFileExtensions="true" />
   <compatibleFrameworks xmlns="urn:schemas-microsoft-com:clickonce.v2">
-    <framework targetVersion="4.0" profile="Client" supportedRuntime="4.0.30319" />
-    <framework targetVersion="4.0" profile="Full" supportedRuntime="4.0.30319" />
+    <framework targetVersion="4.6" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="GBA FE Randomizer.exe.manifest" size="4915">
+    <dependentAssembly dependencyType="install" codebase="GBA FE Randomizer.exe.manifest" size="4987">
       <assemblyIdentity name="GBA FE Randomizer.exe" version="1.0.1.0" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="x86" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
-        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>53jPC4/RH6e+w6sei5esk9lfgl8=</dsig:DigestValue>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>GBP9GM2JYK0SnfVfzmIE3Nz0G1zz+U7/tKxXXIH8qRs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
