@@ -86,7 +86,7 @@
         Next
 
         For Each address As UInteger In addresses
-            Dim resolvedString As String = HuffmanHelper.sanitizeByteArrayIntoTextString(HuffmanHelper.decodeTextAtAddressWithHuffmanTree(filePtr, address, huffmanTreeStart, huffmanTreeRoot), True)
+            Dim resolvedString As String = HuffmanHelper.sanitizeByteArrayIntoTextString(HuffmanHelper.decodeTextAtAddressWithHuffmanTree(filePtr, address, huffmanTreeStart, huffmanTreeRoot), True, gameType)
             strings.Add(address, resolvedString)
         Next
 

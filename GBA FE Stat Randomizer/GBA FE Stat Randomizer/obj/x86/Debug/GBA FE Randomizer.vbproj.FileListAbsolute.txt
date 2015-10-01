@@ -6,7 +6,6 @@ C:\Users\lushe_000\Documents\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Ran
 C:\Users\lushe_000\Documents\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\bin\Debug\GBA FE Randomizer.exe
 C:\Users\lushe_000\Documents\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\bin\Debug\GBA FE Randomizer.pdb
 C:\Users\lushe_000\Documents\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\bin\Debug\GBA FE Randomizer.xml
-C:\Users\lushe_000\Documents\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\WindowsApplication1.AdvancedClassOptionsView.resources
 C:\Users\lushe_000\Documents\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\WindowsApplication1.Form1.resources
 C:\Users\lushe_000\Documents\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\WindowsApplication1.Resources.resources
 C:\Users\lushe_000\Documents\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Debug\GBA FE Randomizer.vbproj.GenerateResource.Cache

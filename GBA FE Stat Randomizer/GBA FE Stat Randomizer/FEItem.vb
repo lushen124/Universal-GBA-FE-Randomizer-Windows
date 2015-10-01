@@ -1,4 +1,7 @@
-﻿Public Class FEItem
+﻿Imports WindowsApplication1
+
+Public Class FEItem
+    Implements RecordKeeper.RecordableItem
 
     Enum WeaponEffect As Byte
         WeaponEffectNone
@@ -97,10 +100,13 @@
     Property weaponID As Byte           'offset 6, 1 byte
 
     Property itemNameIndex As UShort    'offset 0, 2 bytes
+    Property itemDisplayName As String
 
-    Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gameType As Utilities.GameType)
+    Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gameType As Utilities.GameType, ByRef textManager As TextManager)
         filePtr.Seek(offset, IO.SeekOrigin.Begin)
         itemNameIndex = Utilities.ReadHalfWord(filePtr)
+
+        itemDisplayName = textManager.stringForTextAtIndex(itemNameIndex)
 
         filePtr.Seek(offset + 6, IO.SeekOrigin.Begin)
         weaponID = filePtr.ReadByte()
@@ -320,4 +326,37 @@
         End If
     End Sub
 
+    Public Function fieldTable() As Hashtable Implements RecordKeeper.RecordableItem.fieldTable
+        Dim table As Hashtable = New Hashtable
+
+        table.Add("Name", itemDisplayName)
+
+        table.Add("Durability", durability.ToString)
+        table.Add("Might", might.ToString)
+        table.Add("Hit", hit.ToString)
+        table.Add("Critical", critical.ToString)
+        table.Add("Weight", weight.ToString)
+
+        ' Figure out how to show added effects.
+
+        Return table
+    End Function
+
+    Public Function orderedKeys() As ArrayList Implements RecordKeeper.RecordableItem.orderedKeys
+        Dim keyList As ArrayList = New ArrayList
+
+        keyList.Add("Name")
+
+        keyList.Add("Durability")
+        keyList.Add("Might")
+        keyList.Add("Hit")
+        keyList.Add("Critical")
+        keyList.Add("Weight")
+
+        Return keyList
+    End Function
+
+    Public Function primaryKey() As String Implements RecordKeeper.RecordableItem.primaryKey
+        Return "Name"
+    End Function
 End Class

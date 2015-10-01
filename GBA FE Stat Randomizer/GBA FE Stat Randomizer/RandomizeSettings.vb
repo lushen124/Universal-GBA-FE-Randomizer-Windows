@@ -63,16 +63,40 @@ Public Class RandomizeSettings
     Private Class Settings
         Implements RecordKeeper.RecordableItem
 
-        Public Function stringDescription() As String Implements RecordKeeper.RecordableItem.stringDescription
-            Return "Randomize Growths? " + IIf(shouldRandomizeGrowths, "YES - Variance: " + growthsVariance.ToString + "% Minimum Growths? " + IIf(shouldForceMinimumGrowth, "YES", "NO") + " Weight HP Growths? " + IIf(shouldWeightHPGrowths, "YES", "NO"), "NO") + vbCrLf _
-                & "Randomize Bases? " + IIf(shouldRandomizeBases, "YES - Variance: " + baseVariance.ToString, "NO") + vbCrLf _
-                & "Randomize CON? " + IIf(shouldRandomizeCON, "YES - Minimum CON: " + minimumCON.ToString, "NO") + vbCrLf _
-                & "Randomize MOV? " + IIf(shouldRandomizeMOV, "YES - Minimum MOV: " + minimumMOV.ToString + " Maximum MOV: " + maximumMOV.ToString, "NO") + vbCrLf _
-                & "Randomize Affinity? " + IIf(shouldRandomizeAffinity, "YES", "NO") + vbCrLf _
-                & "Randomize Items? " + IIf(shouldRandomizeItems, "YES - " + IIf(mightVariance > 0, "(Might Variance: " + mightVariance.ToString + " Minimum Might: " + minimumMight.ToString + ")", "") + IIf(hitVariance > 0, "(Hit Variance: " + hitVariance.ToString + " Minimum Hit: " + minimumHit.ToString + ")", "") + IIf(criticalVariance > 0, "(Critical Variance: " + criticalVariance.ToString + " Minimum Critical: " + minimumCritical.ToString + ")", "") + IIf(weightVariance > 0, "(Weight Variance: " + weightVariance.ToString + " Minimum Weight: " + minimumWeight.ToString + " Maximum Weight: " + maximumWeight.ToString + ")", "") + IIf(randomTraits, "(Assign Random Traits)", ""), "NO") + vbCrLf _
-                & "Randomize Classes? " + IIf(shouldRandomizeClasses, "YES - Amount " + IIf(randomLords, "(Randomize Lords)", "") + IIf(randomThieves, "(Randomize Thieves)", "") + IIf(randomBosses, "(Randomize Bosses)", "") + IIf(uniqueClasses, "(Unique Classes)", "") + IIf(crossgender, "(Cross Gender)", ""), "NO") + vbCrLf _
-                & "Recruitment? " + IIf(recruitment = RecruitmentType.RecruitmentTypeNormal, "Normal", IIf(recruitment = RecruitmentType.RecruitmentTypeReverse, "Reverse", "Random")) + vbCrLf _
-                & "Buff Enemies? " + IIf(buffEnemies, "YES - " + IIf(buffType = EnemyBuffType.BuffTypeSetConstant, "= ", "< ") + buffAmount.ToString + " " + IIf(buffBosses, "(Buff Bosses)", ""), "NO") + vbCrLf
+        Public Function fieldTable() As Hashtable Implements RecordKeeper.RecordableItem.fieldTable
+            Dim table As Hashtable = New Hashtable()
+
+            table.Add("Randomize Growths", IIf(shouldRandomizeGrowths, "YES - Variance: " + growthsVariance.ToString + "% Minimum Growths? " + IIf(shouldForceMinimumGrowth, "YES", "NO") + " Weight HP Growths? " + IIf(shouldWeightHPGrowths, "YES", "NO"), "NO"))
+            table.Add("Randomize Bases", IIf(shouldRandomizeBases, "YES - Variance: " + baseVariance.ToString, "NO"))
+            table.Add("Randomize CON", IIf(shouldRandomizeCON, "YES - Minimum CON: " + minimumCON.ToString, "NO"))
+            table.Add("Randomize MOV", IIf(shouldRandomizeMOV, "YES - Minimum MOV: " + minimumMOV.ToString + " Maximum MOV: " + maximumMOV.ToString, "NO"))
+            table.Add("Randomize Affinity", IIf(shouldRandomizeAffinity, "YES", "NO"))
+            table.Add("Randomize Items", IIf(shouldRandomizeItems, "YES - " + IIf(mightVariance > 0, "(Might Variance: " + mightVariance.ToString + " Minimum Might: " + minimumMight.ToString + ")", "") + IIf(hitVariance > 0, "(Hit Variance: " + hitVariance.ToString + " Minimum Hit: " + minimumHit.ToString + ")", "") + IIf(criticalVariance > 0, "(Critical Variance: " + criticalVariance.ToString + " Minimum Critical: " + minimumCritical.ToString + ")", "") + IIf(weightVariance > 0, "(Weight Variance: " + weightVariance.ToString + " Minimum Weight: " + minimumWeight.ToString + " Maximum Weight: " + maximumWeight.ToString + ")", "") + IIf(randomTraits, "(Assign Random Traits)", ""), "NO"))
+            table.Add("Randomize Classes", IIf(shouldRandomizeClasses, "YES - " + IIf(randomLords, "(Randomize Lords)", "") + IIf(randomThieves, "(Randomize Thieves)", "") + IIf(randomBosses, "(Randomize Bosses)", "") + IIf(uniqueClasses, "(Unique Classes)", "") + IIf(crossgender, "(Cross Gender)", ""), "NO"))
+            table.Add("Recruitment", IIf(recruitment = RecruitmentType.RecruitmentTypeNormal, "Normal", IIf(recruitment = RecruitmentType.RecruitmentTypeReverse, "Reverse", "Random")))
+            table.Add("Buff Enemies", IIf(buffEnemies, "YES - Amount " + IIf(buffType = EnemyBuffType.BuffTypeSetConstant, "= ", "< ") + buffAmount.ToString + " " + IIf(buffBosses, "(Buff Bosses)", ""), "NO"))
+
+            Return table
+        End Function
+
+        Public Function orderedKeys() As ArrayList Implements RecordKeeper.RecordableItem.orderedKeys
+            Dim keyList As ArrayList = New ArrayList
+
+            keyList.Add("Randomize Growths")
+            keyList.Add("Randomize Bases")
+            keyList.Add("Randomize CON")
+            keyList.Add("Randomize MOV")
+            keyList.Add("Randomize Affinity")
+            keyList.Add("Randomize Items")
+            keyList.Add("Randomize Classes")
+            keyList.Add("Recruitment")
+            keyList.Add("Buff Enemies")
+
+            Return keyList
+        End Function
+
+        Public Function primaryKey() As String Implements RecordKeeper.RecordableItem.primaryKey
+            Return Nothing
         End Function
     End Class
 

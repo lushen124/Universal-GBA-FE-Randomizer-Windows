@@ -475,8 +475,58 @@ Public Class FEClass
 
     End Sub
 
-    Public Function stringDescription() As String Implements RecordKeeper.RecordableItem.stringDescription
-        Return "[ (0x" + Hex(classId) + ") " + classDisplayName + IIf((ability2 And ClassAbility2.Female) <> 0, "(F)", "") + "] Promotes to: 0x" + Hex(promotedClassId) + " Movement: " + baseMov.ToString + vbCrLf + " Growths: HP: " + hpGrowth.ToString + "% STR/MAG: " + strGrowth.ToString + "% SKL: " + sklGrowth.ToString + "% SPD: " + spdGrowth.ToString + "% LCK: " + lckGrowth.ToString + "% DEF: " + defGrowth.ToString + "% RES: " + resGrowth.ToString + "%"
+    Public Function fieldTable() As Hashtable Implements RecordKeeper.RecordableItem.fieldTable
+        Dim table As Hashtable = New Hashtable
+
+        table.Add("Name", classDisplayName)
+
+        table.Add("Base HP", baseHP.ToString)
+        table.Add("Base STR/MAG", baseStr.ToString)
+        table.Add("Base SKL", baseSkl.ToString)
+        table.Add("Base SPD", baseSpd.ToString)
+        table.Add("Base DEF", baseDef.ToString)
+        table.Add("Base RES", baseRes.ToString)
+        table.Add("Base CON", baseCon.ToString)
+        table.Add("Base MOV", baseMov.ToString)
+
+        table.Add("HP Growth", hpGrowth.ToString + "%")
+        table.Add("STR/MAG Growth", strGrowth.ToString + "%")
+        table.Add("SKL Growth", sklGrowth.ToString + "%")
+        table.Add("SPD Growth", spdGrowth.ToString + "%")
+        table.Add("LCK Growth", lckGrowth.ToString + "%")
+        table.Add("DEF Growth", defGrowth.ToString + "%")
+        table.Add("RES Growth", resGrowth.ToString + "%")
+
+        Return table
+    End Function
+
+    Public Function orderedKeys() As ArrayList Implements RecordKeeper.RecordableItem.orderedKeys
+        Dim keyList As ArrayList = New ArrayList
+
+        keyList.Add("Name")
+
+        keyList.Add("Base HP")
+        keyList.Add("Base STR/MAG")
+        keyList.Add("Base SKL")
+        keyList.Add("Base SPD")
+        keyList.Add("Base DEF")
+        keyList.Add("Base RES")
+        keyList.Add("Base CON")
+        keyList.Add("Base MOV")
+
+        keyList.Add("HP Growth")
+        keyList.Add("STR/MAG Growth")
+        keyList.Add("SKL Growth")
+        keyList.Add("SPD Growth")
+        keyList.Add("LCK Growth")
+        keyList.Add("DEF Growth")
+        keyList.Add("RES Growth")
+
+        Return keyList
+    End Function
+
+    Public Function primaryKey() As String Implements RecordKeeper.RecordableItem.primaryKey
+        Return "Name"
     End Function
 End Class
 

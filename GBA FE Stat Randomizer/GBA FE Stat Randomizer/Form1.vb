@@ -37,10 +37,6 @@
             GameDetectionLabel.Text = "Game Detected: Fire Emblem 6"
             RandomizeButton.Enabled = True
             GameSpecificCheckbox.Hide()
-
-            Dim test As New AdvancedClassOptionsView(Utilities.GameType.GameTypeFE6)
-            test.ShowDialog()
-
             applyTutorialKiller = False
         ElseIf type = Utilities.GameType.GameTypeFE7 Then
             GameDetectionLabel.Text = "Game Detected: Fire Emblem 7"
@@ -143,10 +139,6 @@
         Dim specialMovementManager As SpecialMovementManager = Nothing
 
         Dim textManager As TextManager = Nothing
-
-        Dim characterNameLookup As Hashtable = New Hashtable()
-        Dim itemNameLookup As Hashtable = New Hashtable()
-        Dim classNameLookup As Hashtable = New Hashtable()
 
         Dim fileReader = IO.File.OpenRead(OpenFileDialog1.FileName)
 
@@ -365,7 +357,6 @@
             currentClass.initializeWithBytesFromOffset(fileReader, fileReader.Position, classEntrySize, type, textManager)
 
             classList.Add(currentClass)
-            classNameLookup.Add(currentClass.classId, currentClass.classDisplayName)
 
             Utilities.setObjectForKey(classLookup, currentClass, currentClass.classId)
 
@@ -380,7 +371,6 @@
             currentCharacter.initializeWithBytesFromOffset(fileReader, fileReader.Position, characterEntrySize, type, textManager, classLookup)
 
             characterList.Add(currentCharacter)
-            characterNameLookup.Add(currentCharacter.characterId, currentCharacter.displayName)
 
             Utilities.setObjectForKey(characterLookup, currentCharacter, currentCharacter.characterId)
 
@@ -392,15 +382,15 @@
         For index As Integer = 1 To numberOfItems
             Dim currentItem As FEItem = New FEItem
 
-            currentItem.initializeWithBytesFromOffset(fileReader, fileReader.Position, itemEntrySize, type)
+            currentItem.initializeWithBytesFromOffset(fileReader, fileReader.Position, itemEntrySize, type, textManager)
 
             itemList.Add(currentItem)
 
-            Dim itemName As String = textManager.stringForTextAtIndex(currentItem.itemNameIndex)
-            'DebugLogger.logMessage("Processing Item: " + itemName)
-            itemNameLookup.Add(currentItem.weaponID, itemName)
-
             Utilities.setObjectForKey(itemLookup, currentItem, currentItem.weaponID)
+
+            If currentItem.isWeapon Then
+                recordKeeper.recordPendingChangeInSectionWithExisting("Items", currentItem, currentItem.weaponID.ToString)
+            End If
         Next
 
         fileReader.Close()
@@ -1711,6 +1701,10 @@ StartOver:
             Else
                 Dim currentItem As FEItem = itemList.Item(index)
                 currentItem.writeItemToOffset(fileWriter, fileWriter.Position, itemEntrySize, type)
+
+                If currentItem.isWeapon Then
+                    recordKeeper.finishRecordingPendingChangeInSectionWithKey("Items", currentItem, currentItem.weaponID.ToString)
+                End If
             End If
         Next
 
@@ -2198,15 +2192,17 @@ StartOver:
 
     Private Sub processChangelogPathSelection(ByVal result As DialogResult)
         If result = DialogResult.OK Then
-            RandomizeSettings.changelogPath = FolderBrowserDialog1.SelectedPath() + "\Changelog.txt"
-            ChangelogPathField.Text = FolderBrowserDialog1.SelectedPath() + "\Changelog.txt"
+            RandomizeSettings.changelogPath = FolderBrowserDialog1.SelectedPath() + "\Changelog.html"
+            ChangelogPathField.Text = FolderBrowserDialog1.SelectedPath() + "\Changelog.html"
 
             Dim recordKeeper As RecordKeeper = New RecordKeeper()
 
             recordKeeper.writeChangesToDiskAtPath(RandomizeSettings.changelogPath)
 
         ElseIf result = DialogResult.Cancel
-            If IsNothing(RandomizeSettings.changelogPath) Or RandomizeSettings.changelogPath.Equals("") Then
+            If IsNothing(RandomizeSettings.changelogPath) Then
+                SaveChangelogCheckbox.Checked = False
+            ElseIf RandomizeSettings.changelogPath.Equals("") Then
                 SaveChangelogCheckbox.Checked = False
             Else
                 ' Do nothing

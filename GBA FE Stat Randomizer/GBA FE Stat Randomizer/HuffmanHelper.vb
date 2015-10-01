@@ -76,7 +76,7 @@
 
     End Function
 
-    Public Shared Function sanitizeByteArrayIntoTextString(ByRef byteArray As Byte(), ByVal squelchCodes As Boolean) As String
+    Public Shared Function sanitizeByteArrayIntoTextString(ByRef byteArray As Byte(), ByVal squelchCodes As Boolean, ByVal gameType As Utilities.GameType) As String
         Dim result As String = ""
 
         For i As Integer = 0 To byteArray.Length
@@ -125,14 +125,108 @@
                 End If
 
                 i += 1
-                Else
+            ElseIf (currentByte = &H82) And gameType = Utilities.GameType.GameTypeFE6 Then
+                ' For whatever reason, FE6 has an additional level of encoding on top of it.
+                ' All characters start with [0x82] before a code that dictates which character it is.
+                ' The second code's range starts from 0x9F to 0xF1. Additionally,
+                ' symbols are also decoded differently, starting with an [0x83] byte followed by
+                ' what seems to be a unicode character. 
+                ' TODO: Implement the symbols later.
+                If i + 1 < byteArray.Length Then
+                    Dim characterCode As Byte = byteArray(i + 1)
+                    i += 1
+                    If characterCode = &H9F Then result = result + "2"
+                    If characterCode = &HA0 Then result = result + "A"
+                    If characterCode = &HA1 Then result = result + "3"
+                    If characterCode = &HA2 Then result = result + "B"
+                    If characterCode = &HA3 Then result = result + "4"
+                    If characterCode = &HA4 Then result = result + "C"
+                    If characterCode = &HA5 Then result = result + "5"
+                    If characterCode = &HA6 Then result = result + "D"
+                    If characterCode = &HA7 Then result = result + "6"
+                    If characterCode = &HA8 Then result = result + "E"
+                    If characterCode = &HA9 Then result = result + "F"
+                    If characterCode = &HAA Then result = result + "u"
+                    If characterCode = &HAB Then result = result + "G"
+                    If characterCode = &HAC Then result = result + "v"
+                    If characterCode = &HAD Then result = result + "H"
+                    If characterCode = &HAE Then result = result + "w"
+                    If characterCode = &HAF Then result = result + "I"
+                    If characterCode = &HB0 Then result = result + "x"
+                    If characterCode = &HB1 Then result = result + "J"
+                    If characterCode = &HB2 Then result = result + "y"
+                    If characterCode = &HB3 Then result = result + "K"
+                    If characterCode = &HB4 Then result = result + "z"
+                    If characterCode = &HB5 Then result = result + "L"
+                    ' No 0xB6?
+                    If characterCode = &HB7 Then result = result + "M"
+                    If characterCode = &HB8 Then result = result + " "
+                    If characterCode = &HB9 Then result = result + "N"
+                    If characterCode = &HBA Then result = result + "!"
+                    If characterCode = &HBB Then result = result + "O"
+                    If characterCode = &HBC Then result = result + """"
+                    If characterCode = &HBD Then result = result + "P"
+                    If characterCode = &HBE Then result = result + "#"
+                    If characterCode = &HBF Then result = result + "Q"
+                    If characterCode = &HC0 Then result = result + "$"
+                    If characterCode = &HC1 Then result = result + "7"
+                    If characterCode = &HC2 Then result = result + "R"
+                    If characterCode = &HC3 Then result = result + "%"
+                    If characterCode = &HC4 Then result = result + "S"
+                    If characterCode = &HC5 Then result = result + "&"
+                    If characterCode = &HC6 Then result = result + "T"
+                    If characterCode = &HC7 Then result = result + "'"
+                    If characterCode = &HC8 Then result = result + "U"
+                    If characterCode = &HC9 Then result = result + "V"
+                    If characterCode = &HCA Then result = result + "W"
+                    If characterCode = &HCB Then result = result + "X"
+                    If characterCode = &HCC Then result = result + "Y"
+                    If characterCode = &HCD Then result = result + "Z"
+                    If characterCode = &HCE Then result = result + "("
+                    If characterCode = &HCF Then result = result + "-"
+                    If characterCode = &HD0 Then result = result + "a"
+                    If characterCode = &HD1 Then result = result + ")"
+                    If characterCode = &HD2 Then result = result + "."
+                    If characterCode = &HD3 Then result = result + "b"
+                    If characterCode = &HD4 Then result = result + "*"
+                    If characterCode = &HD5 Then result = result + "/"
+                    If characterCode = &HD6 Then result = result + "c"
+                    If characterCode = &HD7 Then result = result + "+"
+                    If characterCode = &HD8 Then result = result + "0"
+                    If characterCode = &HD9 Then result = result + "d"
+                    If characterCode = &HDA Then result = result + ","
+                    If characterCode = &HDB Then result = result + "1"
+                    If characterCode = &HDC Then result = result + "e"
+                    If characterCode = &HDD Then result = result + "f"
+                    If characterCode = &HDE Then result = result + "g"
+                    If characterCode = &HDF Then result = result + "h"
+                    If characterCode = &HE0 Then result = result + "i"
+                    If characterCode = &HE1 Then result = result + "8"
+                    If characterCode = &HE2 Then result = result + "j"
+                    If characterCode = &HE3 Then result = result + "9"
+                    If characterCode = &HE4 Then result = result + "k"
+                    If characterCode = &HE5 Then result = result + ":"
+                    If characterCode = &HE6 Then result = result + "l"
+                    If characterCode = &HE7 Then result = result + "m"
+                    If characterCode = &HE8 Then result = result + "n"
+                    If characterCode = &HE9 Then result = result + "o"
+                    If characterCode = &HEA Then result = result + "p"
+                    If characterCode = &HEB Then result = result + "q"
+                    ' No 0xEC?
+                    If characterCode = &HED Then result = result + "r"
+                    ' No 0xEE?
+                    ' No 0xEF?
+                    If characterCode = &HF0 Then result = result + "s"
+                    If characterCode = &HF1 Then result = result + "t"
+                End If
+            Else
                 If currentByte < &H20 Then
                     If Not squelchCodes Then
                         result = result + "[0x" + Hex(currentByte) + "]"
                     End If
 
                 Else
-                        result = result + Chr(currentByte)
+                    result = result + Chr(currentByte)
                 End If
             End If
         Next

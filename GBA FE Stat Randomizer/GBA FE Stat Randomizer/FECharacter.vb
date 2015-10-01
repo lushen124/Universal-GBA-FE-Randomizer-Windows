@@ -174,7 +174,11 @@ Public Class FECharacter
         characterId = filePtr.ReadByte()
         classId = filePtr.ReadByte()
         Dim charClass As FEClass = classLookup.Item(classId)
-        classDisplayName = charClass.classDisplayName
+        If Not IsNothing(charClass) Then
+            classDisplayName = charClass.classDisplayName
+        Else
+            classDisplayName = "???"
+        End If
 
         portraitIndex = filePtr.ReadByte()
 
@@ -1035,9 +1039,59 @@ Public Class FECharacter
         End If
     End Function
 
-    Public Function stringDescription() As String Implements RecordKeeper.RecordableItem.stringDescription
-        Return "[ (0x" + Hex(characterId) + ") " + displayName + "] Class: " + classDisplayName + " Level: " + level.ToString + vbCrLf _
-            & " Bases: HP: " + baseHP.ToString + " STR/MAG: " + baseStr.ToString + " SKL: " + baseSkl.ToString + " SPD: " + baseSpd.ToString + " LCK: " + baseLck.ToString + " DEF: " + baseDef.ToString + " RES: " + baseRes.ToString + " CON: " + baseCon.ToString + vbCrLf _
-            & " Growths: HP: " + hpGrowth.ToString + "% STR/MAG: " + strGrowth.ToString + "% SKL: " + sklGrowth.ToString + "% SPD: " + spdGrowth.ToString + "% LCK: " + lckGrowth.ToString + "% DEF: " + defGrowth.ToString + "% RES: " + resGrowth.ToString + "%"
+    Public Function fieldTable() As Hashtable Implements RecordKeeper.RecordableItem.fieldTable
+        Dim table As Hashtable = New Hashtable()
+
+        table.Add("Name", displayName)
+        table.Add("Class", classDisplayName)
+
+        table.Add("Base HP", baseHP.ToString)
+        table.Add("Base STR/MAG", baseStr.ToString)
+        table.Add("Base SKL", baseSkl.ToString)
+        table.Add("Base SPD", baseSpd.ToString)
+        table.Add("Base LCK", baseLck.ToString)
+        table.Add("Base DEF", baseDef.ToString)
+        table.Add("Base RES", baseRes.ToString)
+        table.Add("Base CON", baseCon.ToString)
+
+        table.Add("HP Growth", hpGrowth.ToString + "%")
+        table.Add("STR/MAG Growth", strGrowth.ToString + "%")
+        table.Add("SKL Growth", sklGrowth.ToString + "%")
+        table.Add("SPD Growth", spdGrowth.ToString + "%")
+        table.Add("LCK Growth", lckGrowth.ToString + "%")
+        table.Add("DEF Growth", defGrowth.ToString + "%")
+        table.Add("RES Growth", resGrowth.ToString + "%")
+
+        Return table
+    End Function
+
+    Public Function orderedKeys() As ArrayList Implements RecordKeeper.RecordableItem.orderedKeys
+        Dim keyList As ArrayList = New ArrayList
+
+        keyList.Add("Name")
+        keyList.Add("Class")
+
+        keyList.Add("Base HP")
+        keyList.Add("Base STR/MAG")
+        keyList.Add("Base SKL")
+        keyList.Add("Base SPD")
+        keyList.Add("Base LCK")
+        keyList.Add("Base DEF")
+        keyList.Add("Base RES")
+        keyList.Add("Base CON")
+
+        keyList.Add("HP Growth")
+        keyList.Add("STR/MAG Growth")
+        keyList.Add("SKL Growth")
+        keyList.Add("SPD Growth")
+        keyList.Add("LCK Growth")
+        keyList.Add("DEF Growth")
+        keyList.Add("RES Growth")
+
+        Return keyList
+    End Function
+
+    Public Function primaryKey() As String Implements RecordKeeper.RecordableItem.primaryKey
+        Return "Name"
     End Function
 End Class
