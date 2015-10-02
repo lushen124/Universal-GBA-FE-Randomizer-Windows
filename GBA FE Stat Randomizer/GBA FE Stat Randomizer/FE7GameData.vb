@@ -517,6 +517,21 @@
         Return EffectivenessPointers.EffectivenessPointerNone
     End Function
 
+    Public Shared Function stringForEffectivenessPointer(ByVal pointer As UInteger)
+        If pointer = EffectivenessPointers.EffectivenessPointerKnights Then Return "Effective Against Knights"
+        If pointer = EffectivenessPointers.EffectivenessPointerDragons Then Return "Effective Against Dragons"
+        If pointer = EffectivenessPointers.EffectivenessPointerFliers Then Return "Effective Against Fliers"
+        If pointer = EffectivenessPointers.EffectivenessPointerCavalry Then Return "Effective Against Cavalry"
+
+        If pointer = EffectivenessPointers.EffectivenessPointerDragons2 Then Return "Effective Against Dragons"
+        If pointer = EffectivenessPointers.EffectivenessPointerKnightsAndCavalry Then Return "Effective Against Knights And Cavalry"
+        If pointer = EffectivenessPointers.EffectivenessPointerMyrmidon Then Return "Effective Against Swordfighters"
+
+        If pointer = 0 Then Return "None"
+
+        Return "Custom (Unknown) Effectiveness"
+    End Function
+
     Public Shared Function randomStatBonus(ByRef rng As Random)
         ' Probably not dragonstone... or uberspear
         Dim result = rng.Next(2, 9)
@@ -529,6 +544,20 @@
         If result = 8 Then Return StatBonusPointers.StatBonusPointerForblaze
 
         Return StatBonusPointers.StatBonusPointerNone
+    End Function
+
+    Public Shared Function stringForStatBonusPointer(ByVal pointer As UInteger)
+        If pointer = StatBonusPointers.StatBonusPointerArmads Then Return "+5 DEF"
+        If pointer = StatBonusPointers.StatBonusPointerAureola Then Return "+5 RES"
+        If pointer = StatBonusPointers.StatBonusPointerDragonStone Then Return "+10 STR, +10 SKL, +20 DEF, +10 RES"
+        If pointer = StatBonusPointers.StatBonusPointerDurandal Then Return "+5 STR"
+        If pointer = StatBonusPointers.StatBonusPointerForblaze Then Return "+5 LCK"
+        If pointer = StatBonusPointers.StatBonusPointerSolKatti Then Return "+5 RES"
+        If pointer = StatBonusPointers.StatBonusPointerUberSpear Then Return "+17 HP, +5 STR, +4 SKL, +9 SPD, +4 DEF, +14 RES"
+
+        If pointer = 0 Then Return "None"
+
+        Return "Custom (Unknown) Stat Bonus"
     End Function
 
     Public Shared Function unpromotedClassList(ByVal female As Boolean) As ArrayList

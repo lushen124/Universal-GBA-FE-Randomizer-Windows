@@ -165,7 +165,7 @@
                     For j As Integer = 0 To item.keyList.Count - 1
                         Dim currentKey As String = item.keyList.Item(j)
                         'outputLines.Add(currentKey + ": " + item.oldTable.Item(currentKey))
-                        outputLines.Add("<tr><td>" + currentKey + "</td><td>" + item.oldTable.Item(currentKey) + "</td></tr>")
+                        outputLines.Add("<tr><td>" + currentKey + "</td><td>" + item.oldTable.Item(currentKey).ToString.Replace(vbCrLf, "<br>") + "</td></tr>")
                     Next
                     outputLines.Add("</table><br><br>")
                 Else
@@ -173,7 +173,7 @@
                     For j As Integer = 0 To item.keyList.Count - 1
                         Dim currentKey As String = item.keyList.Item(j)
                         'outputLines.Add(currentKey + ":" + vbTab + vbTab + item.oldTable.Item(currentKey) + vbTab + " -> " + vbTab + item.newTable.Item(currentKey))
-                        outputLines.Add("<tr><td>" + currentKey + "</td><td>" + IIf(item.oldTable.ContainsKey(currentKey), item.oldTable.Item(currentKey), "--") + "</td><td>" + IIf(item.newTable.ContainsKey(currentKey), item.newTable.Item(currentKey), "--") + "</td></tr>")
+                        outputLines.Add("<tr><td>" + currentKey + "</td><td>" + IIf(item.oldTable.ContainsKey(currentKey), item.oldTable.Item(currentKey).ToString.Replace(vbCrLf, "<br>"), "--") + "</td><td>" + IIf(item.newTable.ContainsKey(currentKey), item.newTable.Item(currentKey).Replace(vbCrLf, "<br>"), "--") + "</td></tr>")
                     Next
                     outputLines.Add("</table><br><center><a href=""#" + sectionKey + """>Return</a></center><br><br>")
                 End If

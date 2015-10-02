@@ -57,8 +57,9 @@ Public Class FECharacter
 
     Property displayName As String
     Property classDisplayName As String
+    Property gameType As Utilities.GameType
 
-    Enum ClassAbility1 'Bitmaskable
+    Enum CharacterAbility1 'Bitmaskable
         None = &H0
         MountedAidSystem = &H1
         MoveAgain = &H2
@@ -70,7 +71,7 @@ Public Class FECharacter
         Ballista = &H80
     End Enum
 
-    Enum ClassAbility2 'Bitmaskable
+    Enum CharacterAbility2 'Bitmaskable
         None = &H0
         Promoted = &H1
         SupplyDepot = &H2
@@ -82,7 +83,7 @@ Public Class FECharacter
         Boss = &H80
     End Enum
 
-    Enum ClassAbility3 'Bitmaskable
+    Enum CharacterAbility3 'Bitmaskable
         None = &H0
         LordPrfWeaponLock = &H1 'Only in FE6
         WoDaoWeaponLock = &H2 'Shamshir in FE8
@@ -92,6 +93,18 @@ Public Class FECharacter
         PegasusKnightTriangle = &H20
         ArmorKnightTriangle = &H40 'Only in FE6
         StartsAsNPC = &H80 'Only in FE6
+    End Enum
+
+    Enum CharacterAbility4 'Bitmaskable (Only defined for FE7 and FE8)
+        None = &H0
+        NoExperience = &H1
+        Lethality = &H2
+        SealsMagic = &H4 'FE7 only
+        DropsLastItemOrSummon = &H8 'FE7 drops last item, FE8 is for summoned monsters.
+        EliwoodEirikaWeaponLock = &H10
+        HectorEphraimWeaponLock = &H20
+        LynWeaponLock = &H40 'FE7 only
+        AthosWeaponLock = &H80 'FE7 only
     End Enum
 
     Public Function Copy() As FECharacter
@@ -149,6 +162,7 @@ Public Class FECharacter
 
         copiedCharacter.displayName = displayName
         copiedCharacter.classDisplayName = classDisplayName
+        copiedCharacter.gameType = gameType
 
         Return copiedCharacter
     End Function
@@ -164,7 +178,9 @@ Public Class FECharacter
         AffinityAnima = &H7
     End Enum
 
-    Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gameType As Utilities.GameType, ByRef textManager As TextManager, ByRef classLookup As Hashtable)
+    Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gt As Utilities.GameType, ByRef textManager As TextManager, ByRef classLookup As Hashtable)
+        gameType = gt
+
         filePtr.Seek(offset, IO.SeekOrigin.Begin)
         nameIndex = Utilities.ReadHalfWord(filePtr)
         displayName = textManager.stringForTextAtIndex(nameIndex)
@@ -238,6 +254,8 @@ Public Class FECharacter
         filePtr.Seek(offset + entrySize, IO.SeekOrigin.Begin)
 
         shouldResetCustomSpriteToDefault = False
+
+
     End Sub
 
     Public Sub writeStatsToCharacterStartingAtOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gameType As Utilities.GameType)
@@ -364,9 +382,85 @@ Public Class FECharacter
         Return "None"
     End Function
 
-    Public Sub updateClassWithClass(ByRef classObject As FEClass)
+    Public Sub updateClassWithClass(ByRef classObject As FEClass, ByRef rng As Random)
+        ' Don't need to do anything if our class id hasn't changed.
+        If classId = classObject.classId Then
+            Return
+        End If
+
         classId = classObject.classId
         classDisplayName = classObject.classDisplayName
+
+        ' Update weapon levels here.
+        Dim noRank As Byte = 0
+        Dim eRank As Byte
+        Dim dRank As Byte
+        Dim cRank As Byte
+        Dim bRank As Byte
+        Dim aRank As Byte
+        Dim sRank As Byte
+
+        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
+
+        Dim highestRank As Byte = Math.Max(swordLevel, Math.Max(spearLevel, Math.Max(axeLevel, Math.Max(bowLevel, Math.Max(lightLevel, Math.Max(darkLevel, Math.Max(animaLevel, staffLevel)))))))
+
+        swordLevel = classObject.swordLevel
+        spearLevel = classObject.spearLevel
+        axeLevel = classObject.axeLevel
+        bowLevel = classObject.bowLevel
+        animaLevel = classObject.animaLevel
+        lightLevel = classObject.lightLevel
+        darkLevel = classObject.darkLevel
+        staffLevel = classObject.staffLevel
+
+        If highestRank = noRank Then
+            Return
+        End If
+
+        ' Carry over the highest rank to one of their valid new ranks and leave the rest the same.
+        Dim canIncreaseSwordRank As Boolean = swordLevel > noRank And swordLevel < highestRank
+        Dim canIncreaseLanceRank As Boolean = spearLevel > noRank And spearLevel < highestRank
+        Dim canIncreaseAxeRank As Boolean = axeLevel > noRank And axeLevel < highestRank
+        Dim canIncreaseBowRank As Boolean = bowLevel > noRank And bowLevel < highestRank
+        Dim canIncreaseLightRank As Boolean = lightLevel > noRank And lightLevel < highestRank
+        Dim canIncreaseDarkRank As Boolean = darkLevel > noRank And darkLevel < highestRank
+        Dim canIncreaseAnimaRank As Boolean = animaLevel > noRank And animaLevel < highestRank
+        Dim canIncreaseStaffRank As Boolean = staffLevel > noRank And staffLevel < highestRank
+
+        If Not canIncreaseSwordRank And Not canIncreaseLanceRank And Not canIncreaseAxeRank And Not canIncreaseBowRank And Not canIncreaseLightRank And Not canIncreaseDarkRank And Not canIncreaseAnimaRank And Not canIncreaseStaffRank Then
+            Return
+        End If
+
+        Dim assigned As Boolean = False
+        While Not assigned
+            Dim i As Integer = rng.Next(8)
+            If i = 0 And canIncreaseSwordRank Then
+                swordLevel = highestRank
+                assigned = True
+            ElseIf i = 1 And canIncreaseLanceRank Then
+                spearLevel = highestRank
+                assigned = True
+            ElseIf i = 2 And canIncreaseAxeRank Then
+                axeLevel = highestRank
+                assigned = True
+            ElseIf i = 3 And canIncreaseBowRank Then
+                bowLevel = highestRank
+                assigned = True
+            ElseIf i = 4 And canIncreaseLightRank Then
+                lightLevel = highestRank
+                assigned = True
+            ElseIf i = 5 And canIncreaseDarkRank
+                darkLevel = highestRank
+                assigned = True
+            ElseIf i = 6 And canIncreaseAnimaRank Then
+                animaLevel = highestRank
+                assigned = True
+            ElseIf i = 7 And canIncreaseStaffRank Then
+                staffLevel = highestRank
+                assigned = True
+            End If
+        End While
+
     End Sub
 
     Public Sub randomizeBases(ByVal variance As Integer, ByRef rng As Random)
@@ -513,292 +607,6 @@ Public Class FECharacter
             aRank = FE8GameData.WeaponRank.WeaponRankA
             sRank = FE8GameData.WeaponRank.WeaponRankS
         End If
-    End Sub
-
-    Public Sub increaseWeaponRanksWithPercentChance(ByVal chance As Integer, ByVal type As Utilities.GameType, ByRef rng As Random)
-        If chance <= 0 Then Return
-
-        Dim noRank As Byte = 0
-        Dim eRank As Byte
-        Dim dRank As Byte
-        Dim cRank As Byte
-        Dim bRank As Byte
-        Dim aRank As Byte
-        Dim sRank As Byte
-
-        setupWeaponRanksForGameType(type, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
-
-        Dim maxRank As Byte = aRank
-
-        Dim hasSwordRank As Boolean = swordLevel > noRank And swordLevel < maxRank
-        Dim hasLanceRank As Boolean = spearLevel > noRank And spearLevel < maxRank
-        Dim hasAxeRank As Boolean = axeLevel > noRank And axeLevel < maxRank
-        Dim hasBowRank As Boolean = bowLevel > noRank And bowLevel < maxRank
-        Dim hasLightRank As Boolean = lightLevel > noRank And lightLevel < maxRank
-        Dim hasDarkRank As Boolean = darkLevel > noRank And darkLevel < maxRank
-        Dim hasAnimaRank As Boolean = animaLevel > noRank And animaLevel < maxRank
-        Dim hasStaffRank As Boolean = staffLevel > noRank And staffLevel < maxRank
-
-        If Not hasSwordRank And Not hasLanceRank And Not hasAxeRank And Not hasBowRank And Not hasLightRank And Not hasDarkRank And Not hasAnimaRank And Not hasStaffRank Then
-            Return
-        End If
-
-        Dim shouldIncrease As Boolean = IIf(chance >= 100, True, rng.Next(100) + 1 < chance)
-
-        If shouldIncrease Then
-            chance -= 100
-            If hasSwordRank Then
-                increaseSwordRank(type)
-                If swordLevel = maxRank Then hasSwordRank = False
-            End If
-            If hasLanceRank Then
-                increaseLanceRank(type)
-                If spearLevel = maxRank Then hasLanceRank = False
-            End If
-            If hasAxeRank Then
-                increaseAxeRank(type)
-                If axeLevel = maxRank Then hasAxeRank = False
-            End If
-            If hasBowRank Then
-                increaseBowRank(type)
-                If bowLevel = maxRank Then hasBowRank = False
-            End If
-            If hasLightRank Then
-                increaseLightRank(type)
-                If lightLevel = maxRank Then hasLightRank = False
-            End If
-            If hasDarkRank Then
-                increaseDarkRank(type)
-                If darkLevel = maxRank Then hasDarkRank = False
-            End If
-            If hasAnimaRank Then
-                increaseAnimaRank(type)
-                If animaLevel = maxRank Then hasAnimaRank = False
-            End If
-            If hasStaffRank Then
-                increaseStaffRank(type)
-                If staffLevel = maxRank Then hasStaffRank = False
-            End If
-
-            If chance > 0 Then increaseWeaponRanksWithPercentChance(chance, type, rng)
-        End If
-
-    End Sub
-
-    Private Sub increaseSwordRank(ByVal gameType As Utilities.GameType)
-        Dim noRank As Byte = 0
-        Dim eRank As Byte
-        Dim dRank As Byte
-        Dim cRank As Byte
-        Dim bRank As Byte
-        Dim aRank As Byte
-        Dim sRank As Byte
-
-        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
-
-        If swordLevel < eRank Then
-            swordLevel = eRank
-        ElseIf swordLevel = eRank Then
-            swordLevel = dRank
-        ElseIf swordLevel = dRank Then
-            swordLevel = cRank
-        ElseIf swordLevel = cRank Then
-            swordLevel = bRank
-        ElseIf swordLevel = bRank Then
-            swordLevel = aRank
-        ElseIf swordLevel = aRank Then
-            swordLevel = sRank
-        End If
-
-    End Sub
-
-    Private Sub increaseLanceRank(ByVal gameType As Utilities.GameType)
-        Dim noRank As Byte = 0
-        Dim eRank As Byte
-        Dim dRank As Byte
-        Dim cRank As Byte
-        Dim bRank As Byte
-        Dim aRank As Byte
-        Dim sRank As Byte
-
-        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
-
-        If spearLevel < eRank Then
-            spearLevel = eRank
-        ElseIf spearLevel = eRank Then
-            spearLevel = dRank
-        ElseIf spearLevel = dRank Then
-            spearLevel = cRank
-        ElseIf spearLevel = cRank Then
-            spearLevel = bRank
-        ElseIf spearLevel = bRank Then
-            spearLevel = aRank
-        ElseIf spearLevel = aRank Then
-            spearLevel = sRank
-        End If
-
-    End Sub
-
-    Private Sub increaseAxeRank(ByVal gameType As Utilities.GameType)
-        Dim noRank As Byte = 0
-        Dim eRank As Byte
-        Dim dRank As Byte
-        Dim cRank As Byte
-        Dim bRank As Byte
-        Dim aRank As Byte
-        Dim sRank As Byte
-
-        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
-
-        If axeLevel < eRank Then
-            axeLevel = eRank
-        ElseIf axeLevel = eRank Then
-            axeLevel = dRank
-        ElseIf axeLevel = dRank Then
-            axeLevel = cRank
-        ElseIf axeLevel = cRank Then
-            axeLevel = bRank
-        ElseIf axeLevel = bRank Then
-            axeLevel = aRank
-        ElseIf axeLevel = aRank Then
-            axeLevel = sRank
-        End If
-
-    End Sub
-
-    Private Sub increaseBowRank(ByVal gameType As Utilities.GameType)
-        Dim noRank As Byte = 0
-        Dim eRank As Byte
-        Dim dRank As Byte
-        Dim cRank As Byte
-        Dim bRank As Byte
-        Dim aRank As Byte
-        Dim sRank As Byte
-
-        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
-
-        If bowLevel < eRank Then
-            bowLevel = eRank
-        ElseIf bowLevel = eRank Then
-            bowLevel = dRank
-        ElseIf bowLevel = dRank Then
-            bowLevel = cRank
-        ElseIf bowLevel = cRank Then
-            bowLevel = bRank
-        ElseIf bowLevel = bRank Then
-            bowLevel = aRank
-        ElseIf bowLevel = aRank Then
-            bowLevel = sRank
-        End If
-
-    End Sub
-
-    Private Sub increaseLightRank(ByVal gameType As Utilities.GameType)
-        Dim noRank As Byte = 0
-        Dim eRank As Byte
-        Dim dRank As Byte
-        Dim cRank As Byte
-        Dim bRank As Byte
-        Dim aRank As Byte
-        Dim sRank As Byte
-
-        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
-
-        If lightLevel < eRank Then
-            lightLevel = eRank
-        ElseIf lightLevel = eRank Then
-            lightLevel = dRank
-        ElseIf lightLevel = dRank Then
-            lightLevel = cRank
-        ElseIf lightLevel = cRank Then
-            lightLevel = bRank
-        ElseIf lightLevel = bRank Then
-            lightLevel = aRank
-        ElseIf lightLevel = aRank Then
-            lightLevel = sRank
-        End If
-
-    End Sub
-
-    Private Sub increaseDarkRank(ByVal gameType As Utilities.GameType)
-        Dim noRank As Byte = 0
-        Dim eRank As Byte
-        Dim dRank As Byte
-        Dim cRank As Byte
-        Dim bRank As Byte
-        Dim aRank As Byte
-        Dim sRank As Byte
-
-        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
-
-        If darkLevel < eRank Then
-            darkLevel = eRank
-        ElseIf darkLevel = eRank Then
-            darkLevel = dRank
-        ElseIf darkLevel = dRank Then
-            darkLevel = cRank
-        ElseIf darkLevel = cRank Then
-            darkLevel = bRank
-        ElseIf darkLevel = bRank Then
-            darkLevel = aRank
-        ElseIf darkLevel = aRank Then
-            darkLevel = sRank
-        End If
-
-    End Sub
-
-    Private Sub increaseAnimaRank(ByVal gameType As Utilities.GameType)
-        Dim noRank As Byte = 0
-        Dim eRank As Byte
-        Dim dRank As Byte
-        Dim cRank As Byte
-        Dim bRank As Byte
-        Dim aRank As Byte
-        Dim sRank As Byte
-
-        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
-
-        If animaLevel < eRank Then
-            animaLevel = eRank
-        ElseIf animaLevel = eRank Then
-            animaLevel = dRank
-        ElseIf animaLevel = dRank Then
-            animaLevel = cRank
-        ElseIf animaLevel = cRank Then
-            animaLevel = bRank
-        ElseIf animaLevel = bRank Then
-            animaLevel = aRank
-        ElseIf animaLevel = aRank Then
-            animaLevel = sRank
-        End If
-
-    End Sub
-
-    Private Sub increaseStaffRank(ByVal gameType As Utilities.GameType)
-        Dim noRank As Byte = 0
-        Dim eRank As Byte
-        Dim dRank As Byte
-        Dim cRank As Byte
-        Dim bRank As Byte
-        Dim aRank As Byte
-        Dim sRank As Byte
-
-        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
-
-        If staffLevel < eRank Then
-            staffLevel = eRank
-        ElseIf staffLevel = eRank Then
-            staffLevel = dRank
-        ElseIf staffLevel = dRank Then
-            staffLevel = cRank
-        ElseIf staffLevel = cRank Then
-            staffLevel = bRank
-        ElseIf staffLevel = bRank Then
-            staffLevel = aRank
-        ElseIf staffLevel = aRank Then
-            staffLevel = sRank
-        End If
-
     End Sub
 
     Public Sub buffHPWithAdditionalLevelsAtRate(ByVal numberOfLevels As Integer, ByVal growth As Integer, ByVal maxValue As Integer, ByRef rng As Random)
@@ -1039,11 +847,139 @@ Public Class FECharacter
         End If
     End Function
 
+    Private Function weaponRankLetterForValue(ByVal rankValue As Byte) As String
+        Dim noRank As Byte = 0
+        Dim eRank As Byte
+        Dim dRank As Byte
+        Dim cRank As Byte
+        Dim bRank As Byte
+        Dim aRank As Byte
+        Dim sRank As Byte
+
+        setupWeaponRanksForGameType(gameType, noRank, eRank, dRank, cRank, bRank, aRank, sRank)
+
+        If rankValue = noRank Then Return ""
+        If rankValue = eRank Then Return "E"
+        If rankValue = dRank Then Return "D"
+        If rankValue = cRank Then Return "C"
+        If rankValue = bRank Then Return "B"
+        If rankValue = aRank Then Return "A"
+        If rankValue = sRank Then Return "S"
+
+        Return ""
+
+    End Function
+
+    Private Function stringForCharacterAbility1() As String
+        If ability1 = 0 Then Return "None"
+
+        Dim ability1String As String = "[0x" + Hex(ability1) + "]"
+
+        Dim isMountedAid As Boolean = (ability1 And CharacterAbility1.MountedAidSystem) <> 0
+        Dim canMoveAgain As Boolean = (ability1 And CharacterAbility1.MoveAgain) <> 0
+        Dim canSteal As Boolean = (ability1 And CharacterAbility1.Steal) <> 0
+        Dim canUseLockpicks As Boolean = (ability1 And CharacterAbility1.ThiefKey) <> 0
+        Dim canDance As Boolean = (ability1 And CharacterAbility1.Dance) <> 0
+        Dim canPlay As Boolean = (ability1 And CharacterAbility1.Play) <> 0
+        Dim hasCriticalBoost As Boolean = (ability1 And CharacterAbility1.CriticalBoost) <> 0
+        Dim canUseBallistas As Boolean = (ability1 And CharacterAbility1.Ballista) <> 0
+
+        If isMountedAid Then ability1String = ability1String + vbCrLf + vbTab + "Uses Mounted Aid System"
+        If canMoveAgain Then ability1String = ability1String + vbCrLf + vbTab + "Can Move Again"
+        If canSteal Then ability1String = ability1String + vbCrLf + vbTab + "Can Steal"
+        If canUseLockpicks Then ability1String = ability1String + vbCrLf + vbTab + "Can Use Lockpicks"
+        If canDance Then ability1String = ability1String + vbCrLf + vbTab + "Can Dance"
+        If canPlay Then ability1String = ability1String + vbCrLf + vbTab + "Can Play"
+        If hasCriticalBoost Then ability1String = ability1String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE6, "+30", "+15") + " Critical"
+        If canUseBallistas Then ability1String = ability1String + vbCrLf + vbTab + "Can use Ballistas"
+
+        Return ability1String
+    End Function
+
+    Private Function stringForCharacterAbility2() As String
+        If ability2 = 0 Then Return "None"
+
+        Dim ability2String As String = "[0x" + Hex(ability2) + "]"
+
+        Dim isPromoted As Boolean = (ability2 And CharacterAbility2.Promoted) <> 0
+        Dim isSupplyDepot As Boolean = (ability2 And CharacterAbility2.SupplyDepot) <> 0
+        Dim showsHorse As Boolean = (ability2 And CharacterAbility2.ShowHorseIcon) <> 0
+        Dim showsDragon As Boolean = (ability2 And CharacterAbility2.ShowDragonIcon) <> 0
+        Dim showsPegasus As Boolean = (ability2 And CharacterAbility2.ShowPegasusIcon) <> 0
+        Dim isLord As Boolean = (ability2 And CharacterAbility2.Lord) <> 0
+        Dim isFemale As Boolean = (ability2 And CharacterAbility2.Female) <> 0
+        Dim isBoss As Boolean = (ability2 And CharacterAbility2.Boss) <> 0
+
+        If isPromoted Then ability2String = ability2String + vbCrLf + vbTab + "Is Promoted"
+        If isSupplyDepot Then ability2String = ability2String + vbCrLf + vbTab + "Acts As Convoy"
+        If showsHorse Then ability2String = ability2String + vbCrLf + vbTab + "Shows Horse Icon"
+        If showsDragon Then ability2String = ability2String + vbCrLf + vbTab + "Shows Dragon Icon"
+        If showsPegasus Then ability2String = ability2String + vbCrLf + vbTab + "Shows Pegasus Icon"
+        If isLord Then ability2String = ability2String + vbCrLf + vbTab + "Is Lord"
+        If isFemale Then ability2String = ability2String + vbCrLf + vbTab + "Is Female"
+        If isBoss Then ability2String = ability2String + vbCrLf + vbTab + "Is Boss"
+
+        Return ability2String
+    End Function
+
+    Private Function stringForCharacterAbility3() As String
+        If ability3 = 0 Then Return "None"
+
+        Dim ability3String As String = "[0x" + Hex(ability3) + "]"
+
+        Dim canUseLordWeapons As Boolean = (ability3 And CharacterAbility3.LordPrfWeaponLock) <> 0
+        Dim canUseWoDao As Boolean = (ability3 And CharacterAbility3.WoDaoWeaponLock) <> 0
+        Dim canUseDragonstone As Boolean = (ability3 And CharacterAbility3.DragonstoneLock) <> 0
+        Dim morphsMaxLevel10 As Boolean = (ability3 And CharacterAbility3.MorphsMaxLevel10) <> 0
+        Dim isUncontrollable As Boolean = (ability3 And CharacterAbility3.Uncontrollable) <> 0
+        Dim pkTriangle As Boolean = (ability3 And CharacterAbility3.PegasusKnightTriangle) <> 0
+        Dim akTriangle As Boolean = (ability3 And CharacterAbility3.ArmorKnightTriangle) <> 0
+        Dim isNPC As Boolean = (ability3 And CharacterAbility3.StartsAsNPC) <> 0
+
+        If canUseLordWeapons Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE6, "Can Use Lord Weapons", "Unused Weapon Lock")
+        If canUseWoDao Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE8, "Can Use Shamshir", "Can Use Wo Dao")
+        If canUseDragonstone Then ability3String = ability3String + vbCrLf + vbTab + "Can Use Dragonstone"
+        If morphsMaxLevel10 Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Is Morph (including Boss Vaida)", IIf(gameType = Utilities.GameType.GameTypeFE8, "Max Level 10", "Unknown"))
+        If isUncontrollable Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE6, "Unknown", "Uncontrollable")
+        If pkTriangle Then ability3String = ability3String + vbCrLf + vbTab + "Pegasus Knight Triangle Attack"
+        If akTriangle Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE6, "Armor Knight Triangle Attack", "Unused Triangle Attack")
+        If isNPC Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE6, "Starts as NPC", "Unknown")
+
+        Return ability3String
+    End Function
+
+    Private Function stringForCharacterAbility4() As String
+        If ability4 = 0 Or gameType = Utilities.GameType.GameTypeFE6 Then Return "None"
+
+        Dim ability4String As String = "[0x" + Hex(ability4) + "]"
+
+        Dim givesNoExperience As Boolean = (ability4 And CharacterAbility4.NoExperience) <> 0
+        Dim canTriggerLethality As Boolean = (ability4 And CharacterAbility4.Lethality) <> 0
+        Dim isMagicSeal As Boolean = (ability4 And CharacterAbility4.SealsMagic) <> 0
+        Dim dropOrSummon As Boolean = (ability4 And CharacterAbility4.DropsLastItemOrSummon) <> 0
+        Dim eliwoodEirika As Boolean = (ability4 And CharacterAbility4.EliwoodEirikaWeaponLock) <> 0
+        Dim hectorEphraim As Boolean = (ability4 And CharacterAbility4.HectorEphraimWeaponLock) <> 0
+        Dim lynLock As Boolean = (ability4 And CharacterAbility4.LynWeaponLock) <> 0
+        Dim athosLock As Boolean = (ability4 And CharacterAbility4.AthosWeaponLock) <> 0
+
+        If givesNoExperience Then ability4String = ability4String + vbCrLf + vbTab + "Gives No Experience"
+        If canTriggerLethality Then ability4String = ability4String + vbCrLf + vbTab + "Can Trigger Lethality"
+        If isMagicSeal Then ability4String = ability4String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Is Magic Seal", "Unknown")
+        If dropOrSummon Then ability4String = ability4String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Drops Last Item", "Is Summon")
+        If eliwoodEirika Then ability4String = ability4String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Can Use Eliwood Locked Weapons", "Can Use Eirika Locked Weapons")
+        If hectorEphraim Then ability4String = ability4String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Can Use Hector Locked Weapons", "Can Use Ephraim Locked Weapons")
+        If lynLock Then ability4String = ability4String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Can Use Lyn Locked Weapons", "Unused Weapon Lock")
+        If athosLock Then ability4String = ability4String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Can Use Athos Locked Weapons", "Unused Weapon Lock")
+
+        Return ability4String
+    End Function
+
     Public Function fieldTable() As Hashtable Implements RecordKeeper.RecordableItem.fieldTable
         Dim table As Hashtable = New Hashtable()
 
         table.Add("Name", displayName)
         table.Add("Class", classDisplayName)
+        table.Add("Affinity", resolvedAffinity())
 
         table.Add("Base HP", baseHP.ToString)
         table.Add("Base STR/MAG", baseStr.ToString)
@@ -1062,6 +998,22 @@ Public Class FECharacter
         table.Add("DEF Growth", defGrowth.ToString + "%")
         table.Add("RES Growth", resGrowth.ToString + "%")
 
+        table.Add("Weapon Ranks", IIf(weaponRankLetterForValue(swordLevel).Length > 0, weaponRankLetterForValue(swordLevel) + " - Sword" + vbTab, "") _
+            & IIf(weaponRankLetterForValue(spearLevel).Length > 0, weaponRankLetterForValue(spearLevel) + " - Lance" + vbTab, "") _
+            & IIf(weaponRankLetterForValue(axeLevel).Length > 0, weaponRankLetterForValue(axeLevel) + " - Axe" + vbTab, "") _
+            & IIf(weaponRankLetterForValue(bowLevel).Length > 0, weaponRankLetterForValue(bowLevel) + " - Bow" + vbTab, "") _
+            & IIf(weaponRankLetterForValue(animaLevel).Length > 0, weaponRankLetterForValue(animaLevel) + " - Anima" + vbTab, "") _
+            & IIf(weaponRankLetterForValue(lightLevel).Length > 0, weaponRankLetterForValue(lightLevel) + " - Light" + vbTab, "") _
+            & IIf(weaponRankLetterForValue(darkLevel).Length > 0, weaponRankLetterForValue(darkLevel) + " - Dark" + vbTab, "") _
+            & IIf(weaponRankLetterForValue(staffLevel).Length > 0, weaponRankLetterForValue(staffLevel) + " - Staff" + vbTab, ""))
+
+        table.Add("Character Ability 1", stringForCharacterAbility1())
+        table.Add("Character Ability 2", stringForCharacterAbility2())
+        table.Add("Character Ability 3", stringForCharacterAbility3())
+        If gameType <> Utilities.GameType.GameTypeFE6 Then
+            table.Add("Character Ability 4", stringForCharacterAbility4())
+        End If
+
         Return table
     End Function
 
@@ -1070,6 +1022,7 @@ Public Class FECharacter
 
         keyList.Add("Name")
         keyList.Add("Class")
+        keyList.Add("Affinity")
 
         keyList.Add("Base HP")
         keyList.Add("Base STR/MAG")
@@ -1087,6 +1040,15 @@ Public Class FECharacter
         keyList.Add("LCK Growth")
         keyList.Add("DEF Growth")
         keyList.Add("RES Growth")
+
+        keyList.Add("Weapon Ranks")
+
+        keyList.Add("Character Ability 1")
+        keyList.Add("Character Ability 2")
+        keyList.Add("Character Ability 3")
+        If gameType <> Utilities.GameType.GameTypeFE6 Then
+            keyList.Add("Character Ability 4")
+        End If
 
         Return keyList
     End Function

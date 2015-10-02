@@ -444,6 +444,17 @@
         Return EffectivenessPointers.EffectivenessPointerNone
     End Function
 
+    Public Shared Function stringForEffectivenessPointer(ByVal pointer As UInteger)
+        If pointer = EffectivenessPointers.EffectivenessPointerKnights Then Return "Effective Against Knights"
+        If pointer = EffectivenessPointers.EffectivenessPointerDragons Then Return "Effective Against Dragons"
+        If pointer = EffectivenessPointers.EffectivenessPointerFliers Then Return "Effective Against Fliers"
+        If pointer = EffectivenessPointers.EffectivenessPointerCavalry Then Return "Effective Against Cavalry"
+
+        If pointer = 0 Then Return "None"
+
+        Return "Custom (Unknown) Effectiveness"
+    End Function
+
     Public Shared Function randomStatBonus(ByRef rng As Random)
         ' Seems too OP if it randomizes a dragonstone bonus on, say, an Iron Axe...
         Dim result = rng.Next(2, 9)
@@ -460,6 +471,24 @@
         If result = 12 Then Return StatBonusPointers.StatBonusPointer_15STR_15SKL_20DEF_15RES
 
         Return StatBonusPointers.StatBonusPointerNone
+    End Function
+
+    Public Shared Function stringForStatBonusPointer(ByVal pointer As UInteger)
+        If pointer = StatBonusPointers.StatBonusPointer_10STR_10SKL_20DEF_5RES Then Return "+10 STR, +10 SKL, +20 DEF, +5 RES"
+        If pointer = StatBonusPointers.StatBonusPointer_12STR_12SKL_15DEF_25RES Then Return "+12 STR, +12 SKL, +15 DEF, +25 RES"
+        If pointer = StatBonusPointers.StatBonusPointer_15STR_15SKL_20DEF_15RES Then Return "+15 STR, +15 SKL, +20 DEF, +15 RES"
+        If pointer = StatBonusPointers.StatBonusPointer_5DEF Then Return "+5 DEF"
+        If pointer = StatBonusPointers.StatBonusPointer_5DEF_5RES Then Return "+5 DEF, +5 RES"
+        If pointer = StatBonusPointers.StatBonusPointer_5LCK Then Return "+5 LCK"
+        If pointer = StatBonusPointers.StatBonusPointer_5MAG Then Return "+5 MAG"
+        If pointer = StatBonusPointers.StatBonusPointer_5RES Then Return "+5 RES"
+        If pointer = StatBonusPointers.StatBonusPointer_5SKL Then Return "+5 SKL"
+        If pointer = StatBonusPointers.StatBonusPointer_5SPD Then Return "+5 SPD"
+        If pointer = StatBonusPointers.StatBonusPointer_5STR Then Return "+5 STR"
+
+        If pointer = 0 Then Return "None"
+
+        Return "Custom (Unknown) Stat Bonus"
     End Function
 
     Public Shared Function unpromotedClassList(ByVal female As Boolean) As ArrayList

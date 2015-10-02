@@ -70,6 +70,7 @@ Public Class FEClass
     Property writeMovementCostPointer As Boolean
 
     Property classDisplayName As String
+    Property gameType As Utilities.GameType
 
     Enum WeaponRank
         WeaponRankNone = &H0
@@ -80,8 +81,6 @@ Public Class FEClass
         WeaponRankA = &HC9
         WeaponRankS = &HFB
     End Enum
-
-
 
     Enum ClassAbility1 'Bitmaskable
         None = &H0
@@ -132,6 +131,9 @@ Public Class FEClass
     End Enum
 
     Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal type As Utilities.GameType, ByRef textManager As TextManager)
+
+        gameType = type
+
         filePtr.Seek(offset, IO.SeekOrigin.Begin)
         classNameIndex = Utilities.ReadHalfWord(filePtr)
         classDisplayName = textManager.stringForTextAtIndex(classNameIndex)
@@ -475,6 +477,110 @@ Public Class FEClass
 
     End Sub
 
+    Private Function stringForClassAbility1() As String
+        If ability1 = 0 Then Return "None"
+
+        Dim ability1String As String = "[0x" + Hex(ability1) + "]"
+
+        Dim isMountedAid As Boolean = (ability1 And ClassAbility1.MountedAidSystem) <> 0
+        Dim canMoveAgain As Boolean = (ability1 And ClassAbility1.MoveAgain) <> 0
+        Dim canSteal As Boolean = (ability1 And ClassAbility1.Steal) <> 0
+        Dim canUseLockpicks As Boolean = (ability1 And ClassAbility1.ThiefKey) <> 0
+        Dim canDance As Boolean = (ability1 And ClassAbility1.Dance) <> 0
+        Dim canPlay As Boolean = (ability1 And ClassAbility1.Play) <> 0
+        Dim hasCriticalBoost As Boolean = (ability1 And ClassAbility1.CriticalBoost) <> 0
+        Dim canUseBallistas As Boolean = (ability1 And ClassAbility1.Ballista) <> 0
+
+        If isMountedAid Then ability1String = ability1String + vbCrLf + vbTab + "Uses Mounted Aid System"
+        If canMoveAgain Then ability1String = ability1String + vbCrLf + vbTab + "Can Move Again"
+        If canSteal Then ability1String = ability1String + vbCrLf + vbTab + "Can Steal"
+        If canUseLockpicks Then ability1String = ability1String + vbCrLf + vbTab + "Can Use Lockpicks"
+        If canDance Then ability1String = ability1String + vbCrLf + vbTab + "Can Dance"
+        If canPlay Then ability1String = ability1String + vbCrLf + vbTab + "Can Play"
+        If hasCriticalBoost Then ability1String = ability1String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE6, "+30", "+15") + " Critical"
+        If canUseBallistas Then ability1String = ability1String + vbCrLf + vbTab + "Can use Ballistas"
+
+        Return ability1String
+    End Function
+
+    Private Function stringForClassAbility2() As String
+        If ability2 = 0 Then Return "None"
+
+        Dim ability2String As String = "[0x" + Hex(ability2) + "]"
+
+        Dim isPromoted As Boolean = (ability2 And ClassAbility2.Promoted) <> 0
+        Dim isSupplyDepot As Boolean = (ability2 And ClassAbility2.SupplyDepot) <> 0
+        Dim showsHorse As Boolean = (ability2 And ClassAbility2.ShowHorseIcon) <> 0
+        Dim showsDragon As Boolean = (ability2 And ClassAbility2.ShowDragonIcon) <> 0
+        Dim showsPegasus As Boolean = (ability2 And ClassAbility2.ShowPegasusIcon) <> 0
+        Dim isLord As Boolean = (ability2 And ClassAbility2.Lord) <> 0
+        Dim isFemale As Boolean = (ability2 And ClassAbility2.Female) <> 0
+        Dim isBoss As Boolean = (ability2 And ClassAbility2.Boss) <> 0
+
+        If isPromoted Then ability2String = ability2String + vbCrLf + vbTab + "Is Promoted Class"
+        If isSupplyDepot Then ability2String = ability2String + vbCrLf + vbTab + "Acts As Convoy"
+        If showsHorse Then ability2String = ability2String + vbCrLf + vbTab + "Shows Horse Icon"
+        If showsDragon Then ability2String = ability2String + vbCrLf + vbTab + "Shows Dragon Icon"
+        If showsPegasus Then ability2String = ability2String + vbCrLf + vbTab + "Shows Pegasus Icon"
+        If isLord Then ability2String = ability2String + vbCrLf + vbTab + "Is Lord Class"
+        If isFemale Then ability2String = ability2String + vbCrLf + vbTab + "Is Female Class"
+        If isBoss Then ability2String = ability2String + vbCrLf + vbTab + "Is Boss Class"
+
+        Return ability2String
+    End Function
+
+    Private Function stringForClassAbility3() As String
+        If ability3 = 0 Then Return "None"
+
+        Dim ability3String As String = "[0x" + Hex(ability3) + "]"
+
+        Dim canUseLordWeapons As Boolean = (ability3 And ClassAbility3.LordPrfWeaponLock) <> 0
+        Dim canUseWoDao As Boolean = (ability3 And ClassAbility3.WoDaoWeaponLock) <> 0
+        Dim canUseDragonstone As Boolean = (ability3 And ClassAbility3.DragonstoneLock) <> 0
+        Dim morphsMaxLevel10 As Boolean = (ability3 And ClassAbility3.MorphsMaxLevel10) <> 0
+        Dim isUncontrollable As Boolean = (ability3 And ClassAbility3.Uncontrollable) <> 0
+        Dim pkTriangle As Boolean = (ability3 And ClassAbility3.PegasusKnightTriangle) <> 0
+        Dim akTriangle As Boolean = (ability3 And ClassAbility3.ArmorKnightTriangle) <> 0
+        Dim isNPC As Boolean = (ability3 And ClassAbility3.StartsAsNPC) <> 0
+
+        If canUseLordWeapons Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE6, "Can Use Lord Weapons", "Unused Weapon Lock")
+        If canUseWoDao Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE8, "Can Use Shamshir", "Can Use Wo Dao")
+        If canUseDragonstone Then ability3String = ability3String + vbCrLf + vbTab + "Can Use Dragonstone"
+        If morphsMaxLevel10 Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Is Morph (including Boss Vaida)", IIf(gameType = Utilities.GameType.GameTypeFE8, "Max Level 10", "Unknown"))
+        If isUncontrollable Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE6, "Unknown", "Uncontrollable")
+        If pkTriangle Then ability3String = ability3String + vbCrLf + vbTab + "Pegasus Knight Triangle Attack"
+        If akTriangle Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE6, "Armor Knight Triangle Attack", "Unused Triangle Attack")
+        If isNPC Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE6, "Starts as NPC", "Unknown")
+
+        Return ability3String
+    End Function
+
+    Private Function stringForClassAbility4() As String
+        If ability4 = 0 Or gameType = Utilities.GameType.GameTypeFE6 Then Return "None"
+
+        Dim ability4String As String = "[0x" + Hex(ability4) + "]"
+
+        Dim givesNoExperience As Boolean = (ability4 And ClassAbility4.NoExperience) <> 0
+        Dim canTriggerLethality As Boolean = (ability4 And ClassAbility4.Lethality) <> 0
+        Dim isMagicSeal As Boolean = (ability4 And ClassAbility4.SealsMagic) <> 0
+        Dim dropOrSummon As Boolean = (ability4 And ClassAbility4.DropsLastItemOrSummon) <> 0
+        Dim eliwoodEirika As Boolean = (ability4 And ClassAbility4.EliwoodEirikaWeaponLock) <> 0
+        Dim hectorEphraim As Boolean = (ability4 And ClassAbility4.HectorEphraimWeaponLock) <> 0
+        Dim lynLock As Boolean = (ability4 And ClassAbility4.LynWeaponLock) <> 0
+        Dim athosLock As Boolean = (ability4 And ClassAbility4.AthosWeaponLock) <> 0
+
+        If givesNoExperience Then ability4String = ability4String + vbCrLf + vbTab + "Gives No Experience"
+        If canTriggerLethality Then ability4String = ability4String + vbCrLf + vbTab + "Can Trigger Lethality"
+        If isMagicSeal Then ability4String = ability4String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Is Magic Seal", "Unknown")
+        If dropOrSummon Then ability4String = ability4String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Drops Last Item", "Is Summon")
+        If eliwoodEirika Then ability4String = ability4String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Can Use Eliwood Locked Weapons", "Can Use Eirika Locked Weapons")
+        If hectorEphraim Then ability4String = ability4String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Can Use Hector Locked Weapons", "Can Use Ephraim Locked Weapons")
+        If lynLock Then ability4String = ability4String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Can Use Lyn Locked Weapons", "Unused Weapon Lock")
+        If athosLock Then ability4String = ability4String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Can Use Athos Locked Weapons", "Unused Weapon Lock")
+
+        Return ability4String
+    End Function
+
     Public Function fieldTable() As Hashtable Implements RecordKeeper.RecordableItem.fieldTable
         Dim table As Hashtable = New Hashtable
 
@@ -496,6 +602,13 @@ Public Class FEClass
         table.Add("LCK Growth", lckGrowth.ToString + "%")
         table.Add("DEF Growth", defGrowth.ToString + "%")
         table.Add("RES Growth", resGrowth.ToString + "%")
+
+        table.Add("Class Ability 1", stringForClassAbility1())
+        table.Add("Class Ability 2", stringForClassAbility2())
+        table.Add("Class Ability 3", stringForClassAbility3())
+        If gameType <> Utilities.GameType.GameTypeFE6 Then
+            table.Add("Class Ability 4", stringForClassAbility4())
+        End If
 
         Return table
     End Function
@@ -521,6 +634,13 @@ Public Class FEClass
         keyList.Add("LCK Growth")
         keyList.Add("DEF Growth")
         keyList.Add("RES Growth")
+
+        keyList.Add("Class Ability 1")
+        keyList.Add("Class Ability 2")
+        keyList.Add("Class Ability 3")
+        If gameType <> Utilities.GameType.GameTypeFE6 Then
+            keyList.Add("Class Ability 4")
+        End If
 
         Return keyList
     End Function

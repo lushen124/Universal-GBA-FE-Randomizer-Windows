@@ -997,9 +997,6 @@ Partial Class Form1
         Me.SaveChangelogCheckbox.Text = "Save Changelog"
         Me.SaveChangelogCheckbox.UseVisualStyleBackColor = True
         '
-        'FolderBrowserDialog1
-        '
-        '
         'ChangelogPathField
         '
         Me.ChangelogPathField.Location = New System.Drawing.Point(128, 442)
@@ -1088,7 +1085,7 @@ Partial Class Form1
         Me.Controls.Add(Me.FilenameTextBox)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "Form1"
-        Me.Text = "GBA FE Randomizer v1.0.1 by OtakuReborn"
+        Me.Text = "GBA FE Randomizer v1.1.0 by OtakuReborn"
         CType(Me.GrowthVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.BaseVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.MightVarianceControl, System.ComponentModel.ISupportInitialize).EndInit()

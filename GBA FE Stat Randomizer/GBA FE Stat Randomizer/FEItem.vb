@@ -100,9 +100,13 @@ Public Class FEItem
     Property weaponID As Byte           'offset 6, 1 byte
 
     Property itemNameIndex As UShort    'offset 0, 2 bytes
-    Property itemDisplayName As String
 
-    Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gameType As Utilities.GameType, ByRef textManager As TextManager)
+    Property itemDisplayName As String
+    Property gameType As Utilities.GameType
+
+    Public Sub initializeWithBytesFromOffset(ByRef filePtr As IO.FileStream, ByVal offset As Integer, ByVal entrySize As Integer, ByVal gt As Utilities.GameType, ByRef textManager As TextManager)
+        gameType = gt
+
         filePtr.Seek(offset, IO.SeekOrigin.Begin)
         itemNameIndex = Utilities.ReadHalfWord(filePtr)
 
@@ -326,18 +330,127 @@ Public Class FEItem
         End If
     End Sub
 
+    Private Function weaponEffectString() As String
+        If effect = WeaponEffect.WeaponEffectPoison Then Return "Poisons on Hit"
+        If effect = WeaponEffect.WeaponEffectStealsHP Then Return "Nosferatu Effect"
+        If effect = WeaponEffect.WeaponEffectHalvesHP Then Return "Eclipse Effect"
+        If effect = WeaponEffect.WeaponEffectDevilReversal Then Return "Devil Effect"
+        If effect = WeaponEffect.WeaponEffectStone And gameType = Utilities.GameType.GameTypeFE8 Then
+            Return "Stone Effect"
+        End If
+
+        Return "None"
+    End Function
+
+    Private Function stringForWeaponAbility1() As String
+        If weaponAbility1 = 0 Then Return "None"
+
+        Dim ability1String As String = "[0x" + Hex(weaponAbility1) + "]"
+
+        Dim isWeapon As Boolean = (weaponAbility1 And Ability1.Ability1Weapon) <> 0
+        Dim isMagic As Boolean = (weaponAbility1 And Ability1.Ability1Magic) <> 0
+        Dim isStaff As Boolean = (weaponAbility1 And Ability1.Ability1Staff) <> 0
+        Dim isUnbreakable As Boolean = (weaponAbility1 And Ability1.Ability1Unbreakable) <> 0
+        Dim isUnsellable As Boolean = (weaponAbility1 And Ability1.Ability1Unsellable) <> 0
+        Dim hasBraveEffect As Boolean = (weaponAbility1 And Ability1.Ability1Brave) <> 0
+        Dim magicDamage As Boolean = (weaponAbility1 And Ability1.Ability1MagicDamage) <> 0
+        Dim isUncounterable As Boolean = (weaponAbility1 And Ability1.Ability1Uncounterable) <> 0
+
+        If isWeapon And Not isMagic Then ability1String = ability1String + vbCrLf + vbTab + "Weapon"
+        If isWeapon And isMagic Then ability1String = ability1String + vbCrLf + vbTab + "Magic"
+        If isStaff Then ability1String = ability1String + vbCrLf + vbTab + "Staff"
+        If isUnbreakable Then ability1String = ability1String + vbCrLf + vbTab + "Unbreakable"
+        If isUnsellable Then ability1String = ability1String + vbCrLf + vbTab + "Cannot Be Sold"
+        If hasBraveEffect Then ability1String = ability1String + vbCrLf + vbTab + "Strikes Twice per Attack"
+        If magicDamage Then ability1String = ability1String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE6, "Flat 10 Damage From Range", "Targets Resistance")
+        If isUncounterable Then ability1String = ability1String + vbCrLf + vbTab + "Cannot be countered (Ballistas/Siege Tomes)"
+
+        Return ability1String
+    End Function
+
+    Private Function stringForWeaponAbility2() As String
+        If weaponAbility2 = 0 Then Return "None"
+
+        Dim ability2String As String = "[0x" + Hex(weaponAbility2) + "]"
+
+        Dim reverseTriangle As Boolean = (weaponAbility2 And Ability2.Ability2ReverseTriangle) <> 0
+        Dim cannotBeRepaired As Boolean = (weaponAbility2 And Ability2.Ability2Hammerne) <> 0
+        Dim monsterWeapon As Boolean = (weaponAbility2 And Ability2.Ability2MonsterWeaponDragonLock) <> 0
+        Dim lordLock As Boolean = (weaponAbility2 And Ability2.Ability2LordLock) <> 0
+        Dim swordfighterLock As Boolean = (weaponAbility2 And Ability2.Ability2SwordfighterLock) <> 0
+        Dim kingLock As Boolean = (weaponAbility2 And Ability2.Ability2KingLock) <> 0
+        Dim noFlyingEffect As Boolean = (weaponAbility2 And Ability2.Ability2NegateFlyingEffect) <> 0
+        Dim noCritical As Boolean = (weaponAbility2 And Ability2.Ability2NegateCritical) <> 0
+
+        If reverseTriangle Then ability2String = ability2String + vbCrLf + vbTab + "Reverses Weapon Triangle"
+        If cannotBeRepaired Then ability2String = ability2String + vbCrLf + vbTab + "Cannot Be Repaired (?)"
+        If monsterWeapon Then ability2String = ability2String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE8, "Locked to Monsters and Dragons", "Locked To Dragons")
+        If lordLock Then ability2String = ability2String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE6, "Locked to Lord", "Unused Lock")
+        If swordfighterLock Then ability2String = ability2String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE6, "Locked to Myrmidons/Swordmasters", IIf(gameType = Utilities.GameType.GameTypeFE7, "Locked to Myrmidons/Swordmasters/Lyn", "Locked to Myrmidons/Swordmasters/Eirika"))
+        If kingLock Then ability2String = ability2String + vbCrLf + vbTab + "Locked to King"
+        If noFlyingEffect Then ability2String = ability2String + vbCrLf + vbTab + "Negates Flying Effectiveness"
+        If noCritical Then ability2String = ability2String + vbCrLf + vbTab + "Negates Criticals"
+
+        Return ability2String
+    End Function
+
+    Private Function stringForWeaponAbility3() As String
+        If weaponAbility3 = 0 Or gameType = Utilities.GameType.GameTypeFE6 Then Return "None"
+
+        Dim ability3String As String = "[0x" + Hex(weaponAbility3) + "]"
+
+        Dim negatesDefenses As Boolean = (weaponAbility3 And Ability3.Ability3NegateDefenses) <> 0
+        Dim eliwoodEirika As Boolean = (weaponAbility3 And Ability3.Ability3EliwoodEirikaLock) <> 0
+        Dim hectorEphraim As Boolean = (weaponAbility3 And Ability3.Ability3HectorEphraimLock) <> 0
+        Dim lyn As Boolean = (weaponAbility3 And Ability3.Ability3LynLock) <> 0
+        Dim athos As Boolean = (weaponAbility3 And Ability3.Ability3AthosLock) <> 0
+
+        If negatesDefenses Then ability3String = ability3String + vbCrLf + vbTab + "Negates Defenses"
+        If eliwoodEirika Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE8, "Locked to Eirika", "Locked to Eliwood")
+        If hectorEphraim Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE8, "Locked to Ephraim", "Locked to Hector")
+        If lyn Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Locked to Lyn", "Unused Lock")
+        If athos Then ability3String = ability3String + vbCrLf + vbTab + IIf(gameType = Utilities.GameType.GameTypeFE7, "Locked to Athos", "Unused Lock")
+
+        Return ability3String
+    End Function
+
+    Private Function stringForStatBonus() As String
+        If gameType = Utilities.GameType.GameTypeFE6 Then Return "[0x" + Hex(statBonus) + "] " + FE6GameData.stringForStatBonusPointer(statBonus)
+        If gameType = Utilities.GameType.GameTypeFE7 Then Return "[0x" + Hex(statBonus) + "] " + FE7GameData.stringForStatBonusPointer(statBonus)
+        If gameType = Utilities.GameType.GameTypeFE8 Then Return "[0x" + Hex(statBonus) + "] " + FE8GameData.stringForStatBonusPointer(statBonus)
+
+        Return "None"
+    End Function
+
+    Private Function stringForEffectiveness() As String
+        If gameType = Utilities.GameType.GameTypeFE6 Then Return "[0x" + Hex(effectiveness) + "] " + FE6GameData.stringForEffectivenessPointer(effectiveness)
+        If gameType = Utilities.GameType.GameTypeFE7 Then Return "[0x" + Hex(effectiveness) + "] " + FE7GameData.stringForEffectivenessPointer(effectiveness)
+        If gameType = Utilities.GameType.GameTypeFE8 Then Return "[0x" + Hex(effectiveness) + "] " + FE8GameData.stringForEffectivenessPointer(effectiveness)
+
+        Return "None"
+    End Function
+
     Public Function fieldTable() As Hashtable Implements RecordKeeper.RecordableItem.fieldTable
         Dim table As Hashtable = New Hashtable
 
         table.Add("Name", itemDisplayName)
 
-        table.Add("Durability", durability.ToString)
-        table.Add("Might", might.ToString)
+        table.Add("Durability", IIf((weaponAbility1 And Ability1.Ability1Unbreakable) <> 0, "--", durability.ToString))
+        table.Add("Might", IIf(effect = WeaponEffect.WeaponEffectHalvesHP, "--", might.ToString))
         table.Add("Hit", hit.ToString)
         table.Add("Critical", critical.ToString)
         table.Add("Weight", weight.ToString)
 
-        ' Figure out how to show added effects.
+        table.Add("Stat Bonus", stringForStatBonus())
+        table.Add("Effectiveness", stringForEffectiveness())
+
+        table.Add("Weapon Ability 1", stringForWeaponAbility1())
+        table.Add("Weapon Ability 2", stringForWeaponAbility2())
+        If gameType <> Utilities.GameType.GameTypeFE6 Then
+            table.Add("Weapon Ability 3", stringForWeaponAbility3())
+        End If
+
+        table.Add("Weapon Effect", weaponEffectString())
 
         Return table
     End Function
@@ -352,6 +465,17 @@ Public Class FEItem
         keyList.Add("Hit")
         keyList.Add("Critical")
         keyList.Add("Weight")
+
+        keyList.Add("Stat Bonus")
+        keyList.Add("Effectiveness")
+
+        keyList.Add("Weapon Ability 1")
+        keyList.Add("Weapon Ability 2")
+        If gameType <> Utilities.GameType.GameTypeFE6 Then
+            keyList.Add("Weapon Ability 3")
+        End If
+
+        keyList.Add("Weapon Effect")
 
         Return keyList
     End Function

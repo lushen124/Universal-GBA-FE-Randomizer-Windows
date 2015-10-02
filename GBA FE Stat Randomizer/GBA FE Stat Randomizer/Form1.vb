@@ -534,7 +534,7 @@ StartOver:
                             End If
                             replacementCharacter.characterId = character.characterId
                             If replacingLordCharacter Then
-                                replacementCharacter.ability2 = replacementCharacter.ability2 Or FECharacter.ClassAbility2.Lord
+                                replacementCharacter.ability2 = replacementCharacter.ability2 Or FECharacter.CharacterAbility2.Lord
                             End If
                             ' Go ahead and change his class if it needs changing and delevel (or level him) as necessary
                             Dim originalLevel As Integer = replacementCharacter.level
@@ -611,7 +611,7 @@ StartOver:
                                         replacementCharacter.levelWithClass(replacementClass, targetLevel - originalLevel, False, rng)
                                     End If
                                     replacementCharacter.level = IIf(replacementClass.ability2 And FEClass.ClassAbility2.Promoted, targetLevel - 9, targetLevel)
-                                    replacementCharacter.updateClassWithClass(replacementClass)
+                                    replacementCharacter.updateClassWithClass(replacementClass, rng)
                                 End If
                             End If
                         Else
@@ -693,9 +693,11 @@ StartOver:
             Dim importantCharacterIDs = New ArrayList(System.Enum.GetValues(characterType))
 
             Dim weaponLevelIncreaseChance As Integer = 0
+            Dim currentChapter As Integer = 0
 
             ' Go through each chapter.
             For Each chapterUnits As ArrayList In chapterUnitData
+                currentChapter += 1 ' Gaidens/Splits are considered chapters.
                 ' Let's start with 5% per chapter (Gaidens and splits included)
                 weaponLevelIncreaseChance += 8
                 ' For every unit found in the chapter data
@@ -859,25 +861,11 @@ StartOver:
                         ' If the old class was a lord, then apply the lord status on the 
                         ' character (not the class!)
                         If wasLord Then
-                            currentCharacter.ability2 = currentCharacter.ability2 Or FECharacter.ClassAbility2.Lord
+                            currentCharacter.ability2 = currentCharacter.ability2 Or FECharacter.CharacterAbility2.Lord
                         End If
 
-                        ' Update the character's class in the object.
-                        currentCharacter.updateClassWithClass(newClass)
-
-                        ' Make sure their weapon levels are consistent with their new class.
-                        currentCharacter.swordLevel = newClass.swordLevel
-                        currentCharacter.spearLevel = newClass.spearLevel
-                        currentCharacter.axeLevel = newClass.axeLevel
-                        currentCharacter.bowLevel = newClass.bowLevel
-                        currentCharacter.staffLevel = newClass.staffLevel
-                        currentCharacter.animaLevel = newClass.animaLevel
-                        currentCharacter.darkLevel = newClass.darkLevel
-                        currentCharacter.lightLevel = newClass.lightLevel
-
-                        ' Add a chance to increase their weapon ranks depending
-                        ' on how late they join.
-                        currentCharacter.increaseWeaponRanksWithPercentChance(weaponLevelIncreaseChance, type, rng)
+                        ' Update the character's class in the object. Also updates weapon levels
+                        currentCharacter.updateClassWithClass(newClass, rng)
 
                         ' Make sure their class has valid stats.
                         currentCharacter.validate(newClass, RandomizeSettings.minimumCON, type)

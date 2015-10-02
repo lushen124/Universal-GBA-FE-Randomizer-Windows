@@ -553,6 +553,22 @@
         Return EffectivenessPointers.EffectivenessPointerNone
     End Function
 
+    Public Shared Function stringForEffectivenessPointer(ByVal pointer As UInteger)
+        If pointer = EffectivenessPointers.EffectivenessPointerKnights Then Return "Effective Against Knights"
+        If pointer = EffectivenessPointers.EffectivenessPointerDragons Then Return "Effective Against Dragons"
+        If pointer = EffectivenessPointers.EffectivenessPointerFliers Then Return "Effective Against Fliers"
+        If pointer = EffectivenessPointers.EffectivenessPointerCavalry Then Return "Effective Against Cavalry"
+
+        If pointer = EffectivenessPointers.EffectivenessPointerFlyingAndMonsters Then Return "Effective Against Fliers And Monsters"
+        If pointer = EffectivenessPointers.EffectivenessPointerKnightsAndCavalry Then Return "Effective Against Knights And Cavalry"
+        If pointer = EffectivenessPointers.EffectivenessPointerSwordfighters Then Return "Effective Against Swordfighters"
+        If pointer = EffectivenessPointers.EffectivenessPointerMonsters Then Return "Effective Against Monsters"
+
+        If pointer = 0 Then Return "None"
+
+        Return "Custom (Unknown) Effectiveness"
+    End Function
+
     Public Shared Function randomStatBonus(ByRef rng As Random)
         Dim result = rng.Next(2, 16)
         If result = 2 Then Return StatBonusPointers.StatBonusPointerExcalibur
@@ -573,6 +589,27 @@
 
         Return StatBonusPointers.StatBonusPointerNone
 
+    End Function
+
+    Public Shared Function stringForStatBonusPointer(ByVal pointer As UInteger)
+        If pointer = StatBonusPointers.StatBonusPointerAudhulma Then Return "+5 RES"
+        If pointer = StatBonusPointers.StatBonusPointerDecayingBreath Then Return "+10 STR, +10 SKL, +20 DEF, +10 RES"
+        If pointer = StatBonusPointers.StatBonusPointerDemonLight Then Return "+10 MAG, +10 SKL, +10 LCK, +10 DEF, +10 RES"
+        If pointer = StatBonusPointers.StatBonusPointerDragonstone Then Return "+12 STR, +12 SKL, +15 DEF, +20 RES"
+        If pointer = StatBonusPointers.StatBonusPointerExcalibur Then Return "+5 SPD"
+        If pointer = StatBonusPointers.StatBonusPointerGarm Then Return "+5 SPD"
+        If pointer = StatBonusPointers.StatBonusPointerGleipnir Then Return "+5 SKL"
+        If pointer = StatBonusPointers.StatBonusPointerIvaldi Then Return "+5 DEF"
+        If pointer = StatBonusPointers.StatBonusPointerNidhogg Then Return "+5 LCK"
+        If pointer = StatBonusPointers.StatBonusPointerNightmare Then Return "None" ' ?
+        If pointer = StatBonusPointers.StatBonusPointerRavager Then Return "+15 STR, +15 SKL, +15 DEF, +10 RES"
+        If pointer = StatBonusPointers.StatBonusPointerSieglinde Then Return "+5 STR"
+        If pointer = StatBonusPointers.StatBonusPointerSiegmund Then Return "+5 STR"
+        If pointer = StatBonusPointers.StatBonusPointerVidofnir Then Return "+5 DEF"
+
+        If pointer = 0 Then Return "None"
+
+        Return "Custom (Unknown) Stat Bonus"
     End Function
 
     Public Shared Function unpromotedClassList(ByVal female As Boolean, ByVal includeMonsters As Boolean) As ArrayList
