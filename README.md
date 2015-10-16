@@ -3,6 +3,16 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**October 16, 2015**
+
+v1.1.1 Release
+
+New Features:
+* Added a quick hack to apply Klokinator's Fix Patch when Randomizing FE8. The full details of the changelog of the fix patch can be found here: https://dl.dropboxusercontent.com/u/28014061/Randomizer%20Shit/FE8%20Fix%20Patch%20Details.txt
+
+Bug Fixes:
+* Fixed an issue where a UPS patch that wrote more than the original file was causing crashes.
+
 **October 1, 2015**
 
 v1.1.0 Release
