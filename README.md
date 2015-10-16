@@ -3,6 +3,16 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**October 1, 2015**
+
+v1.1.0 Release
+
+New Features:
+* Added ability to generate a changelog to quickly access most relevant changes (Characters, Classes, Items).
+
+Bug Fixes:
+* Updated logic to attempt to transfer a character's highest weapon rank when changing his/her class. The old logic introduced bugs that caused every character to start with A rank weapon levels.
+
 **July 19, 2015**
 
 v1.0.1 Release
