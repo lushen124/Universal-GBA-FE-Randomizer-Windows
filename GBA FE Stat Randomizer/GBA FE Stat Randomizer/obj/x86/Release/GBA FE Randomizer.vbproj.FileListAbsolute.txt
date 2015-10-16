@@ -15,3 +15,4 @@ C:\Users\lushe_000\Documents\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Ran
 C:\Users\lushe_000\Documents\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Release\GBA FE Randomizer.xml
 C:\Users\lushe_000\Documents\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Release\GBA FE Randomizer.pdb
 C:\Users\lushe_000\Documents\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\obj\x86\Release\GBA FE Randomizer.vbprojResolveAssemblyReference.cache
+C:\Users\lushe_000\Documents\Universal-GBA-FE-Randomizer-Windows\GBA FE Stat Randomizer\GBA FE Stat Randomizer\bin\Release\FE8 Otaku Fix Patch V0.8.ups

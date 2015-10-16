@@ -8,9 +8,10 @@
 
     Private hasAlreadyRandomized As Boolean
 
-    
+
 
     Private applyTutorialKiller As Boolean ' FE7 only.
+    Private applyFixPatch As Boolean ' Klok's Fix Patch
 
 
     Private Sub OpenFileDialog1_FileOk(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog1.FileOk
@@ -53,8 +54,13 @@
         ElseIf type = Utilities.GameType.GameTypeFE8 Then
             GameDetectionLabel.Text = "Game Detected: Fire Emblem 8"
             RandomizeButton.Enabled = True
-            GameSpecificCheckbox.Hide()
-            applyTutorialKiller = False
+
+            inputFile.Seek(&H2BA6, IO.SeekOrigin.Begin)
+            Dim notPatchedYet As Boolean = inputFile.ReadByte() = &H03
+            GameSpecificCheckbox.Text = "Apply Klok's Fix Patch"
+            GameSpecificCheckbox.Show()
+            GameSpecificCheckbox.Enabled = notPatchedYet
+            GameSpecificCheckbox.Checked = False
         Else
             GameDetectionLabel.Text = "Unknown Game (Code: " + Convert.ToChar(gameCode.Item(0)) + Convert.ToChar(gameCode.Item(1)) + Convert.ToChar(gameCode.Item(2)) + Convert.ToChar(gameCode.Item(3)) + ")"
             RandomizeButton.Enabled = False
@@ -1645,6 +1651,16 @@ StartOver:
             End If
         End If
 
+        If type = Utilities.GameType.GameTypeFE8 And applyFixPatch Then
+            Dim result As Boolean = Patcher.applyUPSPatch(OpenFileDialog1.FileName, "FE8 Otaku Fix Patch V0.8.ups")
+            If result = False Then
+                MsgBox("Fix Patch Failed. Continuing without applying patch...", MsgBoxStyle.OkOnly, "Notice")
+            Else
+                applyFixPatch = False
+                GameSpecificCheckbox.Checked = False
+            End If
+        End If
+
         Dim fileWriter = IO.File.OpenWrite(OpenFileDialog1.FileName)
 
         If Not IsNothing(specialMovementManager) Then
@@ -1831,6 +1847,8 @@ StartOver:
         ChangelogBrowseButton.Enabled = False
 
         RandomizeButton.Enabled = False
+
+        GameSpecificCheckbox.Enabled = False
     End Sub
 
     Private Sub reenableAllControls()
@@ -1887,6 +1905,8 @@ StartOver:
 
         SaveChangelogCheckbox.Enabled = True
         ChangelogBrowseButton.Enabled = SaveChangelogCheckbox.Checked
+
+        GameSpecificCheckbox.Enabled = (type <> Utilities.GameType.GameTypeFE7)
 
         RandomizeButton.Enabled = type <> Utilities.GameType.GameTypeUnknown
     End Sub
@@ -2341,4 +2361,9 @@ StartOver:
                                       & "Note that dialogue referring to characters does not change.")
     End Sub
 
+    Private Sub GameSpecificCheckbox_CheckedChanged(sender As Object, e As EventArgs) Handles GameSpecificCheckbox.CheckedChanged
+        If type = Utilities.GameType.GameTypeFE8 Then
+            applyFixPatch = GameSpecificCheckbox.Checked
+        End If
+    End Sub
 End Class

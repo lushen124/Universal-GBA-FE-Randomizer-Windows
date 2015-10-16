@@ -22,8 +22,11 @@
 
         Dim header As UInteger = ReadWord(inputFile)
         If header = &H55505331 Then
-            Dim inputLength As ULong = decodePointer(inputFile)
+            Dim inputLength As ULong = Math.Min(decodePointer(inputFile), sourceData.Length)
             Dim outputLength As ULong = decodePointer(inputFile)
+
+            Console.WriteLine(inputLength.ToString)
+            Console.WriteLine(outputLength.ToString)
 
             Dim relative As ULong = 0
 
@@ -44,7 +47,11 @@
                     If i < outputLength Then
                         ' Read byte from source file (0x00 if beyond bounds)
                         ' XOR and write into target file.
-                        Dim currentByte As Byte = IIf(i < inputLength, sourceData(relative - 1), 0)
+                        Dim currentByte As Byte = 0
+                        If (i < inputLength And (relative - 1) < sourceData.Length) Then
+                            currentByte = sourceData(relative - 1)
+                        End If
+
                         targetFile.WriteByte(delta Xor currentByte)
                     End If
                 Next
