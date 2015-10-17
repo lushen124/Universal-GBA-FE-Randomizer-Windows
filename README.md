@@ -3,6 +3,13 @@ A Universal Randomizer for Fire Emblem games on Game Boy Advance
 
 ## Latest Updates
 
+**October 17, 2015**
+
+v1.1.2 Release
+
+Bug Fixes:
+* Updated Klok's Fix Patch to address a small display issue with garbled text.
+
 **October 16, 2015**
 
 v1.1.1 Release
